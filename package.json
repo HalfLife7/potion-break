@@ -1,0 +1,38 @@
+{
+  "name": "potion-break",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "mustache-express": "^1.3.0",
+    "passport": "^0.4.1",
+    "passport-steam": "^1.0.12",
+    "path": "^0.12.7",
+    "sqlite3": "^4.1.1",
+    "stripe": "^8.32.0",
+    "util": "^0.12.2"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "nodemon": "^2.0.2",
+    "prettier": "2.0.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon config/server.js",
+    "pretest": "eslint --ignore-path .gitignore ."
+  },
+  "author": "",
+  "license": "ISC"
+}
