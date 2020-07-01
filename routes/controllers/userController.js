@@ -2,10 +2,10 @@ var express = require("express");
 var router = express.Router();
 const Axios = require("axios");
 const response = require("express");
+var db = require("../../config/db.js");
 
 
 router.get("/user", function (req, res) {
-  console.log("/////////////////////////////////////////////////////////////////////////////")
   console.log(req.user);
   userInfo = req.user;
 
@@ -23,7 +23,6 @@ router.get("/user", function (req, res) {
     }
   }).then((response) => {
     var getOwnedGamesData = response.data.response;
-    console.log(getOwnedGamesData)
 
     // descending order in playtime
     getOwnedGamesData.games.sort(function (a, b) {
@@ -66,11 +65,58 @@ router.get("/user", function (req, res) {
     userInfo.totalMinutesPlayed = totalMinutesPlayed;
     userInfo.totalTimePlayed = (Math.floor(totalMinutesPlayed / 60) + " hours and " + (totalMinutesPlayed - (Math.floor(totalMinutesPlayed / 60)) * 60) + " minutes");
 
-    console.log("here");
-    res.render("user", {
-      user: userInfo,
-      userSteamData: filteredGamesData
-    });
+    console.log(filteredGamesData);
+
+    // update database of games
+    db.serialize(function () {
+      var stmt = db.prepare("INSERT INTO games (app_id, name, img_icon_url, img_logo_url) VALUES (?,?,?,?) ON CONFLICT(app_id) DO UPDATE SET name=excluded.name, img_icon_url=excluded.img_icon_url, img_logo_url=excluded.img_logo_url", function callback(err) {
+        if (err != null) {
+          console.log(err);
+        }
+      });
+
+      for (var i = 0; i < filteredGamesData.length; i++) {
+        if (i === (filteredGamesData.length - 1)) {
+          stmt.finalize();
+          // run this for the last row in the data
+          db.run("INSERT INTO games (app_id, name, img_icon_url, img_logo_url) VALUES (?,?,?,?) ON CONFLICT(app_id) DO UPDATE SET name=excluded.name, img_icon_url=excluded.img_icon_url, img_logo_url=excluded.img_logo_url", [filteredGamesData[i].appid, filteredGamesData[i].name, filteredGamesData[i].img_icon_url, filteredGamesData[i].img_logo_url], function callback(err) {
+            if (err != null) {
+              console.log(err);
+            } else {
+              // update user's games owned and playtime
+              var stmt = db.prepare("INSERT INTO user_games_owned (app_id, user_id, total_playtime) VALUES (?,?,?) ON CONFLICT(app_id, user_id) DO UPDATE SET total_playtime=excluded.total_playtime", function callback(err) {
+                if (err != null) {
+                  console.log(err);
+                }
+              });
+
+              for (var i = 0; i < filteredGamesData.length; i++) {
+                if (i === (filteredGamesData.length - 1)) {
+                  stmt.finalize();
+                  // run this for the last row in the data
+                  db.run("INSERT INTO user_games_owned (app_id, user_id, total_playtime) VALUES (?,?,?) ON CONFLICT(app_id, user_id) DO UPDATE SET total_playtime=excluded.total_playtime", [filteredGamesData[i].appid, userInfo.user_id, filteredGamesData[i].playtime_forever], function callback(err) {
+                    if (err != null) {
+                      console.log(err);
+                    } else {
+                      // render the page
+                      res.render("user", {
+                        user: userInfo,
+                        userSteamData: filteredGamesData
+                      });
+                    }
+                  });
+                } else {
+                  stmt.run(filteredGamesData[i].appid, userInfo.user_id, filteredGamesData[i].playtime_forever);
+                }
+              }
+
+            }
+          });
+        } else {
+          stmt.run(filteredGamesData[i].appid, filteredGamesData[i].name, filteredGamesData[i].img_icon_url, filteredGamesData[i].img_logo_url);
+        }
+      }
+    })
   }, (error) => {
     console.log(error);
   })
