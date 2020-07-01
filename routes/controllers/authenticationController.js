@@ -33,7 +33,7 @@ router.get(
     failureRedirect: "/",
   }),
   function (req, res) {
-    res.redirect("/home");
+    res.redirect("/user");
   }
 );
 

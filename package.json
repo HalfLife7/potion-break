@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "bulma": "^0.9.0",
+    "bulma-carousel": "^4.0.4",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "mustache-express": "^1.3.0",
@@ -30,7 +32,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon config/server.js",
+    "start": "nodemon -e js,mustache config/server.js",
     "pretest": "eslint --ignore-path .gitignore ."
   },
   "author": "",

@@ -1,21 +1,68 @@
-<html>
-    <body>
-        <img src="{{user._json.avatarfull}}"/>
-        <p>ID:
-            {{user._json.steamid}}</p>
-        <p>Name:
-            {{user._json.personaname}}</p>
-        {{#userSteamData}}
-            <p>App ID:
-                {{appid}}</p>
-            <p>Name:
-                {{name}}</p>
-            <p>Total Playtime:
-                {{playtime_forever}}</p>
-            <p>IMG Icon URL<img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{appid}}/{{img_icon_url}}.jpg"/>
-            </p>
-        </p>
-        <p>IMG Logo URL<img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{appid}}/{{img_logo_url}}.jpg"/>
-        </p>
-    </body>
-</html></p></p></body></html>{{/userSteamData}}</body></html>
+{{>header}}
+
+<body>
+    <section class="hero is-dark is-large">
+        <div class="hero-head">
+            <nav class="navbar">
+                <div class="container">
+                    <div class="navbar-brand">
+                        <a class="navbar-item">
+                            <!-- MOGRA font-->
+                            <img src="/images/logo.png" alt="Logo"></a>
+                    </div>
+                    <div id="navbarMenuHeroB" class="navbar-menu">
+                        <div class="navbar-end">
+                            <a class="navbar-item is-active">
+                                Home
+                            </a>
+                            <a class="navbar-item">
+                                Examples
+                            </a>
+                            <a class="navbar-item">
+                                Documentation
+                            </a>
+                            <span class="navbar-item">
+                                <a class="button is-dark is-inverted" href="auth/steam">
+                                    <span class="icon">
+                                        <i class="fab fa-steam"></i>
+                                    </span>
+                                    <span>Logon with Steam</span>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <p class="title">
+                    Take a Potion Break!
+                </p>
+                <p class="subtitle">
+                    Sometimes you need a breather from slaying dragons or saving the world.
+                </p>
+            </div>
+        </div>
+
+        <div class="hero-foot">
+            <nav class="tabs is-boxed is-fullwidth">
+                <div class="container">
+                    <ul>
+                        <li class="is-active">
+                            <a>Games</a>
+                        </li>
+                        <li>
+                            <a>Allies</a>
+                        </li>
+                        <li>
+                            <a>Foes</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </section>
+</body>
+{{>footer}}

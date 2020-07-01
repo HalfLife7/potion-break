@@ -1,0 +1,83 @@
+{{>header}}
+<html>
+
+<body>
+    <section class="hero is-dark is-small">
+        <div class="hero-body">
+            <nav class="level is-dark">
+                <div class="level-item has-text-centered">
+                    <div>
+                        <figure class="image is-128x128">
+                            <img src="{{user.steam_avatar}}" alt="Placeholder image">
+                        </figure>
+                        <p class="title">{{user.steam_persona_name}}</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Games Owned</p>
+                        <p class="title">{{user.totalGamesOwned}}</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Games Played</p>
+                        <p class="title">{{user.totalGamesPlayed}}</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Time Played</p>
+                        <p class="title">{{user.totalTimePlayed}}</p>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </section>
+
+    <section class="section has-background-light">
+        <div class="columns is-centered">
+            <div class="column">
+                <div class="module-card-wrap">
+                    {{#userSteamData}}
+                    <div class="module-card card">
+                        <div class="card">
+                            <div class="card-image">
+                                <figure class="image is-3by1">
+                                    <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{appid}}/{{img_logo_url}}.jpg"
+                                        alt="Logo">
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <div class="media">
+                                    <div class="media-left">
+                                        <figure class="image is-48x48">
+                                            <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{appid}}/{{img_icon_url}}.jpg"
+                                                alt="Icon">
+                                        </figure>
+                                    </div>
+                                    <div class="media-content">
+                                        <p class="title is-4">
+                                            {{name}}</p>
+
+                                        <p class="subtitle is-6">Total Time Played - {{totalTimePlayed}}</p>
+
+                                    </div>
+                                </div>
+                                <div class="content">
+                                    <button class="button is-large is-fullwidth">Start Potion Break</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{/userSteamData}}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+
+    </script>
+</body>
+{{>footer}}

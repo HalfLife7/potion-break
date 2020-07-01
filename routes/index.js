@@ -5,9 +5,12 @@ var router = express.Router();
 /**
  * router manager, loads each controller in seperate files to keep things organized
  */
-router.use("/auth", require("./auth.js"));
-//router.use("/", require("./controllers/loginController.js"));
+
+router.use("/auth", require("./controllers/authenticationController.js"));
 router.use("/", require("./controllers/homeController.js"));
+router.use("/", require("./controllers/userController.js"));
+
+// TODO: setup routes for potion breaks
 
 // export these routes up to server.js
 module.exports = router;

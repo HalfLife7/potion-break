@@ -8,4 +8,5 @@ var config = {
     SESSION_SECRET: process.env.SESSION_SECRET,
     DB_NAME: "database.db"
 };
+
 module.exports = config;
