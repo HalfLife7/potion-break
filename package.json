@@ -8,8 +8,12 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
     "bulma": "^0.9.0",
+    "bulma-calendar": "^6.0.7",
     "bulma-carousel": "^4.0.4",
+    "currency.js": "^1.2.2",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "mustache-express": "^1.3.0",

@@ -65,7 +65,7 @@ router.get("/user", function (req, res) {
     userInfo.totalMinutesPlayed = totalMinutesPlayed;
     userInfo.totalTimePlayed = (Math.floor(totalMinutesPlayed / 60) + " hours and " + (totalMinutesPlayed - (Math.floor(totalMinutesPlayed / 60)) * 60) + " minutes");
 
-    console.log(filteredGamesData);
+    //console.log(filteredGamesData);
 
     // update database of games
     db.serialize(function () {

@@ -1,5 +1,6 @@
 var express = require("express");
 var session = require("express-session");
+var bodyParser = require('body-parser')
 var path = require("path");
 const mustacheExpress = require("mustache-express");
 var config = require('./config.js');
@@ -10,15 +11,14 @@ var db = require("./db.js");
 
 // create the table if it doesn't exist
 db.serialize(function () {
-    db.run("CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY AUTOINCREMENT, steam_persona_name TEXT, steam_profile_url TEXT, steam_id TEXT UNIQUE, steam_avatar text)");
+    db.run("CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY AUTOINCREMENT, steam_persona_name TEXT, steam_profile_url TEXT, steam_id TEXT UNIQUE, steam_avatar text, name TEXT, email TEXT)");
     db.run("CREATE TABLE IF NOT EXISTS games (app_id INTEGER PRIMARY KEY, name TEXT, img_icon_url TEXT, img_logo_url TEXT)");
     db.run("CREATE TABLE IF NOT EXISTS user_games_owned (app_id INTEGER, user_id INTEGER, total_playtime INTEGER, PRIMARY KEY(app_id, user_id), FOREIGN KEY(app_id) REFERENCES games(app_id), FOREIGN KEY(user_id) REFERENCES users(user_id))");
+    db.run("CREATE TABLE IF NOT EXISTS potion_breaks (potion_break_id INTEGER PRIMARY KEY AUTOINCREMENT, date_created INTEGER, end_date INTEGER, user_id INTEGER, app_id INTEGER, total_value INTEGER, charity_id INTEGER, client_secret TEXT, status TEXT, FOREIGN KEY(app_id) REFERENCES games(app_id), FOREIGN KEY(user_id) REFERENCES users(user_id), FOREIGN KEY(charity_id) REFERENCES charities(charity_id))");
+    db.run("CREATE TABLE IF NOT EXISTS charities (charity_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description TEXT)");
 });
 
-// stripe setup
-var stripe = require("stripe")(config.STRIPE_SK_TEST);
-var accountSid = config.STRIPE_ACCOUNT_SID;
-var authToken = config.STRIPE_AUTH_TOKEN;
+
 
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
@@ -28,14 +28,10 @@ var authToken = config.STRIPE_AUTH_TOKEN;
 //   have a database of user records, the complete Steam profile is serialized
 //   and deserialized.
 passport.serializeUser(function (user, done) {
-    console.log("PART 1");
-    console.log(user);
     done(null, user);
 });
 
 passport.deserializeUser(function (obj, done) {
-    console.log("PART 2");
-    console.log(obj);
     done(null, obj);
 });
 
@@ -95,12 +91,13 @@ passport.use(
 
 var app = express();
 
-const bodyParser = require("body-parser");
-app.use(
-    bodyParser.urlencoded({
-        extended: true,
-    })
-);
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({
+    extended: true
+}))
+
+// parse application/json
+app.use(bodyParser.json())
 
 // set view paths
 const viewsPath = path.join(__dirname, "../views");
@@ -126,6 +123,18 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, '../public')));
+// stripe webhook local
+app.use(
+    express.json({
+        // We need the raw body to verify webhook signatures.
+        // Let's compute it only when hitting the Stripe webhook endpoint.
+        verify: function (req, res, buf) {
+            if (req.originalUrl.startsWith("/webhook")) {
+                req.rawBody = buf.toString();
+            }
+        }
+    })
+);
 
 // load routes
 var routes = require("../routes/index.js");

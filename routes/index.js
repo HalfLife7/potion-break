@@ -9,6 +9,8 @@ var router = express.Router();
 router.use("/auth", require("./controllers/authenticationController.js"));
 router.use("/", require("./controllers/homeController.js"));
 router.use("/", require("./controllers/userController.js"));
+router.use("/", require("./controllers/potionBreakController.js"));
+router.use("/", require("./controllers/stripeController.js"));
 
 // TODO: setup routes for potion breaks
 

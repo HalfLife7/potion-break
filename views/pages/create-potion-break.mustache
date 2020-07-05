@@ -41,17 +41,18 @@
         </div>
     </section>
     <section>
-        <form id="potion-break-form" method="post" action="/submit-potion-break">
+        <form id="potion-break-form" method="POST" action="/submit-potion-break">
+            <input type="hidden" id="appId" name="appId" value="{{game.app_id}}">
             <div class="field">
                 <label class="label" for="name">Name</label>
                 <div class="control">
-                    <input class="input" type="text" placeholder="John Smith" name="first-name">
+                    <input class="input" type="text" placeholder="John Smith" name="name">
                 </div>
             </div>
             <div class="field">
                 <label class="label" for="email">Email</label>
                 <div class="control">
-                    <input class="input" type="email" placeholder="john@example.com" name="email">
+                    <input class="input" type="text" placeholder="john@example.com" name="email">
                 </div>
             </div>
             <div class="field">
@@ -75,12 +76,12 @@
                 </div>
             </div>
             <div class="field">
-                <label class="label" for="end-date">End Date</label>
-                <input type="date" name="end-date">
+                <label class="label" for="endDate">End Date</label>
+                <input type="date" name="endDate">
             </div>
             <div class="field is-grouped">
                 <div class="control">
-                    <button id="potion-break-form-submit" class="button is-link">Add Payment
+                    <button type="submit" id="potion-break-form-submit" class="button is-link">Add Payment
                         Information</button>
                 </div>
                 <div class="control">
