@@ -3,8 +3,11 @@
     --body-color: rgb(247, 250, 252);
     --button-color: rgb(30, 166, 114);
     --accent-color: #0a721b;
+    --secondary-color: #ed5f74;
     --link-color: #ffffff;
     --font-color: rgb(105, 115, 134);
+    --gray-border: rgba(0, 0, 0, 0.15);
+    --gray-light: rgba(0, 0, 0, 0.4);
     --body-font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     --radius: 6px;
     --form-width: 400px;
@@ -41,13 +44,49 @@ body {
     justify-content: center;
     height: 100%;
     align-self: center;
-    padding: 75px 50px;
+    padding: 50px 50px 75px 50px;
     background: var(--body-color);
     width: var(--form-width);
     border-radius: var(--radius);
     box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
-        0px 2px 5px 0px rgba(50, 50, 93, 0.1),
-        0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+        0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}
+
+.sr-picker {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.sr-picker button {
+    background: none !important;
+    border: none;
+    padding: 0 !important;
+    /*optional*/
+    font-family: arial, sans-serif;
+    /*input has OS specific font-family*/
+    color: var(--accent-color);
+    cursor: pointer;
+    width: 75px;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.sr-picker button:hover,
+.sr-picker button:focus,
+.sr-picker button.selected {
+    outline: none;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.sr-picker button:hover,
+.sr-picker button:focus {
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.sr-picker button.selected {
+    border-bottom: 2px solid var(--accent-color);
 }
 
 .sr-field-error {
@@ -110,6 +149,18 @@ input[type="text"]::placeholder {
     box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
         0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
     border-radius: 7px;
+}
+
+/* Form */
+.sr-form-row {
+    margin: 16px 0;
+}
+
+label {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: inline-block;
 }
 
 /* Buttons and links */
@@ -312,8 +363,4 @@ pre {
         opacity: 1;
         transform: scale(1);
     }
-}
-
-[hidden] {
-    display: none;
 }

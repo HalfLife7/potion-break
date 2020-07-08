@@ -1,4 +1,6 @@
-{{>header}}
+{{>custom-header}}
+<script src="/js/load-stripe-checkout.js" defer></script>
+</head>
 <html>
 
 <body>
@@ -46,13 +48,13 @@
             <div class="field">
                 <label class="label" for="name">Name</label>
                 <div class="control">
-                    <input class="input" type="text" placeholder="John Smith" name="name">
+                    <input class="input" id="name" type="text" placeholder="John Smith" name="name">
                 </div>
             </div>
             <div class="field">
                 <label class="label" for="email">Email</label>
                 <div class="control">
-                    <input class="input" type="text" placeholder="john@example.com" name="email">
+                    <input class="input" id="email" type="text" placeholder="john@example.com" name="email">
                 </div>
             </div>
             <div class="field">
@@ -79,8 +81,43 @@
                 <label class="label" for="endDate">End Date</label>
                 <input type="date" name="endDate">
             </div>
+
+    <div class="sr-root">
+      <div class="sr-main">
+        <div class="sr-payment-form card">
+          {{! <div class="sr-form-row">
+            <label>
+              Account details
+            </label>
+            <input type="text" id="email" placeholder="Email address" />
+          </div> }}
+
+          <div class="sr-form-row">
+            <label>
+              Payment details
+            </label>
+            <div class="sr-input sr-element sr-card-element" id="card-element">
+              <!-- A Stripe card Element will be inserted here. -->
+            </div>
+          </div>
+          <div class="sr-field-error" id="card-errors" role="alert"></div>
+          {{! <button id="submit">
+            <div class="spinner hidden" id="spinner"></div>
+            <span id="button-text">Link your card to your account</span>
+          </button> }}
+        </div>
+        {{! <div class="sr-result hidden">
+          <p>Card setup completed<br /></p>
+          <pre>
+            <code></code>
+          </pre>
+        </div> }}
+      </div>
+    </div>
+
             <div class="field is-grouped">
                 <div class="control">
+                <div class="spinner hidden" id="spinner"></div>
                     <button type="submit" id="potion-break-form-submit" class="button is-link">Add Payment
                         Information</button>
                 </div>
@@ -94,14 +131,18 @@
     {{>footer}}
     <script>
         // bulma.io datepicker setup
-        var d = new Date();
-        d.setDate(d.getDate() + 7);
+        var minDate = new Date();
+        minDate.setDate(minDate.getDate()+1);
+
+        var maxDate = new Date();
+        maxDate = new Date(maxDate.setMonth(maxDate.getMonth()+1));
 
         var options = {
             type: "date",
             color: "is-dark",
             showTodayButton: "false",
-            maxDate: d
+            maxDate: maxDate,
+            startDate: minDate
         }
         // Initialize all input of type date
         var calendars = bulmaCalendar.attach('[type="date"]', options);

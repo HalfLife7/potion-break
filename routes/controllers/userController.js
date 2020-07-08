@@ -1,8 +1,10 @@
 var express = require("express");
 var router = express.Router();
+var config = require("../../config/config.js");
 const Axios = require("axios");
 const response = require("express");
 var db = require("../../config/db.js");
+var stripe = require("stripe")(config.STRIPE_SK_TEST);
 
 
 router.get("/user", function (req, res) {
