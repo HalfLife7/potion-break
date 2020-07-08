@@ -11,6 +11,8 @@ const {
     response
 } = require("express");
 
+// TODO: ADD MANDATE PAGE - https://stripe.com/docs/payments/setup-intents#mandates (more information)
+
 // stripe setup
 var stripe = require("stripe")(config.STRIPE_SK_TEST);
 var accountSid = config.STRIPE_ACCOUNT_SID;

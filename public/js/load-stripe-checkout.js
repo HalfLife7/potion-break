@@ -113,7 +113,14 @@ var changeLoadingState = function (isLoading) {
 var orderComplete = function (stripe, clientSecret) {
     stripe.retrieveSetupIntent(clientSecret).then(function (result) {
         var setupIntent = result.setupIntent;
-        var setupIntentJson = JSON.stringify(setupIntent, null, 2);
+        var stripeData = JSON.stringify(setupIntent, null, 2);
+        var formData = {
+            email: document.getElementById("email").value,
+            name: document.getElementById("name").value,
+            amount: document.getElementById("amount").value,
+            charity: document.getElementById("charity").value,
+            endDate: document.getElementById("end").value
+        }
 
         // document.querySelector(".sr-payment-form").classList.add("hidden");
         // document.querySelector(".sr-result").classList.remove("hidden");
@@ -126,6 +133,16 @@ var orderComplete = function (stripe, clientSecret) {
 
         // TODO: GET REQUEST TO NEXT PAGE CONFIRMING SETUP
         // SEND SETUPINTENT DATA -> UPDATE USER WITH SETUPINTENT ID -> UPDATE THEIR POTION BREAKS AS WELL
+        return fetch("/potion-break-creation-success", {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: stripeData
+            })
+            .then(function (response) {
+                return response.json();
+            })
     });
 };
 

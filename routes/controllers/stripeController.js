@@ -98,6 +98,19 @@ router.post("/create-setup-intent", async (req, res) => {
     })
 });
 
+router.post('/potion-break-creation-success', async function (req, res) {
+    console.log("starting potion-break-creation-success");
+    console.log(req.body);
+
+
+
+    // update database with potion break
+    db.serialize(function () {
+        db.run("INSERT INTO potion_breaks (date_created, end_date, user_id, app_id, total_value, charity_id, setup_intent_id,)")
+    })
+    // 
+})
+
 
 // // get user payment information using stripe
 // router.post('/create-payment-intent', async function (req, res) {
