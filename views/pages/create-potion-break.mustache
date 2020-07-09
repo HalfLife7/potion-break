@@ -79,46 +79,39 @@
             </div>
             <div class="field">
                 <label class="label" for="endDate">End Date</label>
-                <input type="date" name="endDate">
+                <input id="calendarInput" type="date" name="endDate">
             </div>
 
-    <div class="sr-root">
-      <div class="sr-main">
-        <div class="sr-payment-form card">
-          {{! <div class="sr-form-row">
-            <label>
-              Account details
-            </label>
-            <input type="text" id="email" placeholder="Email address" />
-          </div> }}
-
-          <div class="sr-form-row">
-            <label>
-              Payment details
-            </label>
-            <div class="sr-input sr-element sr-card-element" id="card-element">
-              <!-- A Stripe card Element will be inserted here. -->
-            </div>
-          </div>
-          <!-- TODO: update card-error styling to modal or something more noticable -->
-          <div class="sr-field-error" id="card-errors" role="alert"></div>
-          {{! <button id="submit">
+            <div class="sr-root">
+                <div class="sr-main">
+                    <div class="sr-payment-form card">
+                        <div class="sr-form-row">
+                            <label>
+                                Payment details
+                            </label>
+                            <div class="sr-input sr-element sr-card-element" id="card-element">
+                                <!-- A Stripe card Element will be inserted here. -->
+                            </div>
+                        </div>
+                        <!-- TODO: update card-error styling to modal or something more noticable -->
+                        <div class="sr-field-error" id="card-errors" role="alert"></div>
+                        {{! <button id="submit">
             <div class="spinner hidden" id="spinner"></div>
             <span id="button-text">Link your card to your account</span>
           </button> }}
-        </div>
-        {{! <div class="sr-result hidden">
+                    </div>
+                    {{! <div class="sr-result hidden">
           <p>Card setup completed<br /></p>
           <pre>
             <code></code>
           </pre>
         </div> }}
-      </div>
-    </div>
+                </div>
+            </div>
 
             <div class="field is-grouped">
                 <div class="control">
-                <div class="spinner hidden" id="spinner"></div>
+                    <div class="spinner hidden" id="spinner"></div>
                     <button type="submit" id="potion-break-form-submit" class="button is-link">Add Payment
                         Information</button>
                 </div>
@@ -131,12 +124,29 @@
     </section>
     {{>footer}}
     <script>
-        // bulma.io datepicker setup
         var minDate = new Date();
-        minDate.setDate(minDate.getDate()+1);
+        minDate.setDate(minDate.getDate() + 1);
 
         var maxDate = new Date();
-        maxDate = new Date(maxDate.setMonth(maxDate.getMonth()+1));
+        maxDate = new Date(maxDate.setMonth(maxDate.getMonth() + 1));
+
+        // flatpickr calendar setup
+        const fp = flatpickr(document.getElementById('calendarInput'), {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+            defaultDate: minDate,
+            minDate: minDate,
+            maxDate: maxDate,
+            parseDate: (datestr, format) => {
+                return moment(datestr, format, true).toDate();
+            },
+            formatDate: (date, format, locale) => {
+                // locale can also be used
+                return moment(date).format(format);
+            }
+
+        });
 
         var options = {
             type: "date",
@@ -148,24 +158,6 @@
             allowSameDayRange: "false",
             enableYearSwitch: "false"
 
-        }
-        // Initialize all input of type date
-        var calendars = bulmaCalendar.attach('[type="date"]', options);
-
-        // Loop on each calendar initialized
-        for (var i = 0; i < calendars.length; i++) { // Add listener to date:selected event calendars[i].on('select',
-            date => {
-                console.log(date);
-            }
-        }
-
-        // To access to bulmaCalendar instance of an element
-        var element = document.querySelector('#my-element');
-        if (element) {
-            // bulmaCalendar instance is available as element.bulmaCalendar
-            element.bulmaCalendar.on('select', function (datepicker) {
-                console.log(datepicker.data.value());
-            });
         }
     </script>
 </body>
