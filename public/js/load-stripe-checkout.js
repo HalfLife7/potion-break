@@ -119,15 +119,17 @@ var orderComplete = function (stripe, clientSecret) {
     stripe.retrieveSetupIntent(clientSecret).then(function (result) {
         var setupIntent = result.setupIntent;
         console.log(setupIntent);
-        var stripeData = setupIntent;
-        console.log(stripeData);
-        stripeData.email = document.getElementById("email").value;
-        stripeData.name = document.getElementById("name").value;
-        stripeData.amount = document.getElementById("amount").value;
-        stripeData.charity = document.getElementById("charity").value;
-        stripeData.endDate = document.getElementById("calendarInput").value;
+        var potionBreakData = setupIntent;
+        console.log(potionBreakData);
+        var minDate = new Date();
+        potionBreakData.email = document.getElementById("email").value;
+        potionBreakData.name = document.getElementById("name").value;
+        potionBreakData.amount = document.getElementById("amount").value;
+        potionBreakData.charity = document.getElementById("charity").value;
+        potionBreakData.endDate = document.getElementById("calendarInput").value;
+        potionBreakData.appId = document.getElementById("appId").value;
 
-        console.log(stripeData);
+        console.log(potionBreakData);
 
         // document.querySelector(".sr-payment-form").classList.add("hidden");
         // document.querySelector(".sr-result").classList.remove("hidden");
@@ -145,7 +147,7 @@ var orderComplete = function (stripe, clientSecret) {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(stripeData)
+                body: JSON.stringify(potionBreakData)
             })
             .then(function (response) {
                 return response.json();

@@ -101,11 +101,23 @@ router.post("/create-setup-intent", async (req, res) => {
 router.post('/potion-break-creation-success', async function (req, res) {
     console.log("starting potion-break-creation-success");
     console.log(req.body);
-
-
+    potionBreakData = req.body;
+    potionBreakData.endDate = Math.floor(new Date(potionBreakData.endDate).getTime() / 1000)
+    potionBreakData.amount = currency(potionBreakData.amount).intValue;
     // update database with potion break
     db.serialize(function () {
-        db.run("INSERT INTO potion_breaks (date_created, end_date, user_id, app_id, total_value, charity_id, setup_intent_id,)")
+        db.run("INSERT INTO potion_breaks (start_date, end_date, user_id, app_id, total_value, charity_id, setup_intent_id, status, playtime_start)" +
+            " VALUES(?, ?, ?, ?, ?, (SELECT charity_id FROM charities WHERE name = ?), ?, ?, (SELECT total_playtime FROM user_games_owned WHERE app_id = ? AND user_id = ?))", [potionBreakData.created, potionBreakData.endDate, req.user.user_id, potionBreakData.appId, potionBreakData.amount, potionBreakData.charity, potionBreakData.id, "ongoing", potionBreakData.appId, req.user.user_id],
+            function (err) {
+                if (err != null) {
+                    console.error(err);
+                } else {
+                    console.log("success");
+
+                    // redirect user to summary page
+
+                }
+            })
     })
     // 
 })

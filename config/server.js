@@ -13,11 +13,49 @@ var db = require("./db.js");
 
 // create the table if it doesn't exist
 db.serialize(function () {
+    // create tables
     db.run("CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY AUTOINCREMENT, steam_persona_name TEXT, steam_profile_url TEXT, steam_id TEXT UNIQUE, steam_avatar text, name TEXT, email TEXT, stripe_customer_id TEXT)");
     db.run("CREATE TABLE IF NOT EXISTS games (app_id INTEGER PRIMARY KEY, name TEXT, img_icon_url TEXT, img_logo_url TEXT)");
     db.run("CREATE TABLE IF NOT EXISTS user_games_owned (app_id INTEGER, user_id INTEGER, total_playtime INTEGER, PRIMARY KEY(app_id, user_id), FOREIGN KEY(app_id) REFERENCES games(app_id), FOREIGN KEY(user_id) REFERENCES users(user_id))");
-    db.run("CREATE TABLE IF NOT EXISTS potion_breaks (potion_break_id INTEGER PRIMARY KEY AUTOINCREMENT, date_created INTEGER, end_date INTEGER, user_id INTEGER, app_id INTEGER, total_value INTEGER, charity_id INTEGER, client_secret TEXT, status TEXT, playtime_start TEXT, playtime_end TEXT, FOREIGN KEY(app_id) REFERENCES games(app_id), FOREIGN KEY(user_id) REFERENCES users(user_id), FOREIGN KEY(charity_id) REFERENCES charities(charity_id))");
-    db.run("CREATE TABLE IF NOT EXISTS charities (charity_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description TEXT)");
+    db.run("CREATE TABLE IF NOT EXISTS potion_breaks (potion_break_id INTEGER PRIMARY KEY AUTOINCREMENT, start_date INTEGER, end_date INTEGER, user_id INTEGER, app_id INTEGER, total_value INTEGER, charity_id INTEGER, setup_intent_id TEXT, status TEXT, playtime_start TEXT, playtime_end TEXT, FOREIGN KEY(app_id) REFERENCES games(app_id), FOREIGN KEY(user_id) REFERENCES users(user_id), FOREIGN KEY(charity_id) REFERENCES charities(charity_id))");
+    db.run("CREATE TABLE IF NOT EXISTS charities (charity_id INTEGER PRIMARY KEY, name TEXT UNIQUE, description TEXT)");
+
+    const charities = [{
+            id: "1",
+            name: "NPR",
+            description: "NPR is an independent, nonprofit media organization that was founded on a mission to create a more informed public. Every day, NPR connects with millions of Americans on the air, online, and in person to explore the news, ideas, and what it means to be human."
+        },
+        {
+            id: "2",
+            name: "Nature Conservancy Canada",
+            description: "The Nature Conservancy of Canada (NCC) is Canada's leading national land conservation organization. A private, non-profit organization, we partner with individuals, corporations, foundations, Indigenous communities and other non-profit organizations and governments at all levels to protect our most important natural treasures — the natural areas that sustain Canada’s plants and wildlife. We secure properties (through donation, purchase, conservation agreement and the relinquishment of other legal interests in land) and manage them for the long term."
+        },
+        {
+            id: "3",
+            name: "SPCA",
+            description: "As Canada's federation of SPCAs and humane societies, Humane Canada™ advances the welfare of animals with a strong national voice, promoting the interests and concerns of animal welfare to government, policy makers, industry and public."
+        },
+        {
+            id: "4",
+            name: "WWF Canada",
+            description: "World Wildlife Fund Canada is the country’s largest international conservation organization. Using the best scientific analysis and indigenous guidance, we work to conserve species at risk, protect threatened habitats, and address climate change. Our long-term vision is simple: to create a world where people and nature thrive."
+        },
+        {
+            id: "5",
+            name: "PBS",
+            description: "PBS is a membership organization that, in partnership with its member stations, serves the American public with programming and services of the highest quality, using media to educate, inspire, entertain and express a diversity of perspectives."
+        }
+    ]
+
+
+    // seed data into charities table if it is empty
+    for (i = 0; i < charities.length; i++) {
+        db.run("INSERT OR IGNORE INTO charities (charity_id, name, description) VALUES (?, ?, ?)", [charities[i].id, charities[i].name, charities[i].description], function (err) {
+            if (err != null) {
+                console.error(err);
+            }
+        });
+    }
 });
 
 
