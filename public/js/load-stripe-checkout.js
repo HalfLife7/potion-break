@@ -30,7 +30,12 @@ var button = document.getElementById("potion-break-form-submit");
 button.addEventListener("click", function (event) {
     console.log("BEGIN potion-break-form-submit")
     event.preventDefault();
-    changeLoadingState(true);
+    document.getElementById('potion-break-form').checkValidity();
+    document.getElementById('potion-break-form').reportValidity();
+    if (document.getElementById('potion-break-form').checkValidity() === false) {
+        return;
+    }
+    // changeLoadingState(true);
     var email = document.getElementById("email").value;
     var name = document.getElementById("name").value;
 
@@ -47,7 +52,7 @@ button.addEventListener("click", function (event) {
         .then(function (result) {
             console.log(result);
             if (result.error) {
-                changeLoadingState(false);
+                // changeLoadingState(false);
                 // TODO: have display error show up in a modal
                 var displayError = document.getElementById("card-errors");
                 displayError.textContent = result.error.message;
@@ -97,30 +102,32 @@ var getPublicKey = function () {
 };
 
 // Show a spinner on payment submission
-var changeLoadingState = function (isLoading) {
-    if (isLoading) {
-        document.querySelector("button").disabled = true;
-        document.querySelector("#spinner").classList.remove("hidden");
-        // document.querySelector("#button-text").classList.add("hidden");
-    } else {
-        document.querySelector("button").disabled = false;
-        document.querySelector("#spinner").classList.add("hidden");
-        // document.querySelector("#button-text").classList.remove("hidden");
-    }
-};
+// var changeLoadingState = function (isLoading) {
+//     if (isLoading) {
+//         document.querySelector("button").disabled = true;
+//         document.querySelector("#spinner").classList.remove("hidden");
+//         // document.querySelector("#button-text").classList.add("hidden");
+//     } else {
+//         document.querySelector("button").disabled = false;
+//         document.querySelector("#spinner").classList.add("hidden");
+//         // document.querySelector("#button-text").classList.remove("hidden");
+//     }
+// };
 
 /* Shows a success / error message when the payment is complete */
 var orderComplete = function (stripe, clientSecret) {
     stripe.retrieveSetupIntent(clientSecret).then(function (result) {
         var setupIntent = result.setupIntent;
-        var stripeData = JSON.stringify(setupIntent, null, 2);
-        var formData = {
-            email: document.getElementById("email").value,
-            name: document.getElementById("name").value,
-            amount: document.getElementById("amount").value,
-            charity: document.getElementById("charity").value,
-            endDate: document.getElementById("end").value
-        }
+        console.log(setupIntent);
+        var stripeData = setupIntent;
+        console.log(stripeData);
+        stripeData.email = document.getElementById("email").value;
+        stripeData.name = document.getElementById("name").value;
+        stripeData.amount = document.getElementById("amount").value;
+        stripeData.charity = document.getElementById("charity").value;
+        stripeData.endDate = document.getElementById("calendarInput").value;
+
+        console.log(stripeData);
 
         // document.querySelector(".sr-payment-form").classList.add("hidden");
         // document.querySelector(".sr-result").classList.remove("hidden");
@@ -138,7 +145,7 @@ var orderComplete = function (stripe, clientSecret) {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: stripeData
+                body: JSON.stringify(stripeData)
             })
             .then(function (response) {
                 return response.json();

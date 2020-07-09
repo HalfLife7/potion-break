@@ -1,5 +1,7 @@
 {{>custom-header}}
 <script src="/js/load-stripe-checkout.js" defer></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.3/flatpickr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.3/flatpickr.min.js"></script>
 </head>
 <html>
 
@@ -48,26 +50,26 @@
             <div class="field">
                 <label class="label" for="name">Name</label>
                 <div class="control">
-                    <input class="input" id="name" type="text" placeholder="John Smith" name="name">
+                    <input required class="input" id="name" type="text" placeholder="John Smith" name="name">
                 </div>
             </div>
             <div class="field">
                 <label class="label" for="email">Email</label>
                 <div class="control">
-                    <input class="input" id="email" type="text" placeholder="john@example.com" name="email">
+                    <input required class="input" id="email" type="text" placeholder="john@example.com" name="email">
                 </div>
             </div>
             <div class="field">
                 <label class="label" for="amount">Amount</label>
                 <div class="control">
-                    <input class="input" type="number" placeholder="10, 20, 100, etc." name="amount">
+                    <input required id="amount" class="input" type="number" placeholder="10, 20, 100, etc." name="amount">
                 </div>
             </div>
             <div class="field" name="charity">
                 <label class="label" for="charity">Charity</label>
                 <div class="control">
                     <div class="select">
-                        <select name="charity">
+                        <select required id="charity" name="charity">
                             <option>NPR</option>
                             <option>Samaritan's Purse</option>
                             <option>Metropolitan Museum of Art</option>
@@ -79,7 +81,7 @@
             </div>
             <div class="field">
                 <label class="label" for="endDate">End Date</label>
-                <input id="calendarInput" type="date" name="endDate">
+                <input required id="calendarInput" type="date" name="endDate">
             </div>
 
             <div class="sr-root">
@@ -111,7 +113,7 @@
 
             <div class="field is-grouped">
                 <div class="control">
-                    <div class="spinner hidden" id="spinner"></div>
+                    {{! <div class="spinner hidden" id="spinner"></div> }}
                     <button type="submit" id="potion-break-form-submit" class="button is-link">Add Payment
                         Information</button>
                 </div>
@@ -127,37 +129,20 @@
         var minDate = new Date();
         minDate.setDate(minDate.getDate() + 1);
 
+        var defaultDate = new Date();
+        defaultDate.setDate(defaultDate.getDate() + 7);
+
         var maxDate = new Date();
         maxDate = new Date(maxDate.setMonth(maxDate.getMonth() + 1));
 
         // flatpickr calendar setup
-        const fp = flatpickr(document.getElementById('calendarInput'), {
+        const fp = flatpickr('#calendarInput', {
             altInput: true,
             altFormat: "F j, Y",
             dateFormat: "Y-m-d",
-            defaultDate: minDate,
+            defaultDate: defaultDate,
             minDate: minDate,
-            maxDate: maxDate,
-            parseDate: (datestr, format) => {
-                return moment(datestr, format, true).toDate();
-            },
-            formatDate: (date, format, locale) => {
-                // locale can also be used
-                return moment(date).format(format);
-            }
-
+            maxDate: maxDate
         });
-
-        var options = {
-            type: "date",
-            color: "is-dark",
-            showTodayButton: "false",
-            maxDate: maxDate,
-            startDate: minDate,
-            minDate: minDate,
-            allowSameDayRange: "false",
-            enableYearSwitch: "false"
-
-        }
     </script>
 </body>

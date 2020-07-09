@@ -7,7 +7,6 @@ var config = require('./config.js');
 var passport = require("passport");
 var SteamStrategy = require("../lib/passport-steam/index.js").Strategy;
 var db = require("./db.js");
-const flatpickr = require("flatpickr");
 
 // TODO: update stripe API to use the newset version (currently using 2019-11-05, newest is 2020-03-02)
 // TODO: create automated test cases
