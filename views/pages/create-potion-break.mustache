@@ -70,11 +70,9 @@
                 <div class="control">
                     <div class="select">
                         <select required id="charity" name="charity">
-                            <option>NPR</option>
-                            <option>Nature Conservancy Canada</option>
-                            <option>SPCA</option>
-                            <option>WWF</option>
-                            <option>PBS</option>
+                            {{#charities}}
+                            <option>{{name}}</option>
+                            {{/charities}}
                         </select>
                     </div>
                 </div>

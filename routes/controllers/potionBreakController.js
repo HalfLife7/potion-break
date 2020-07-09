@@ -24,10 +24,18 @@ router.get('/potion-break/create/:appid', function (req, res) {
         if (err != null) {
             console.err(err);
         } else {
-            gameInformation = row;
-            res.render('create-potion-break', {
-                user: req.user,
-                game: gameInformation
+            let gameInformation = row;
+            db.all("SELECT * FROM charities", function callback(err, rows) {
+                if (err != null) {
+                    console.error(err);
+                } else {
+                    let charitiesInformation = rows;
+                    res.render('create-potion-break', {
+                        user: req.user,
+                        game: gameInformation,
+                        charities: charitiesInformation
+                    })
+                }
             })
         }
     })
