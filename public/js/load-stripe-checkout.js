@@ -30,14 +30,16 @@ var button = document.getElementById("potion-break-form-submit");
 button.addEventListener("click", function (event) {
     console.log("BEGIN potion-break-form-submit")
     event.preventDefault();
+
+    // quick form validation to see if there are any empty
     document.getElementById('potion-break-form').checkValidity();
     document.getElementById('potion-break-form').reportValidity();
     if (document.getElementById('potion-break-form').checkValidity() === false) {
         return;
     }
     // changeLoadingState(true);
-    var email = document.getElementById("email").value;
-    var name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const name = document.getElementById("name").value;
 
     stripe
         .confirmCardSetup(setupIntents.setupIntent.client_secret, {
@@ -117,41 +119,59 @@ var getPublicKey = function () {
 /* Shows a success / error message when the payment is complete */
 var orderComplete = function (stripe, clientSecret) {
     stripe.retrieveSetupIntent(clientSecret).then(function (result) {
-        var setupIntent = result.setupIntent;
-        console.log(setupIntent);
-        var potionBreakData = setupIntent;
-        console.log(potionBreakData);
-        var minDate = new Date();
-        potionBreakData.email = document.getElementById("email").value;
-        potionBreakData.name = document.getElementById("name").value;
-        potionBreakData.amount = document.getElementById("amount").value;
-        potionBreakData.charity = document.getElementById("charity").value;
-        potionBreakData.endDate = document.getElementById("calendarInput").value;
-        potionBreakData.appId = document.getElementById("appId").value;
+        const setupIntentId = result.setupIntent.id;
 
-        console.log(potionBreakData);
+        // create invisible form to send post data and redirect to new page
+        var formElement = document.createElement("form");
+        formElement.setAttribute("id", "submitForm");
+        formElement.setAttribute("action", "/potion-break-creation-success");
+        formElement.setAttribute("method", "post");
+        formElement.style.display = 'none';
+        document.body.appendChild(formElement);
 
-        // document.querySelector(".sr-payment-form").classList.add("hidden");
-        // document.querySelector(".sr-result").classList.remove("hidden");
-        // document.querySelector("pre").textContent = setupIntentJson;
-        // setTimeout(function () {
-        //     document.querySelector(".sr-result").classList.add("expand");
-        // }, 200);
+        var inputElementSetupIntentId = document.createElement("input");
+        inputElementSetupIntentId.setAttribute("type", "text");
+        inputElementSetupIntentId.setAttribute("name", "setup-intent-id");
+        inputElementSetupIntentId.setAttribute("value", setupIntentId);
+        document.getElementById("submitForm").appendChild(inputElementSetupIntentId);
 
-        // changeLoadingState(false);
+        var inputElementEmail = document.createElement("input");
+        inputElementEmail.setAttribute("type", "text");
+        inputElementEmail.setAttribute("name", "email");
+        inputElementEmail.setAttribute("value", document.getElementById("email").value);
+        document.getElementById("submitForm").appendChild(inputElementEmail);
 
-        // TODO: GET REQUEST TO NEXT PAGE CONFIRMING SETUP
-        // SEND SETUPINTENT DATA -> UPDATE USER WITH SETUPINTENT ID -> UPDATE THEIR POTION BREAKS AS WELL
-        return fetch("/potion-break-creation-success", {
-                method: "post",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(potionBreakData)
-            })
-            .then(function (response) {
-                return response.json();
-            })
+        var inputElementName = document.createElement("input");
+        inputElementName.setAttribute("type", "text");
+        inputElementName.setAttribute("name", "name");
+        inputElementName.setAttribute("value", document.getElementById("name").value);
+        document.getElementById("submitForm").appendChild(inputElementName);
+
+        var inputElementAmount = document.createElement("input");
+        inputElementAmount.setAttribute("type", "text");
+        inputElementAmount.setAttribute("name", "amount");
+        inputElementAmount.setAttribute("value", document.getElementById("amount").value);
+        document.getElementById("submitForm").appendChild(inputElementAmount);
+
+        var inputElementCharity = document.createElement("input");
+        inputElementCharity.setAttribute("type", "text");
+        inputElementCharity.setAttribute("name", "charity");
+        inputElementCharity.setAttribute("value", document.getElementById("charity").value);
+        document.getElementById("submitForm").appendChild(inputElementCharity);
+
+        var inputElementCalendar = document.createElement("input");
+        inputElementCalendar.setAttribute("type", "text");
+        inputElementCalendar.setAttribute("name", "calendar");
+        inputElementCalendar.setAttribute("value", document.getElementById("calendar").value);
+        document.getElementById("submitForm").appendChild(inputElementCalendar);
+
+        var inputElementAppId = document.createElement("input");
+        inputElementAppId.setAttribute("type", "text");
+        inputElementAppId.setAttribute("name", "app-id");
+        inputElementAppId.setAttribute("value", document.getElementById("appId").value);
+        document.getElementById("submitForm").appendChild(inputElementAppId);
+
+        document.getElementById("submitForm").submit();
     });
 };
 

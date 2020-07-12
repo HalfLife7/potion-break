@@ -6,6 +6,7 @@ const response = require("express");
 var db = require("../../config/db.js");
 var stripe = require("stripe")(config.STRIPE_SK_TEST);
 
+// TODO: get user data from steam API only during initial login
 
 router.get("/user", function (req, res) {
   console.log(req.user);

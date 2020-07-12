@@ -141,7 +141,22 @@
             dateFormat: "Y-m-d",
             defaultDate: defaultDate,
             minDate: minDate,
-            maxDate: maxDate
+            maxDate: maxDate,
+
+            // fix to allow form validation to include the bulma date picker - https://github.com/flatpickr/flatpickr/issues/892#issuecomment-610753460
+            allowInput: true,
+            onOpen: function(selectedDates, dateStr, instance) {
+                instance.altInput.prop('readonly', true);
+            },
+            onClose: function(selectedDates, dateStr, instance) {
+                instance.altInput.prop('readonly', false);
+                instance.altInput.blur();
+            }
         });
+
+        // additional fix to prevent users from entering invalid format into the data picker - https://github.com/flatpickr/flatpickr/issues/892#issuecomment-604387030
+        fp._input.onkeypress = () => false;
+
+        
     </script>
 </body>
