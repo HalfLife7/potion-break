@@ -119,7 +119,10 @@ var getPublicKey = function () {
 /* Shows a success / error message when the payment is complete */
 var orderComplete = function (stripe, clientSecret) {
     stripe.retrieveSetupIntent(clientSecret).then(function (result) {
-        const setupIntentId = result.setupIntent.id;
+        const setupIntent = result.setupIntent;
+
+        const setupIntentId = setupIntent.id;
+        const setupIntentDateCreated = setupIntent.created;
 
         // create invisible form to send post data and redirect to new page
         var formElement = document.createElement("form");
@@ -131,43 +134,49 @@ var orderComplete = function (stripe, clientSecret) {
 
         var inputElementSetupIntentId = document.createElement("input");
         inputElementSetupIntentId.setAttribute("type", "text");
-        inputElementSetupIntentId.setAttribute("name", "setup-intent-id");
+        inputElementSetupIntentId.setAttribute("name", "setupIntentId");
         inputElementSetupIntentId.setAttribute("value", setupIntentId);
         document.getElementById("submitForm").appendChild(inputElementSetupIntentId);
 
+        var inputElementDateCreated = document.createElement("input");
+        inputElementDateCreated.setAttribute("type", "text");
+        inputElementDateCreated.setAttribute("name", "dateCreated");
+        inputElementDateCreated.setAttribute("value", setupIntentDateCreated);
+        document.getElementById("submitForm").appendChild(inputElementDateCreated);
+
         var inputElementEmail = document.createElement("input");
         inputElementEmail.setAttribute("type", "text");
-        inputElementEmail.setAttribute("name", "email");
+        inputElementEmail.setAttribute("name", "paymentEmail");
         inputElementEmail.setAttribute("value", document.getElementById("email").value);
         document.getElementById("submitForm").appendChild(inputElementEmail);
 
         var inputElementName = document.createElement("input");
         inputElementName.setAttribute("type", "text");
-        inputElementName.setAttribute("name", "name");
+        inputElementName.setAttribute("name", "paymentName");
         inputElementName.setAttribute("value", document.getElementById("name").value);
         document.getElementById("submitForm").appendChild(inputElementName);
 
         var inputElementAmount = document.createElement("input");
         inputElementAmount.setAttribute("type", "text");
-        inputElementAmount.setAttribute("name", "amount");
+        inputElementAmount.setAttribute("name", "paymentAmount");
         inputElementAmount.setAttribute("value", document.getElementById("amount").value);
         document.getElementById("submitForm").appendChild(inputElementAmount);
 
         var inputElementCharity = document.createElement("input");
         inputElementCharity.setAttribute("type", "text");
-        inputElementCharity.setAttribute("name", "charity");
+        inputElementCharity.setAttribute("name", "charityName");
         inputElementCharity.setAttribute("value", document.getElementById("charity").value);
         document.getElementById("submitForm").appendChild(inputElementCharity);
 
         var inputElementCalendar = document.createElement("input");
         inputElementCalendar.setAttribute("type", "text");
-        inputElementCalendar.setAttribute("name", "calendar");
-        inputElementCalendar.setAttribute("value", document.getElementById("calendar").value);
+        inputElementCalendar.setAttribute("name", "endDate");
+        inputElementCalendar.setAttribute("value", document.getElementById("calendarInput").value);
         document.getElementById("submitForm").appendChild(inputElementCalendar);
 
         var inputElementAppId = document.createElement("input");
         inputElementAppId.setAttribute("type", "text");
-        inputElementAppId.setAttribute("name", "app-id");
+        inputElementAppId.setAttribute("name", "appId");
         inputElementAppId.setAttribute("value", document.getElementById("appId").value);
         document.getElementById("submitForm").appendChild(inputElementAppId);
 

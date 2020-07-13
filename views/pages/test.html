@@ -1,163 +1,133 @@
 {{>custom-header}}
-<script src="/js/load-stripe-checkout.js" defer></script>
+<script src="/js/create-stripe-customer.js" defer></script>
 </head>
 <html>
 
 <body>
-    <section class="hero is-dark is-small">
+    {{>nav-bar}}
+    <section class="hero is-medium is-light is-bold">
         <div class="hero-body">
-            <nav class="level is-dark">
-                <div class="level-item has-text-centered">
-                    <div>
-                        <figure class="image is-128x128">
-                            <img src="{{user.steam_avatar}}" alt="Placeholder image">
-                        </figure>
-                        <p class="title">{{user.steam_persona_name}}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Games Owned</p>
-                        <p class="title">{{user.totalGamesOwned}}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Games Played</p>
-                        <p class="title">{{user.totalGamesPlayed}}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Time Played</p>
-                        <p class="title">{{user.totalTimePlayed}}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Game</p>
-                        <p class="title">{{game.name}}</p>
-                    </div>
-                </div>
-            </nav>
+            <div class="container">
+                <h1 class="title">
+                    You have successfully started a potion break
+                </h1>
+                <h2 class="subtitle">
+                    Best of luck!
+                </h2>
+            </div>
         </div>
+
+        <!-- total_value: 213,
+  status: 'ongoing',
+  playtime_start: '5816:56',
+  app_id: 570,
+  game_name: 'Dota 2',
+  game_img_icon_url: '0bbb630d63262dd66d2fdd0f7d37e8661a410075',
+  game_img_logo_url: 'd4f836839254be08d8e9dd333ecc9a01782c26d2',
+  charity_id: 3,
+  charity_name: 'SPCA',
+  charity_description: "As Canada's federation of SPCAs and humane societies, Humane Canada™ advances the welfare of animals with a strong national voice, promoting the interests and concerns of animal welfare to government, policy makers, industry and public.",
+  startDate: 'Sunday, July 12th 2020',
+  endDate: 'Sunday, July 12th 2020'  -->
+
+
     </section>
-    <section>
-        <form id="potion-break-form" method="POST" action="/submit-potion-break">
-            <input type="hidden" id="appId" name="appId" value="{{game.app_id}}">
-            <div class="field">
-                <label class="label" for="name">Name</label>
-                <div class="control">
-                    <input class="input" id="name" type="text" placeholder="John Smith" name="name">
+    <section class="section">
+        <div class="container mx-5">
+            <div class="tile is-ancestor">
+                <div class="tile is-parent">
+                    <article class="tile is-child box">
+                        <p class="title has-text-centered">Start Date</p>
+                        <div class="content">
+                            <p class="has-text-centered has-text-weight-bold is-size-1">
+                                {{potionBreakData.formatted_start_date}}</p>
+                        </div>
+                    </article>
                 </div>
-            </div>
-            <div class="field">
-                <label class="label" for="email">Email</label>
-                <div class="control">
-                    <input class="input" id="email" type="text" placeholder="john@example.com" name="email">
+                <div class="tile is-parent">
+                    <article class="tile is-child box">
+                        <p class="title">End Date</p>
+                        <div class="content">
+                            <p class="has-text-centered has-text-weight-bold is-size-1">
+                                {{potionBreakData.formatted_end_date}}</p>
+                        </div>
+                    </article>
                 </div>
-            </div>
-            <div class="field">
-                <label class="label" for="amount">Amount</label>
-                <div class="control">
-                    <input class="input" type="number" placeholder="10, 20, 100, etc." name="amount">
+                <div class="tile is-parent">
+                    <article class="tile is-child box">
+                        <p class="title">Total Days</p>
+                        <div class="content">
+                            <p class="has-text-centered has-text-weight-bold is-size-1">{{potionBreakData.total_days}}
+                            </p>
+                        </div>
+                    </article>
                 </div>
-            </div>
-            <div class="field" name="charity">
-                <label class="label" for="charity">Charity</label>
-                <div class="control">
-                    <div class="select">
-                        <select name="charity">
-                            <option>NPR</option>
-                            <option>Samaritan's Purse</option>
-                            <option>Metropolitan Museum of Art</option>
-                            <option>Doctors Without Borders</option>
-                            <option>PBS</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="field">
-                <label class="label" for="endDate">End Date</label>
-                <input id="calendarInput" type="date" name="endDate">
             </div>
 
-            <div class="sr-root">
-                <div class="sr-main">
-                    <div class="sr-payment-form card">
-                        <div class="sr-form-row">
-                            <label>
-                                Payment details
-                            </label>
-                            <div class="sr-input sr-element sr-card-element" id="card-element">
-                                <!-- A Stripe card Element will be inserted here. -->
+            <div class="tile is-ancestor">
+                <div class="tile is-vertical is-8">
+                    <div class="tile">
+                        <div class="tile is-parent is-vertical">
+                            <article class="tile is-child box">
+                                <p class="title">Value Pledged</p>
+                                <div class="content">
+                                    <p class="has-text-weight-bold has-text-centered is-size-1">
+                                        ${{potionBreakData.total_value}}</p>
+                                </div>
+                            </article>
+                            <article class="tile is-child box">
+                                <figure class="image is-3by1">
+                                    <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{potionBreakData.app_id}}/{{potionBreakData.game_img_logo_url}}.jpg"
+                                        alt="Logo">
+                                </figure>
+                            </article>
+                        </div>
+                        <div class="tile is-parent">
+                            <article class="tile is-child box">
+                                <p class="title">Charity</p>
+                                <div class="content">
+                                    <p class="has-text-centered has-text-weight-bold is-size-1">
+                                        {{potionBreakData.charity_name}}</p>
+                                </div>
+                                <figure class="image is-4by3">
+                                    <img src="https://bulma.io/images/placeholders/640x480.png">
+                                </figure>
+                            </article>
+                        </div>
+                    </div>
+                    <div class="tile is-parent">
+                        <div class="tile is-parent">
+                            <article class="tile is-child box">
+                                <p class="title">Start Playtime</p>
+                                <div class="content">
+                                    <p class="has-text-centered has-text-weight-bold is-size-1">
+                                        {{potionBreakData.playtime_start_hours}} hours and
+                                        {{potionBreakData.playtime_start_minutes}} minutes</p>
+                                </div>
+                            </article>
+                        </div>
+                        <div class="tile is-parent">
+                            <article class="tile is-child box">
+                                <p class="title">TBD</p>
+                                <div class="content">
+                                    <p class="has-text-centered has-text-weight-bold is-size-1">Some text</p>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+                <div class="tile is-parent">
+                    <article class="tile is-child box">
+                        <div class="content">
+                            <p class="title">Charity Description</p>
+                            <div class="content">
+                                <p class="has-text-centered has-text-weight-bold is-size-1">
+                                    {{potionBreakData.charity_description}}</p>
                             </div>
                         </div>
-                        <!-- TODO: update card-error styling to modal or something more noticable -->
-                        <div class="sr-field-error" id="card-errors" role="alert"></div>
-                        {{! <button id="submit">
-            <div class="spinner hidden" id="spinner"></div>
-            <span id="button-text">Link your card to your account</span>
-          </button> }}
-                    </div>
-                    {{! <div class="sr-result hidden">
-          <p>Card setup completed<br /></p>
-          <pre>
-            <code></code>
-          </pre>
-        </div> }}
+                    </article>
                 </div>
             </div>
-
-            <div class="field is-grouped">
-                <div class="control">
-                    <div class="spinner hidden" id="spinner"></div>
-                    <button type="submit" id="potion-break-form-submit" class="button is-link">Add Payment
-                        Information</button>
-                </div>
-                <div class="control">
-                    <button type="reset" class="button is-link is-light">Reset</button>
-                </div>
-            </div>
-        </form>
-
+        </div>
     </section>
-    {{>footer}}
-    <script>
-        var minDate = new Date();
-        minDate.setDate(minDate.getDate() + 1);
-
-        var maxDate = new Date();
-        maxDate = new Date(maxDate.setMonth(maxDate.getMonth() + 1));
-
-        // flatpickr calendar setup
-        flatpickr(document.getElementById('calendarInput'), {
-            altInput: true,
-            altFormat: "F j, Y",
-            dateFormat: "Y-m-d",
-            defaultDate: minDate,
-            minDate: minDate,
-            maxDate: maxDate,
-            parseDate: (datestr, format) => {
-                return moment(datestr, format, true).toDate();
-            },
-            formatDate: (date, format, locale) => {
-                // locale can also be used
-                return moment(date).format(format);
-            }
-
-        });
-
-        var options = {
-            type: "date",
-            color: "is-dark",
-            showTodayButton: "false",
-            maxDate: maxDate,
-            startDate: minDate,
-            minDate: minDate,
-            allowSameDayRange: "false",
-            enableYearSwitch: "false"
-
-        }
-    </script>
 </body>

@@ -45,7 +45,8 @@
             </nav>
         </div>
     </section>
-    <section>
+    <section class="mx-5 my-5">
+    <div class="container">
         <form id="potion-break-form" method="POST" action="/submit-potion-break">
             <input type="hidden" id="appId" name="appId" value="{{game.app_id}}">
             <div class="field">
@@ -83,7 +84,7 @@
                 <input required id="calendarInput" type="date" name="endDate">
             </div>
 
-            <div class="sr-root">
+            <div class="sr-root my-5">
                 <div class="sr-main">
                     <div class="sr-payment-form card">
                         <div class="sr-form-row">
@@ -121,15 +122,15 @@
                 </div>
             </div>
         </form>
-
+    </div>
     </section>
     {{>footer}}
     <script>
         var minDate = new Date();
         minDate.setDate(minDate.getDate() + 1);
 
-        var defaultDate = new Date();
-        defaultDate.setDate(defaultDate.getDate() + 7);
+        // var defaultDate = new Date();
+        // defaultDate.setDate(defaultDate.getDate() + 7);
 
         var maxDate = new Date();
         maxDate = new Date(maxDate.setMonth(maxDate.getMonth() + 1));
@@ -139,19 +140,11 @@
             altInput: true,
             altFormat: "F j, Y",
             dateFormat: "Y-m-d",
-            defaultDate: defaultDate,
             minDate: minDate,
             maxDate: maxDate,
 
             // fix to allow form validation to include the bulma date picker - https://github.com/flatpickr/flatpickr/issues/892#issuecomment-610753460
-            allowInput: true,
-            onOpen: function(selectedDates, dateStr, instance) {
-                instance.altInput.prop('readonly', true);
-            },
-            onClose: function(selectedDates, dateStr, instance) {
-                instance.altInput.prop('readonly', false);
-                instance.altInput.blur();
-            }
+            allowInput: true
         });
 
         // additional fix to prevent users from entering invalid format into the data picker - https://github.com/flatpickr/flatpickr/issues/892#issuecomment-604387030
