@@ -30,25 +30,43 @@ router.get('/potion-break/create/:appid', function (req, res) {
     })
 })
 
+router.get('/potion-breaks/view/all', (req, res) => {
+    db.serialize(() => {
+        db.all("SELECT potion_breaks.potion_break_id, potion_breaks.start_date, potion_breaks.end_date, potion_breaks.total_value, potion_breaks.status, potion_breaks.playtime_start, potion_breaks.app_id, games.name AS game_name, games.img_icon_url AS game_img_icon_url, games.img_logo_url AS game_img_logo_url, potion_breaks.charity_id, charities.name AS charity_name, charities.description AS charity_description FROM potion_breaks INNER JOIN games ON potion_breaks.app_id = games.app_id INNER JOIN charities ON potion_breaks.charity_id = charities.charity_id", [], (err, rows) => {
+            if (err != null) {
+                console.error(err);
+            } else {
+                console.log(rows);
+                let potionBreakData = rows;
+                // convert playtime to HH:MM
+                potionBreakData.forEach((value, index, array) => {
+                    value.playtime_start_hours = (Math.floor(value.playtime_start / 60));
+                    value.playtime_start_minutes = (value.playtime_start % 60);
+                })
+
+                res.render('get-potion-breaks', {
+                    potionBreakData: potionBreakData
+                });
+            }
+        })
+    })
+})
+
 router.post('/potion-break-creation-success', async function (req, res) {
     console.log("starting potion-break-creation-success");
     console.log(req.body);
     console.log("BEFORE");
     var potionBreakData = req.body;
-    // var formDate = moment("2020-07-23");
-    // console.log("formDate: " + formDate);
-    // console.log(formDate.toDate());
-
-    // var unixStartDate = moment.unix(1594583528)
-    // console.log("unixStartDate: " + unixStartDate);
-    // console.log(unixStartDate.toDate());
 
     // conversions (to UNIX and $xx.xx format)
-    const unixEndDate = moment(potionBreakData.endDate).format("X");
-    potionBreakData.endDate = unixEndDate;
-    const unixDateCreated = moment.unix(potionBreakData.dateCreated).format("X");
-    potionBreakData.dateCreated = unixDateCreated;
-    potionBreakData.paymentAmount = (potionBreakData.paymentAmount) * 100;
+    // const unixEndDate = moment(potionBreakData.endDate).format("X");
+    // potionBreakData.endDate = unixEndDate;
+    // const unixDateCreated = moment.unix(potionBreakData.dateCreated).format("X");
+    // potionBreakData.dateCreated = unixDateCreated;
+
+    // conversion from UNIX timestamp to YYYY-MM-DD
+    const formattedStartDate = moment.unix(potionBreakData.dateCreated).format("YYYY-MM-DD");
+    potionBreakData.dateCreated = formattedStartDate;
 
     console.log("AFTER");
     console.log(potionBreakData);
@@ -59,15 +77,13 @@ router.post('/potion-break-creation-success', async function (req, res) {
             " VALUES(?, ?, ?, ?, ?, (SELECT charity_id FROM charities WHERE name = ?), ?, ?, (SELECT total_playtime FROM user_games_owned WHERE app_id = ? AND user_id = ?))",
             [
                 potionBreakData.dateCreated, potionBreakData.endDate, req.user.user_id, potionBreakData.appId, potionBreakData.paymentAmount,
-                potionBreakData.charityName, potionBreakData.setupIntentId, "ongoing", potionBreakData.appId, req.user.user_id
+                potionBreakData.charityName, potionBreakData.setupIntentId, "Ongoing", potionBreakData.appId, req.user.user_id
             ],
             function (err) {
                 if (err != null) {
                     console.error(err);
                 } else {
                     console.log("success");
-
-                    //const redirectUrl = 'potion-break/create/' + potionBreakData.appId + '/success';
 
                     // redirect user to summary page
                     return res.redirect('potion-break/create/' + potionBreakData.appId + '/success');
@@ -96,17 +112,16 @@ router.get('/potion-break/create/:appid/success', function (req, res) {
                         console.log(potionBreakData);
 
                         // convert unix time to this format - Thursday, July 23rd 2020
-                        potionBreakData.formatted_start_date = moment.unix(potionBreakData.start_date).format("dddd, MMMM Do YYYY");
-                        potionBreakData.formatted_end_date = moment.unix(potionBreakData.end_date).format("dddd, MMMM Do YYYY");
+                        potionBreakData.formatted_start_date = moment(potionBreakData.start_date).format("dddd, MMMM Do YYYY");
+                        potionBreakData.formatted_end_date = moment(potionBreakData.end_date).format("dddd, MMMM Do YYYY");
                         // calculate duration of potion break
-                        var start = moment.unix(potionBreakData.start_date);
-                        var end = moment.unix(potionBreakData.end_date);
+                        var start = moment(potionBreakData.start_date);
+                        var end = moment(potionBreakData.end_date);
                         potionBreakData.total_days = end.diff(start, 'days');
                         // convert total time played from minutes to hours:minutes
                         potionBreakData.playtime_start_hours = (Math.floor(potionBreakData.playtime_start / 60));
                         potionBreakData.playtime_start_minutes = (potionBreakData.playtime_start % 60);
-                        // convert payment to dollar value
-                        potionBreakData.total_value = potionBreakData.total_value / 100;
+
                         console.log(potionBreakData);
                         res.render('potion-break-create-success', {
                             user: req.user,

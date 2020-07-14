@@ -1,133 +1,45 @@
 {{>custom-header}}
-<script src="/js/create-stripe-customer.js" defer></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables-bulma@1.0.1/css/dataTables.bulma.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/datatables-bulma@1.0.1/js/dataTables.bulma.min.js"></script>
+<script src="https://use.fontawesome.com/4da2109ad6.js"></script>
 </head>
 <html>
 
 <body>
     {{>nav-bar}}
-    <section class="hero is-medium is-light is-bold">
-        <div class="hero-body">
-            <div class="container">
-                <h1 class="title">
-                    You have successfully started a potion break
-                </h1>
-                <h2 class="subtitle">
-                    Best of luck!
-                </h2>
-            </div>
-        </div>
 
-        <!-- total_value: 213,
-  status: 'ongoing',
-  playtime_start: '5816:56',
-  app_id: 570,
-  game_name: 'Dota 2',
-  game_img_icon_url: '0bbb630d63262dd66d2fdd0f7d37e8661a410075',
-  game_img_logo_url: 'd4f836839254be08d8e9dd333ecc9a01782c26d2',
-  charity_id: 3,
-  charity_name: 'SPCA',
-  charity_description: "As Canada's federation of SPCAs and humane societies, Humane Canada™ advances the welfare of animals with a strong national voice, promoting the interests and concerns of animal welfare to government, policy makers, industry and public.",
-  startDate: 'Sunday, July 12th 2020',
-  endDate: 'Sunday, July 12th 2020'  -->
-
-
-    </section>
-    <section class="section">
-        <div class="container mx-5">
-            <div class="tile is-ancestor">
-                <div class="tile is-parent">
-                    <article class="tile is-child box">
-                        <p class="title has-text-centered">Start Date</p>
-                        <div class="content">
-                            <p class="has-text-centered has-text-weight-bold is-size-1">
-                                {{potionBreakData.formatted_start_date}}</p>
-                        </div>
-                    </article>
-                </div>
-                <div class="tile is-parent">
-                    <article class="tile is-child box">
-                        <p class="title">End Date</p>
-                        <div class="content">
-                            <p class="has-text-centered has-text-weight-bold is-size-1">
-                                {{potionBreakData.formatted_end_date}}</p>
-                        </div>
-                    </article>
-                </div>
-                <div class="tile is-parent">
-                    <article class="tile is-child box">
-                        <p class="title">Total Days</p>
-                        <div class="content">
-                            <p class="has-text-centered has-text-weight-bold is-size-1">{{potionBreakData.total_days}}
-                            </p>
-                        </div>
-                    </article>
-                </div>
-            </div>
-
-            <div class="tile is-ancestor">
-                <div class="tile is-vertical is-8">
-                    <div class="tile">
-                        <div class="tile is-parent is-vertical">
-                            <article class="tile is-child box">
-                                <p class="title">Value Pledged</p>
-                                <div class="content">
-                                    <p class="has-text-weight-bold has-text-centered is-size-1">
-                                        ${{potionBreakData.total_value}}</p>
-                                </div>
-                            </article>
-                            <article class="tile is-child box">
-                                <figure class="image is-3by1">
-                                    <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{potionBreakData.app_id}}/{{potionBreakData.game_img_logo_url}}.jpg"
-                                        alt="Logo">
-                                </figure>
-                            </article>
-                        </div>
-                        <div class="tile is-parent">
-                            <article class="tile is-child box">
-                                <p class="title">Charity</p>
-                                <div class="content">
-                                    <p class="has-text-centered has-text-weight-bold is-size-1">
-                                        {{potionBreakData.charity_name}}</p>
-                                </div>
-                                <figure class="image is-4by3">
-                                    <img src="https://bulma.io/images/placeholders/640x480.png">
-                                </figure>
-                            </article>
-                        </div>
-                    </div>
-                    <div class="tile is-parent">
-                        <div class="tile is-parent">
-                            <article class="tile is-child box">
-                                <p class="title">Start Playtime</p>
-                                <div class="content">
-                                    <p class="has-text-centered has-text-weight-bold is-size-1">
-                                        {{potionBreakData.playtime_start_hours}} hours and
-                                        {{potionBreakData.playtime_start_minutes}} minutes</p>
-                                </div>
-                            </article>
-                        </div>
-                        <div class="tile is-parent">
-                            <article class="tile is-child box">
-                                <p class="title">TBD</p>
-                                <div class="content">
-                                    <p class="has-text-centered has-text-weight-bold is-size-1">Some text</p>
-                                </div>
-                            </article>
-                        </div>
-                    </div>
-                </div>
-                <div class="tile is-parent">
-                    <article class="tile is-child box">
-                        <div class="content">
-                            <p class="title">Charity Description</p>
-                            <div class="content">
-                                <p class="has-text-centered has-text-weight-bold is-size-1">
-                                    {{potionBreakData.charity_description}}</p>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </div>
-        </div>
-    </section>
+    <table class="table is-bordered is-striped is-hoverable is-fullwidth" id="potion-break-table">
+        <thead>
+            <tr>
+                <th>Game</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Value</th>
+                <th>Status</th>
+                <th>Initial Playtime</th>
+                <th>Charity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#potionBreakData}}
+            <tr>
+                <td>{{game_name}}</td>
+                <td>{{start_date}}</td>
+                <td>{{end_date}}</td>
+                <td>{{total_value}}</td>
+                <td>{{status}}</td>
+                <td>{{playtime_start}}</td>
+                <td>{{charity_name}}</td>
+            </tr>
+            {{/potionBreakData}}
+        </tbody>
+    </table>
+    <script type="text/javascript">
+        $("#potion-break-table").DataTable();
+    </script>
+    {{>footer}}
 </body>
+
+</html>

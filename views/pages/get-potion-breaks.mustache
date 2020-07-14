@@ -1,0 +1,68 @@
+{{>custom-header}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables-bulma@1.0.1/css/dataTables.bulma.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/datatables-bulma@1.0.1/js/dataTables.bulma.min.js"></script>
+<script src="https://use.fontawesome.com/4da2109ad6.js"></script>
+</head>
+<html>
+
+<body>
+    {{>nav-bar}}
+    <section class="hero is-light">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    Potion Breaks
+                </h1>
+                <h2 class="subtitle">
+                    View past and current potion breaks
+                </h2>
+            </div>
+        </div>
+    </section>
+    <section class="section has-background-light">
+        <div class="container">
+            <div class="table-container">
+                <table class="table is-bordered is-striped is-hoverable is-fullwidth" id="potion-break-table">
+                    <thead>
+                        <tr>
+                        <th>Game</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Value</th>
+                        <th>Status</th>
+                        <th>Initial Playtime</th>
+                        <th>Charity</th>            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#potionBreakData}}
+                            <tr>
+                                <td>
+                                    <figure class="image is-24x24 game-logo">
+                                        <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{app_id}}/{{game_img_icon_url}}.jpg"
+                                            alt="Icon">
+                                    </figure>
+                                    {{game_name}}
+                                </td>
+                                <td>{{start_date}}</td>
+                                <td>{{end_date}}</td>
+                                <td>{{total_value}}</td>
+                                <td>{{status}}</td>
+                                <td>{{playtime_start_hours}} hours and {{playtime_start_minutes}} minutes</td>
+                                <td>{{charity_name}}</td>
+                            </tr>
+                        {{/potionBreakData}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <script type="text/javascript">
+        $("#potion-break-table").DataTable();
+    </script>
+    {{>footer}}
+</body>
+
+</html>

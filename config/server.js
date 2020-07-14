@@ -17,7 +17,7 @@ db.serialize(function () {
     db.run("CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY AUTOINCREMENT, steam_persona_name TEXT, steam_profile_url TEXT, steam_id TEXT UNIQUE, steam_avatar text, name TEXT, email TEXT, stripe_customer_id TEXT)");
     db.run("CREATE TABLE IF NOT EXISTS games (app_id INTEGER PRIMARY KEY, name TEXT, img_icon_url TEXT, img_logo_url TEXT)");
     db.run("CREATE TABLE IF NOT EXISTS user_games_owned (app_id INTEGER, user_id INTEGER, total_playtime INTEGER, PRIMARY KEY(app_id, user_id), FOREIGN KEY(app_id) REFERENCES games(app_id), FOREIGN KEY(user_id) REFERENCES users(user_id))");
-    db.run("CREATE TABLE IF NOT EXISTS potion_breaks (potion_break_id INTEGER PRIMARY KEY AUTOINCREMENT, start_date INTEGER, end_date INTEGER, user_id INTEGER, app_id INTEGER, total_value INTEGER, charity_id INTEGER, setup_intent_id TEXT, status TEXT, playtime_start TEXT, playtime_end TEXT, FOREIGN KEY(app_id) REFERENCES games(app_id), FOREIGN KEY(user_id) REFERENCES users(user_id), FOREIGN KEY(charity_id) REFERENCES charities(charity_id))");
+    db.run("CREATE TABLE IF NOT EXISTS potion_breaks (potion_break_id INTEGER PRIMARY KEY AUTOINCREMENT, start_date TEXT, end_date TEXT, user_id INTEGER, app_id INTEGER, total_value INTEGER, charity_id INTEGER, setup_intent_id TEXT, status TEXT, playtime_start TEXT, playtime_end TEXT, FOREIGN KEY(app_id) REFERENCES games(app_id), FOREIGN KEY(user_id) REFERENCES users(user_id), FOREIGN KEY(charity_id) REFERENCES charities(charity_id))");
     db.run("CREATE TABLE IF NOT EXISTS charities (charity_id INTEGER PRIMARY KEY, name TEXT UNIQUE, description TEXT)");
 
     // TODO: get charity logos

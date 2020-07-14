@@ -1,5 +1,4 @@
 {{>custom-header}}
-<script src="/js/create-stripe-customer.js" defer></script>
 </head>
 <html>
 
@@ -16,20 +15,6 @@
                 </h2>
             </div>
         </div>
-
-        <!-- total_value: 213,
-  status: 'ongoing',
-  playtime_start: '5816:56',
-  app_id: 570,
-  game_name: 'Dota 2',
-  game_img_icon_url: '0bbb630d63262dd66d2fdd0f7d37e8661a410075',
-  game_img_logo_url: 'd4f836839254be08d8e9dd333ecc9a01782c26d2',
-  charity_id: 3,
-  charity_name: 'SPCA',
-  charity_description: "As Canada's federation of SPCAs and humane societies, Humane Canada™ advances the welfare of animals with a strong national voice, promoting the interests and concerns of animal welfare to government, policy makers, industry and public.",
-  startDate: 'Sunday, July 12th 2020',
-  endDate: 'Sunday, July 12th 2020'  -->
-
 
     </section>
     <section class="section">
@@ -76,6 +61,7 @@
                                 </div>
                             </article>
                             <article class="tile is-child box" style="display: grid;">
+                                <p class="title has-text-centered">Game</p>
                                 <figure class="image is-3by1">
                                     <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{potionBreakData.app_id}}/{{potionBreakData.game_img_logo_url}}.jpg"
                                         alt="Logo">
@@ -115,9 +101,9 @@
                 <div class="tile is-parent">
                     <article class="tile is-child box">
                         <div class="content">
-                            <p class="title has-text-justified">Charity Description</p>
+                            <p class="title has-text-centered">Charity Description</p>
                             <div class="content">
-                                <p class="has-text-centered is-size-5">
+                                <p class="has-text-justifed is-size-5">
                                     {{potionBreakData.charity_description}}</p>
                             </div>
                         </div>
@@ -126,4 +112,6 @@
             </div>
         </div>
     </section>
+    {{>footer}}
 </body>
+</html>
