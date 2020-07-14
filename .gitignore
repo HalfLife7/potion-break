@@ -3,3 +3,4 @@
 /.prettierrc.json
 /database.db
 /node_modules
+/views/pages/text.html
