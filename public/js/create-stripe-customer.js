@@ -8,8 +8,11 @@ var createCustomer = function (publicKey) {
         })
         .then(function (response) {
             console.log(response);
-            return response.json();
+            return;
         })
+        .catch(function (error) {
+            console.error(error);
+        });
 };
 
 var getPublicKey = function () {
@@ -26,6 +29,9 @@ var getPublicKey = function () {
         })
         .then(function (response) {
             createCustomer(response.publicKey);
+        })
+        .catch(function (error) {
+            console.error(error);
         });
 };
 

@@ -8,7 +8,7 @@ var router = express.Router();
 
 router.use("/auth", require("./controllers/authenticationController.js"));
 router.use("/", require("./controllers/homeController.js"));
-router.use("/", require("./controllers/userController.js"));
+router.use("/", require("./controllers/gameLibraryController.js"));
 router.use("/", require("./controllers/potionBreakController.js"));
 router.use("/", require("./controllers/stripeController.js"));
 router.use("/", require("./controllers/cronController.js"));

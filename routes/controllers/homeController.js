@@ -9,7 +9,7 @@ const stripe = require('stripe')(process.env.STRIPE_SK_TEST);
 // middleware to check if logged in
 router.get("/", function (req, res) {
     if (req.user) {
-        res.redirect("/user");
+        res.redirect("/game-library");
     } else {
         res.render("home");
     }

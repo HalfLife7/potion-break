@@ -74,7 +74,7 @@ router.post('/potion-break-creation-success', async function (req, res) {
     // update database with potion break
     db.serialize(function () {
         db.run("INSERT INTO potion_breaks (start_date, end_date, user_id, app_id, total_value, charity_id, setup_intent_id, status, playtime_start, stripe_payment_date_created)" +
-            " VALUES(?, ?, ?, ?, ?, (SELECT charity_id FROM charities WHERE name = ?), ?, ?, (SELECT total_playtime FROM user_games_owned WHERE app_id = ? AND user_id = ?), ?)",
+            " VALUES(?, ?, ?, ?, ?, (SELECT charity_id FROM charities WHERE name = ?), ?, ?, (SELECT playtime_forever FROM user_games_owned WHERE app_id = ? AND user_id = ?), ?)",
             [
                 potionBreakData.formattedDate, potionBreakData.endDate, req.user.user_id, potionBreakData.appId, potionBreakData.paymentAmount,
                 potionBreakData.charityName, potionBreakData.setupIntentId, "Ongoing", potionBreakData.appId, req.user.user_id, potionBreakData.dateCreated

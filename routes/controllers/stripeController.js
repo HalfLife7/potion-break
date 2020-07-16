@@ -37,17 +37,22 @@ router.post("/create-stripe-customer", function async (req, res) {
                         description: req.user.steam_id
                     }, function (err, customer) {
                         console.log(customer);
-                        // update the user with the customer_id
-                        db.run("UPDATE users SET stripe_customer_id = (?) WHERE user_id = (?)", [customer.id, req.user.user_id], function (err) {
-                            if (err) {
-                                console.error(err);
-                            } else {
-                                // do nothing after updating the user's stripe_customer_id
-                            }
-                        })
+                        if (err) {
+                            console.error(err);
+                        } else {
+                            // update the user with the customer_id
+                            db.run("UPDATE users SET stripe_customer_id = (?) WHERE user_id = (?)", [customer.id, req.user.user_id], function (err) {
+                                if (err) {
+                                    console.error(err);
+                                } else {
+                                    return;
+                                }
+                            })
+                        }
                     });
                 } else {
                     // do nothing if user already is a customer in stripe
+                    return;
                 }
             }
         })
@@ -64,35 +69,32 @@ router.post("/create-setup-intent", function async (req, res) {
             console.error(err);
         } else {
             console.log(row);
-            stripe.customers.retrieve(
-                row.stripe_customer_id,
-                function (err, customer) {
-                    // asynchronously called
-                    console.log("GOT CUSTOMER");
-                    console.log(customer);
-                    if (err) {
-                        console.error(err);
-                    } else {
-                        console.log("BEGIN CREATING SETUPINTENTS")
-                        stripe.setupIntents.create({
-                                customer: customer.id
-                            },
-                            function (err, setupIntent) {
-                                console.log("created setupIntent!")
-                                console.log(setupIntent);
-                                // asynchronously called
-                                if (err) {
-                                    console.error(err);
-                                } else {
-                                    res.send({
-                                        setupIntent: setupIntent
-                                    });
-                                }
+            stripe.customers.retrieve(row.stripe_customer_id, function (err, customer) {
+                // asynchronously called
+                console.log("GOT CUSTOMER");
+                console.log(customer);
+                if (err) {
+                    console.error(err);
+                } else {
+                    console.log("BEGIN CREATING SETUPINTENTS")
+                    stripe.setupIntents.create({
+                            customer: customer.id
+                        },
+                        function (err, setupIntent) {
+                            console.log("created setupIntent!")
+                            console.log(setupIntent);
+                            // asynchronously called
+                            if (err) {
+                                console.error(err);
+                            } else {
+                                res.send({
+                                    setupIntent: setupIntent
+                                });
                             }
-                        );
-                    }
+                        }
+                    );
                 }
-            );
+            });
         }
     })
 });
