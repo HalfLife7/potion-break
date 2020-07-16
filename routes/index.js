@@ -11,6 +11,7 @@ router.use("/", require("./controllers/homeController.js"));
 router.use("/", require("./controllers/userController.js"));
 router.use("/", require("./controllers/potionBreakController.js"));
 router.use("/", require("./controllers/stripeController.js"));
+router.use("/", require("./controllers/cronController.js"));
 
 // TODO: setup routes for potion breaks
 

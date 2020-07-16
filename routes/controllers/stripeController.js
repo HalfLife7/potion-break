@@ -1,6 +1,5 @@
 var express = require("express");
 var router = express.Router();
-var passport = require("passport");
 var config = require("../../config/config.js");
 var db = require("../../config/db.js");
 
@@ -15,19 +14,19 @@ const {
 // stripe setup
 var stripe = require("stripe")(config.STRIPE_SK_TEST);
 
-router.get("/public-key", (req, res) => {
+router.get("/public-key", function (req, res) {
     res.send({
         publicKey: config.STRIPE_PK_TEST
     });
 });
 
-router.post("/create-stripe-customer", async (req, res) => {
+router.post("/create-stripe-customer", function async (req, res) {
     console.log("starting create-stripe-customer");
     // Create or use an existing Customer to associate with the SetupIntent.
     // The PaymentMethod will be stored to this Customer for later use.
     db.serialize(function () {
         db.get("SELECT stripe_customer_id FROM users WHERE user_id = (?)", [req.user.user_id], function (err, row) {
-            if (err != null) {
+            if (err) {
                 console.error(err);
             } else {
                 console.log(row.stripe_customer_id);
@@ -40,7 +39,7 @@ router.post("/create-stripe-customer", async (req, res) => {
                         console.log(customer);
                         // update the user with the customer_id
                         db.run("UPDATE users SET stripe_customer_id = (?) WHERE user_id = (?)", [customer.id, req.user.user_id], function (err) {
-                            if (err != null) {
+                            if (err) {
                                 console.error(err);
                             } else {
                                 // do nothing after updating the user's stripe_customer_id
@@ -55,13 +54,13 @@ router.post("/create-stripe-customer", async (req, res) => {
     })
 });
 
-router.post("/create-setup-intent", async (req, res) => {
+router.post("/create-setup-intent", function async (req, res) {
     console.log("STARTING create-setup-intent")
     // use an existing Customer to associate with the SetupIntent.
     // The PaymentMethod will be stored to this Customer for later use.
 
     db.get("SELECT stripe_customer_id FROM users WHERE user_id = (?)", [req.user.user_id], function (err, row) {
-        if (err != null) {
+        if (err) {
             console.error(err);
         } else {
             console.log(row);
@@ -71,7 +70,7 @@ router.post("/create-setup-intent", async (req, res) => {
                     // asynchronously called
                     console.log("GOT CUSTOMER");
                     console.log(customer);
-                    if (err != null) {
+                    if (err) {
                         console.error(err);
                     } else {
                         console.log("BEGIN CREATING SETUPINTENTS")
@@ -82,7 +81,7 @@ router.post("/create-setup-intent", async (req, res) => {
                                 console.log("created setupIntent!")
                                 console.log(setupIntent);
                                 // asynchronously called
-                                if (err != null) {
+                                if (err) {
                                     console.error(err);
                                 } else {
                                     res.send({
@@ -107,7 +106,7 @@ router.post("/create-setup-intent", async (req, res) => {
 
 //     db.serialize(function () {
 //         db.run("UPDATE users SET name = (?), email = (?) WHERE user_id = (?)", [req.user.name, req.user.email, req.user.user_id], function (err) {
-//             if (err != null) {
+//             if (err) {
 //                 console.err(err);
 //             } else {
 //                 let currencyType = "cad";
@@ -142,7 +141,7 @@ router.post("/create-setup-intent", async (req, res) => {
 //     // update DB with the potion break once the payment is complete
 //     db.serialize(function () {
 //         db.run("INSERT INTO potion_breaks (date_created, end_date, user_id, app_id, total_value, charity_id, client_secret, status) VALUES (?,?,?,?,?,(SELECT charity_id FROM charities WHERE name = ?),?, ?)", [paymentIntent.created, endDate, req.user.user_id, req.user.potionBreakDetails.app_id, paymentIntent.amount, req.user.potionBreakDetails.charity, clientSecretHash, "ongoing"], function (err) {
-//             if (err != null) {
+//             if (err) {
 //                 console.err(err);
 //             } else {
 //                 // redirect to success page
@@ -152,7 +151,7 @@ router.post("/create-setup-intent", async (req, res) => {
 
 // })
 // Webhook handler for asynchronous events.
-router.post("/webhook", async (req, res) => {
+router.post("/webhook", async function (req, res) {
     let data;
     let eventType;
 
@@ -209,7 +208,7 @@ router.post("/webhook", async (req, res) => {
             data.object.customer, {
                 email: data.object.billing_details.email
             },
-            () => {
+            function () {
                 console.log(
                     `🔔  Customer successfully updated.`
                 );

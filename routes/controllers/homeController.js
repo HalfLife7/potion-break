@@ -4,6 +4,7 @@ var passport = require("passport");
 var config = require("../../config/config.js");
 var db = require("../../config/db.js");
 var checkLogin = require("../../config/checkLoginMiddleware.js");
+const stripe = require('stripe')(process.env.STRIPE_SK_TEST);
 
 // middleware to check if logged in
 router.get("/", function (req, res) {
@@ -49,6 +50,16 @@ router.get("/login", checkLogin, function (req, res) {
 
 // var total_days = formatted_end_date1.diff(formatted_start_date1, 'days');
 // console.log(total_days);
+// stripe.paymentMethods.list({
+//         customer: 'cus_HcNWg5HB5W5bfO',
+//         type: 'card'
+//     },
+//     function (err, paymentMethods) {
+//         console.log(paymentMethods);
+//     }
+// );
+
+
 
 // export routes up to routes.js
 module.exports = router;
