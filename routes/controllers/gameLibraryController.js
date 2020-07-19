@@ -18,9 +18,6 @@ function convertMinutesToHHMM(item, index) {
   }
 }
 
-
-// TODO: get user data from steam API only during initial login
-
 router.get("/game-library", function (req, res) {
   console.log(req.user);
   let userInfo = req.user;

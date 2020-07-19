@@ -60,7 +60,11 @@
         </div>
     </section>
     <script type="text/javascript">
-        $("#potion-break-table").DataTable();
+    $(document).ready(function() {
+        $("#potion-break-table").DataTable({
+            "order": [[1, "desc"]]
+        });
+    })
     </script>
     {{>footer}}
 </body>

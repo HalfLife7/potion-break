@@ -44,7 +44,7 @@ router.get('/potion-breaks/view/all', function (req, res) {
                     value.playtime_start_minutes = (value.playtime_start % 60);
                 })
 
-                res.render('get-potion-breaks', {
+                res.render('view-all-potion-breaks', {
                     potionBreakData: potionBreakData
                 });
             }

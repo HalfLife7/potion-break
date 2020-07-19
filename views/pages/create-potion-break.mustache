@@ -1,4 +1,5 @@
 {{>custom-header}}
+<link rel="stylesheet" type="text/css" href="/css/stripe.css" />
 <script src="/js/load-stripe-checkout.js" defer></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.3/flatpickr.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.3/flatpickr.min.js"></script>
@@ -7,130 +8,78 @@
 
 <body>
     {{>nav-bar}}
-    <section class="hero is-dark is-small">
-        <div class="hero-body">
-            <nav class="level is-dark">
-                <div class="level-item has-text-centered">
-                    <div>
-                        <figure class="image is-128x128">
-                            <img src="{{user.steam_avatar}}" alt="Placeholder image">
-                        </figure>
-                        <p class="title">{{user.steam_persona_name}}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Games Owned</p>
-                        <p class="title">{{user.totalGamesOwned}}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Games Played</p>
-                        <p class="title">{{user.totalGamesPlayed}}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Time Played</p>
-                        <p class="title">{{user.totalTimePlayed}}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Game</p>
-                        <p class="title">{{game.name}}</p>
-                    </div>
-                </div>
-            </nav>
-        </div>
-    </section>
     <section class="mx-5 my-5">
-    <div class="container">
-        <form id="potion-break-form" method="POST" action="/submit-potion-break">
-            <input type="hidden" id="appId" name="appId" value="{{game.app_id}}">
-            <div class="field">
-                <label class="label" for="name">Name</label>
-                <div class="control">
-                    <input required class="input" id="name" type="text" placeholder="John Smith" name="name">
-                </div>
-            </div>
-            <div class="field">
-                <label class="label" for="email">Email</label>
-                <div class="control">
-                    <input required class="input" id="email" type="text" placeholder="john@example.com" name="email">
-                </div>
-            </div>
-            <div class="field">
-                <label class="label" for="amount">Amount</label>
-                <div class="control">
-                    <input required id="amount" class="input" type="number" placeholder="10, 20, 100, etc." name="amount">
-                </div>
-            </div>
-            <div class="field" name="charity">
-                <label class="label" for="charity">Charity</label>
-                <div class="control">
-                    <div class="select">
-                        <select required id="charity" name="charity">
-                            {{#charities}}
-                            <option>{{name}}</option>
-                            {{/charities}}
-                        </select>
+        <div class="container">
+            <h1 class="title is-1">Create Potion Break</h1>
+            <h1 class="subtitle is-3">{{game.name}}</h1>
+            <form id="potion-break-form" method="POST" action="/submit-potion-break">
+                <input type="hidden" id="appId" name="appId" value="{{game.app_id}}">
+                <div class="field">
+                    <label class="label" for="name">Name</label>
+                    <div class="control">
+                        <input required class="input" id="name" type="text" placeholder="John Smith" name="name">
                     </div>
                 </div>
-            </div>
-            <div class="field">
-                <label class="label" for="endDate">End Date</label>
-                <input required id="calendarInput" type="date" name="endDate">
-            </div>
+                <div class="field">
+                    <label class="label" for="email">Email</label>
+                    <div class="control">
+                        <input required class="input" id="email" type="text" placeholder="john@example.com"
+                            name="email">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label" for="amount">Amount</label>
+                    <div class="control">
+                        <input required id="amount" class="input" type="number" placeholder="10, 20, 100, etc."
+                            name="amount">
+                    </div>
+                </div>
+                <div class="field" name="charity">
+                    <label class="label" for="charity">Charity</label>
+                    <div class="control">
+                        <div class="select">
+                            <select required id="charity" name="charity">
+                                {{#charities}}
+                                <option>{{name}}</option>
+                                {{/charities}}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label" for="endDate">End Date</label>
+                    <input required id="calendarInput" type="date" name="endDate">
+                </div>
 
-            <div class="sr-root my-5">
-                <div class="sr-main">
-                    <div class="sr-payment-form card">
-                        <div class="sr-form-row">
-                            <label>
-                                Payment details
-                            </label>
-                            <div class="sr-input sr-element sr-card-element" id="card-element">
+                <div class="field">
+                    <label class="label" for="card-element">
+                        Payment details
+                    </label>
+                    <div class="card">
+                        <div>
+                            <div id="card-element">
                                 <!-- A Stripe card Element will be inserted here. -->
                             </div>
                         </div>
-                        <!-- TODO: update card-error styling to modal or something more noticable -->
-                        <div class="sr-field-error" id="card-errors" role="alert"></div>
-                        {{! <button id="submit">
-            <div class="spinner hidden" id="spinner"></div>
-            <span id="button-text">Link your card to your account</span>
-          </button> }}
                     </div>
-                    {{! <div class="sr-result hidden">
-          <p>Card setup completed<br /></p>
-          <pre>
-            <code></code>
-          </pre>
-        </div> }}
+                    <div class="help is-danger" id="card-errors" role="alert"></div>
                 </div>
-            </div>
 
-            <div class="field is-grouped">
-                <div class="control">
-                    {{! <div class="spinner hidden" id="spinner"></div> }}
-                    <button type="submit" id="potion-break-form-submit" class="button is-link">Add Payment
-                        Information</button>
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button type="submit" id="potion-break-form-submit" class="button is-link">Submit</button>
+                    </div>
+                    <div class="control">
+                        <button id="potion-break-form-reset" type="reset" class="button is-link is-light">Reset</button>
+                    </div>
                 </div>
-                <div class="control">
-                    <button type="reset" class="button is-link is-light">Reset</button>
-                </div>
-            </div>
-        </form>
-    </div>
+            </form>
+        </div>
     </section>
     {{>footer}}
     <script>
         var minDate = new Date();
         minDate.setDate(minDate.getDate() + 1);
-
-        // var defaultDate = new Date();
-        // defaultDate.setDate(defaultDate.getDate() + 7);
 
         var maxDate = new Date();
         maxDate = new Date(maxDate.setMonth(maxDate.getMonth() + 1));
@@ -140,7 +89,7 @@
             altInput: true,
             altFormat: "F j, Y",
             dateFormat: "Y-m-d",
-            // TESTING-UPDATE-AFTER
+
             //minDate: minDate,
             maxDate: maxDate,
 
@@ -150,9 +99,8 @@
 
         // additional fix to prevent users from entering invalid format into the data picker - https://github.com/flatpickr/flatpickr/issues/892#issuecomment-604387030
         fp._input.onkeypress = () => false;
-
-        
     </script>
     {{>footer}}
 </body>
+
 </html>

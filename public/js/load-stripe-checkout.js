@@ -30,6 +30,8 @@ var button = document.getElementById("potion-break-form-submit");
 button.addEventListener("click", function (event) {
     console.log("BEGIN potion-break-form-submit")
     event.preventDefault();
+    var displayError = document.getElementById("card-errors");
+    displayError.textContent = "";
 
     // quick form validation to see if there are any empty
     document.getElementById('potion-break-form').checkValidity();
@@ -37,7 +39,11 @@ button.addEventListener("click", function (event) {
     if (document.getElementById('potion-break-form').checkValidity() === false) {
         return;
     }
-    // changeLoadingState(true);
+
+    // disable button and set it to a spinner
+    document.getElementById('potion-break-form-submit').classList.add("is-loading");
+    document.getElementById('potion-break-form-reset').setAttribute("disabled", "true");
+
     const email = document.getElementById("email").value;
     const name = document.getElementById("name").value;
 
@@ -58,10 +64,11 @@ button.addEventListener("click", function (event) {
         .then(function (result) {
             console.log(result);
             if (result.error) {
-                // changeLoadingState(false);
-                // TODO: have display error show up in a modal
-                var displayError = document.getElementById("card-errors");
                 displayError.textContent = result.error.message;
+
+                // renable button
+                document.getElementById('potion-break-form-submit').classList.remove("is-loading");
+                document.getElementById('potion-break-form-reset').removeAttribute("disabled");
             } else {
                 // The PaymentMethod was successfully set up
                 orderComplete(stripe, setupIntents.setupIntent.client_secret);
@@ -107,20 +114,6 @@ var getPublicKey = function () {
         });
 };
 
-// Show a spinner on payment submission
-// var changeLoadingState = function (isLoading) {
-//     if (isLoading) {
-//         document.querySelector("button").disabled = true;
-//         document.querySelector("#spinner").classList.remove("hidden");
-//         // document.querySelector("#button-text").classList.add("hidden");
-//     } else {
-//         document.querySelector("button").disabled = false;
-//         document.querySelector("#spinner").classList.add("hidden");
-//         // document.querySelector("#button-text").classList.remove("hidden");
-//     }
-// };
-
-/* Shows a success / error message when the payment is complete */
 var orderComplete = function (stripe, clientSecret) {
     stripe.retrieveSetupIntent(clientSecret).then(function (result) {
         const setupIntent = result.setupIntent;
@@ -189,14 +182,3 @@ var orderComplete = function (stripe, clientSecret) {
 };
 
 getPublicKey();
-
-// // Element focus ring
-// card.on("focus", function () {
-//     var el = document.getElementById("card-element");
-//     el.classList.add("focused");
-// });
-
-// card.on("blur", function () {
-//     var el = document.getElementById("card-element");
-//     el.classList.remove("focused");
-// });

@@ -99,59 +99,6 @@ router.post("/create-setup-intent", function async (req, res) {
     })
 });
 
-// // get user payment information using stripe
-// router.post('/create-payment-intent', async function (req, res) {
-//     console.log("BEGIN CREATE PAYMENT INTENT")
-//     console.log(req.user);
-//     const potionBreakDetails = req.user.potionBreakDetails;
-//     console.log(potionBreakDetails);
-
-//     db.serialize(function () {
-//         db.run("UPDATE users SET name = (?), email = (?) WHERE user_id = (?)", [req.user.name, req.user.email, req.user.user_id], function (err) {
-//             if (err) {
-//                 console.err(err);
-//             } else {
-//                 let currencyType = "cad";
-//                 let orderAmount = currency(potionBreakDetails.amount).intValue;
-//                 console.log(orderAmount);
-
-//                 // Create a PaymentIntent with the order amount and currency
-//                 const paymentIntent = await stripe.paymentIntents.create({
-//                     amount: orderAmount,
-//                     currency: currencyType,
-//                     capture_method: 'manual'
-//                 });
-
-//                 console.log("SENDING PAYMENT INTENT")
-//                 // Send publishable key and PaymentIntent details to client
-//                 res.send({
-//                     publishableKey: process.env.STRIPE_PK_TEST,
-//                     clientSecret: paymentIntent.client_secret
-//                 });
-//             }
-//         })
-//     })
-// })
-
-// router.post('/send-payment-intent', function (req, res) {
-//     console.log("BEGIN SEND PAYMENT INTENT");
-//     const paymentIntent = req.body;
-//     console.log(paymentIntent);
-//     // store date time object as UNIX timestamp - https://stackoverflow.com/questions/11893083/convert-normal-date-to-unix-timestamp
-//     let endDate = Math.floor(req.user.potionBreakDetails.endDate.getTime() / 1000);
-
-//     // update DB with the potion break once the payment is complete
-//     db.serialize(function () {
-//         db.run("INSERT INTO potion_breaks (date_created, end_date, user_id, app_id, total_value, charity_id, client_secret, status) VALUES (?,?,?,?,?,(SELECT charity_id FROM charities WHERE name = ?),?, ?)", [paymentIntent.created, endDate, req.user.user_id, req.user.potionBreakDetails.app_id, paymentIntent.amount, req.user.potionBreakDetails.charity, clientSecretHash, "ongoing"], function (err) {
-//             if (err) {
-//                 console.err(err);
-//             } else {
-//                 // redirect to success page
-//             }
-//         })
-//     })
-
-// })
 // Webhook handler for asynchronous events.
 router.post("/webhook", async function (req, res) {
     let data;
@@ -218,7 +165,6 @@ router.post("/webhook", async function (req, res) {
         );
 
     }
-
     res.sendStatus(200);
 });
 
