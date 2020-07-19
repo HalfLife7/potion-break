@@ -103,7 +103,7 @@ router.get('/potion-break/create/:appid/success', function (req, res) {
             } else {
                 const potionBreakId = row["MAX(potion_break_id)"];
                 console.log(potionBreakId);
-                db.get("SELECT potion_breaks.start_date, potion_breaks.end_date, potion_breaks.total_value, potion_breaks.status, potion_breaks.playtime_start, potion_breaks.app_id, games.name AS game_name, games.img_icon_url AS game_img_icon_url, games.img_logo_url AS game_img_logo_url, potion_breaks.charity_id, charities.name AS charity_name, charities.description AS charity_description FROM potion_breaks INNER JOIN games ON potion_breaks.app_id = games.app_id INNER JOIN charities ON potion_breaks.charity_id = charities.charity_id WHERE potion_break_id = ?", [potionBreakId], function (err, row) {
+                db.get("SELECT potion_breaks.start_date, potion_breaks.end_date, potion_breaks.total_value, potion_breaks.status, potion_breaks.playtime_start, potion_breaks.app_id, games.name AS game_name, games.img_icon_url AS game_img_icon_url, games.img_logo_url AS game_img_logo_url, potion_breaks.charity_id, charities.name AS charity_name, charities.description AS charity_description, charities.img_path AS charity_img_path FROM potion_breaks INNER JOIN games ON potion_breaks.app_id = games.app_id INNER JOIN charities ON potion_breaks.charity_id = charities.charity_id WHERE potion_break_id = ?", [potionBreakId], function (err, row) {
                     if (err) {
                         console.error(err);
                     } else {

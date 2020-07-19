@@ -19,48 +19,51 @@ db.serialize(function () {
     db.run("CREATE TABLE IF NOT EXISTS games (app_id INTEGER PRIMARY KEY, name TEXT, img_icon_url TEXT, img_logo_url TEXT)");
     db.run("CREATE TABLE IF NOT EXISTS user_games_owned (app_id INTEGER, user_id INTEGER, playtime_forever INTEGER, PRIMARY KEY(app_id, user_id), FOREIGN KEY(app_id) REFERENCES games(app_id), FOREIGN KEY(user_id) REFERENCES users(user_id))");
     db.run("CREATE TABLE IF NOT EXISTS potion_breaks (potion_break_id INTEGER PRIMARY KEY AUTOINCREMENT, start_date TEXT, end_date TEXT, user_id INTEGER, app_id INTEGER, total_value INTEGER, charity_id INTEGER, setup_intent_id TEXT, status TEXT, playtime_start TEXT, playtime_end TEXT, payment_status TEXT, stripe_payment_date_created TEXT, FOREIGN KEY(app_id) REFERENCES games(app_id), FOREIGN KEY(user_id) REFERENCES users(user_id), FOREIGN KEY(charity_id) REFERENCES charities(charity_id))");
-    db.run("CREATE TABLE IF NOT EXISTS charities (charity_id INTEGER PRIMARY KEY, name TEXT UNIQUE, description TEXT)");
+    db.run("CREATE TABLE IF NOT EXISTS charities (charity_id INTEGER PRIMARY KEY, name TEXT UNIQUE, description TEXT, img_path TEXT)");
 
     // TODO: get charity logos
     const charities = [{
             id: "1",
             name: "NPR",
-            description: "NPR is an independent, nonprofit media organization that was founded on a mission to create a more informed public. Every day, NPR connects with millions of Americans on the air, online, and in person to explore the news, ideas, and what it means to be human."
+            description: "NPR is an independent, nonprofit media organization that was founded on a mission to create a more informed public. Every day, NPR connects with millions of Americans on the air, online, and in person to explore the news, ideas, and what it means to be human.",
+            img_path: "/images/charities/npr.svg"
         },
         {
             id: "2",
             name: "Nature Conservancy Canada",
-            description: "The Nature Conservancy of Canada (NCC) is Canada's leading national land conservation organization. A private, non-profit organization, we partner with individuals, corporations, foundations, Indigenous communities and other non-profit organizations and governments at all levels to protect our most important natural treasures — the natural areas that sustain Canada’s plants and wildlife. We secure properties (through donation, purchase, conservation agreement and the relinquishment of other legal interests in land) and manage them for the long term."
+            description: "The Nature Conservancy of Canada (NCC) is Canada's leading national land conservation organization. A private, non-profit organization, we partner with individuals, corporations, foundations, Indigenous communities and other non-profit organizations and governments at all levels to protect our most important natural treasures — the natural areas that sustain Canada’s plants and wildlife. We secure properties (through donation, purchase, conservation agreement and the relinquishment of other legal interests in land) and manage them for the long term.",
+            img_path: "/images/charities/ncc.svg"
         },
         {
             id: "3",
-            name: "SPCA",
-            description: "As Canada's federation of SPCAs and humane societies, Humane Canada™ advances the welfare of animals with a strong national voice, promoting the interests and concerns of animal welfare to government, policy makers, industry and public."
+            name: "Ontario SPCA",
+            description: "The Ontario SPCA and Humane Society is a registered charity, established in 1873. The Society and its network of communities facilitate and provide for province-wide leadership on matters relating to the prevention of cruelty to animals and the promotion of animal well-being. Offering a variety of mission-based programs, including community-based sheltering, animal wellness services, provincial animal transfers, shelter health & wellness, high-volume spay/neuter services, animal rescue, animal advocacy, Indigenous partnership programs and humane education, the Ontario SPCA is Ontario’s animal charity.",
+            img_path: "/images/charities/spca.png"
         },
         {
             id: "4",
             name: "WWF Canada",
-            description: "World Wildlife Fund Canada is the country’s largest international conservation organization. Using the best scientific analysis and indigenous guidance, we work to conserve species at risk, protect threatened habitats, and address climate change. Our long-term vision is simple: to create a world where people and nature thrive."
+            description: "World Wildlife Fund Canada is the country’s largest international conservation organization. Using the best scientific analysis and indigenous guidance, we work to conserve species at risk, protect threatened habitats, and address climate change. Our long-term vision is simple: to create a world where people and nature thrive.",
+            img_path: "/images/charities/wwf.png"
         },
         {
             id: "5",
             name: "PBS",
-            description: "PBS is a membership organization that, in partnership with its member stations, serves the American public with programming and services of the highest quality, using media to educate, inspire, entertain and express a diversity of perspectives."
+            description: "PBS is a membership organization that, in partnership with its member stations, serves the American public with programming and services of the highest quality, using media to educate, inspire, entertain and express a diversity of perspectives.",
+            img_path: "/images/charities/pbs.svg"
         }
     ]
 
 
     // seed data into charities table if it is empty
     for (i = 0; i < charities.length; i++) {
-        db.run("INSERT OR IGNORE INTO charities (charity_id, name, description) VALUES (?, ?, ?)", [charities[i].id, charities[i].name, charities[i].description], function (err) {
+        db.run("INSERT OR IGNORE INTO charities (charity_id, name, description,img_path) VALUES (?, ?, ?,?)", [charities[i].id, charities[i].name, charities[i].description], charities[i].img_path, function (err) {
             if (err != null) {
                 console.error(err);
             }
         });
     }
 });
-
-
 
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
