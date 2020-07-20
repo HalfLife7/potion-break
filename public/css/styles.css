@@ -87,3 +87,16 @@
     float: left;
     margin-right: 5px;
 }
+
+/* 
+outline text to improve readability on hero images
+https: //stackoverflow.com/questions/11323813/how-to-outline-text-in-html-css 
+*/
+.outline-text {
+    color: white;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+html {
+    background-color: black;
+}

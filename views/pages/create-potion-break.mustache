@@ -8,10 +8,20 @@
 
 <body>
     {{>nav-bar}}
-    <section class="mx-5 my-5">
+    <section class="hero is-medium">
+        <div class="hero-body" style="background-image: url('/images/hero/fireplace.jpg'); background-position: center;">
+            <div class="container">
+                <h1 class="title outline-text has-text-centered has-text-white">
+                    Start Potion Break
+                </h1>
+                <h2 class="subtitle outline-text has-text-centered has-text-white">
+                    {{game.name}}
+                </h2>
+            </div>
+        </div>
+    </section>
+    <section class="px-5 py-5 has-background-light">
         <div class="container">
-            <h1 class="title is-1">Create Potion Break</h1>
-            <h1 class="subtitle is-3">{{game.name}}</h1>
             <form id="potion-break-form" method="POST" action="/submit-potion-break">
                 <input type="hidden" id="appId" name="appId" value="{{game.app_id}}">
                 <div class="field">
@@ -76,7 +86,6 @@
             </form>
         </div>
     </section>
-    {{>footer}}
     <script>
         var minDate = new Date();
         minDate.setDate(minDate.getDate() + 1);
@@ -89,8 +98,7 @@
             altInput: true,
             altFormat: "F j, Y",
             dateFormat: "Y-m-d",
-
-            //minDate: minDate,
+            minDate: minDate,
             maxDate: maxDate,
 
             // fix to allow form validation to include the bulma date picker - https://github.com/flatpickr/flatpickr/issues/892#issuecomment-610753460

@@ -5,36 +5,16 @@
 
 <body>
     {{>nav-bar}}
-    <section class="hero is-dark is-small">
-        <div class="hero-body">
-            <nav class="level is-dark">
-                <div class="level-item has-text-centered">
-                    <div>
-                        <figure class="image is-128x128">
-                            <img src="{{user.steam_avatar}}" alt="Placeholder image">
-                        </figure>
-                        <p class="title">{{user.steam_persona_name}}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Games Owned</p>
-                        <p class="title">{{user.total_games_owned}}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Games Played</p>
-                        <p class="title">{{user.total_games_played}}</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Time Played</p>
-                        <p class="title">{{user.total_time_played}}</p>
-                    </div>
-                </div>
-            </nav>
+    <section class="hero is-medium">
+        <div class="hero-body" style="background-image: url('/images/hero/game-pieces.jpg'); background-position: center;">
+            <div class="container">
+                <h1 class="title outline-text has-text-centered has-text-white">
+                    Game Library
+                </h1>
+                <h2 class="subtitle outline-text has-text-centered has-text-white">
+                    Start a Potion Break for one of your games played!
+                </h2>
+            </div>
         </div>
     </section>
 

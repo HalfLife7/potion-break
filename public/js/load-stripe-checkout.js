@@ -57,10 +57,6 @@ button.addEventListener("click", function (event) {
                 }
             }
         })
-        // TODO: Note that stripe.confirmCardSetup may take several seconds to complete. During that time, you should disable your form from being resubmitted and show a waiting indicator like a spinner. 
-        // If you receive an error result, you should be sure to show that error to the customer, re - enable the form, and hide the waiting indicator.
-        // Additionally, stripe.confirmCardSetup may trigger a 3 D Secure authentication challenge.This will be shown in a modal dialog and may be confusing
-        // for customers using assistive technologies like screen readers.You should make your form accessible by ensuring that success or error messages are clearly read out after this method completes.
         .then(function (result) {
             console.log(result);
             if (result.error) {

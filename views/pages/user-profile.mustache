@@ -1,0 +1,46 @@
+{{>custom-header}}
+    <script src="/js/create-stripe-customer.js" defer></script>
+</head>
+<html>
+
+<body>
+    {{>nav-bar}}
+    <section class="hero is-dark">
+        <div class="hero-body">
+            <nav class="level">
+                <div class="level-item has-text-centered">
+                    <div>
+                        <figure class="image is-128x128">
+                            <img src="{{user.steam_avatar}}" alt="Placeholder image">
+                        </figure>
+                        <p class="title">{{user.steam_persona_name}}</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Games Owned</p>
+                        <p class="title">{{user.total_games_owned}}</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Games Played</p>
+                        <p class="title">{{user.total_games_played}}</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Time Played</p>
+                        <p class="title">{{user.total_time_played}}</p>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </section>
+
+    <section class="section has-background-light">
+        <!-- form to update user's information-->
+    </section>
+    {{>footer}}
+</body>
+</html>

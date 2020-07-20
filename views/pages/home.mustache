@@ -1,7 +1,7 @@
 {{>header}}
 
 <body>
-    <section class="hero is-dark is-large">
+    <section class="hero is-black is-large">
         <div class="hero-head">
             <nav class="navbar">
                 <div class="container">
@@ -12,6 +12,7 @@
                     </div>
                     <div id="navbarMenuHeroB" class="navbar-menu">
                         <div class="navbar-end">
+                            <!--
                             <a class="navbar-item">
                                 Home
                             </a>
@@ -21,8 +22,9 @@
                             <a class="navbar-item">
                                 Documentation
                             </a>
+                            -->
                             <span class="navbar-item">
-                                <a class="button is-dark is-inverted" href="auth/steam">
+                                <a class="button is-black is-inverted" href="auth/steam">
                                     <span class="icon">
                                         <i class="fab fa-steam"></i>
                                     </span>
@@ -35,12 +37,12 @@
             </nav>
         </div>
 
-        <div class="hero-body">
+        <div class="hero-body" style="background-image: url('/images/hero/bottle.jpg');">
             <div class="container has-text-centered">
-                <p class="title">
+                <p class="title outline-text">
                     Take a Potion Break!
                 </p>
-                <p class="subtitle">
+                <p class="subtitle outline-text">
                     Sometimes you need a breather from slaying dragons or saving the world.
                 </p>
             </div>
@@ -66,4 +68,5 @@
     </section>
     {{>footer}}
 </body>
+
 </html>
