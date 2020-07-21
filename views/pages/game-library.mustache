@@ -6,7 +6,7 @@
 <body>
     {{>nav-bar}}
     <section class="hero is-medium">
-        <div class="hero-body" style="background-image: url('/images/hero/game-pieces.jpg'); background-position: center;">
+        <div class="hero-body" style="background-image: url('/images/hero/game-library/{{image}}'); background-position: center;">
             <div class="container">
                 <h1 class="title outline-text has-text-centered has-text-white">
                     Game Library
@@ -28,7 +28,7 @@
                             <div class="card-image">
                                 <figure class="image is-3by1">
                                     <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{app_id}}/{{img_logo_url}}.jpg"
-                                        alt="Logo">
+                                        alt="{{name}} Banner">
                                 </figure>
                             </div>
                             <div class="card-content">
@@ -36,7 +36,7 @@
                                     <div class="media-left">
                                         <figure class="image is-48x48">
                                             <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{app_id}}/{{img_icon_url}}.jpg"
-                                                alt="Icon">
+                                                alt="{{name}} Icon">
                                         </figure>
                                     </div>
                                     <div class="media-content">

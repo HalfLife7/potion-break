@@ -1,46 +1,77 @@
 {{>custom-header}}
-    <script src="/js/create-stripe-customer.js" defer></script>
+<script src="/js/create-stripe-customer.js" defer></script>
 </head>
 <html>
 
 <body>
     {{>nav-bar}}
-    <section class="hero is-dark">
-        <div class="hero-body">
+    <section class="hero is-medium">
+        <div class="hero-body" style="background-image: url('/images/hero/user-profile/{{image}}'); background-position: center;">
             <nav class="level">
                 <div class="level-item has-text-centered">
                     <div>
                         <figure class="image is-128x128">
-                            <img src="{{user.steam_avatar}}" alt="Placeholder image">
+                            <img src="{{user.steam_avatar}}" alt="Steam Profile Picture">
                         </figure>
-                        <p class="title">{{user.steam_persona_name}}</p>
+                        <p class="outline-text title">{{user.steam_persona_name}}</p>
                     </div>
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading">Games Owned</p>
-                        <p class="title">{{user.total_games_owned}}</p>
+                        <p class="outline-text heading is-size-6">Games Owned</p>
+                        <p class="outline-text title">{{user.total_steam_games_owned}}</p>
                     </div>
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading">Games Played</p>
-                        <p class="title">{{user.total_games_played}}</p>
+                        <p class="outline-text heading is-size-6">Games Played</p>
+                        <p class="outline-text title">{{user.total_games_played}}</p>
                     </div>
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading">Time Played</p>
-                        <p class="title">{{user.total_time_played}}</p>
+                        <p class="outline-text heading is-size-6">Time Played</p>
+                        <p class="outline-text title">{{user.total_time_played}}</p>
                     </div>
                 </div>
             </nav>
         </div>
     </section>
-
     <section class="section has-background-light">
-        <!-- form to update user's information-->
+        <div class="container">
+            <form method="POST" action="/update-user-profile">
+                <div class="field">
+                    <label class="label" for="name">Name</label>
+                    <div class="control">
+                        <input required class="input" id="name" type="text" name="name" value="{{user.name}}">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label" for="email">Email</label>
+                    <div class="control">
+                        <input required class="input" id="email" type="email" value="{{user.email}}"
+                            name="email">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label" for="steam-id">Steam ID</label>
+                    <div class="control">
+                        <input disabled required class="input" id="steam-id" type="text" placeholder=""
+                            name="steam-id" value="{{user.steam_id}}">
+                    </div>
+                </div>
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button type="submit" id="update-user-form-submit" class="button is-link">Submit</button>
+                    </div>
+                    <div class="control">
+                        <button id="update-user-form-reset" type="reset" class="button is-link is-light">Reset</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </section>
     {{>footer}}
 </body>
+
 </html>

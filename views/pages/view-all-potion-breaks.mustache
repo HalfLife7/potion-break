@@ -10,7 +10,7 @@
 <body class="has-background-black">
     {{>nav-bar}}
     <section class="hero is-medium">
-        <div class="hero-body" style="background-image: url('/images/hero/silver-watch.jpg'); background-position: bottom;">
+        <div class="hero-body" style="background-image: url('/images/hero/view-all-potion-breaks/{{image}}'); background-position: center;">
             <div class="container">
                 <h1 class="title outline-text has-text-centered has-text-white">
                     Potion Breaks
@@ -42,7 +42,7 @@
                                 <td>
                                     <figure class="image is-24x24 game-logo">
                                         <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{app_id}}/{{game_img_icon_url}}.jpg"
-                                            alt="Icon">
+                                            alt="{{game_name}} Icon">
                                     </figure>
                                     {{game_name}}
                                 </td>

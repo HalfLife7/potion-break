@@ -3,6 +3,7 @@ var router = express.Router();
 var config = require("../../config/config.js");
 var db = require("../../config/db.js");
 var moment = require('moment');
+var fs = require('fs');
 
 // TODO: ADD MANDATE PAGE - https://stripe.com/docs/payments/setup-intents#mandates (more information)
 // TODO: a game can only have 1 potion break active at a time???
@@ -19,10 +20,16 @@ router.get('/potion-break/create/:appid', function (req, res) {
                     console.error(err);
                 } else {
                     let charitiesInformation = rows;
+
+                    var files = fs.readdirSync('public/images/hero/create-potion-break')
+                    /* now files is an Array of the name of the files in the folder and you can pick a random name inside of that array */
+                    let randomImage = files[Math.floor(Math.random() * files.length)]
+
                     res.render('create-potion-break', {
                         user: req.user,
                         game: gameInformation,
-                        charities: charitiesInformation
+                        charities: charitiesInformation,
+                        image: randomImage
                     })
                 }
             })
@@ -32,7 +39,7 @@ router.get('/potion-break/create/:appid', function (req, res) {
 
 router.get('/potion-breaks/view/all', function (req, res) {
     db.serialize(function () {
-        db.all("SELECT potion_breaks.potion_break_id, potion_breaks.start_date, potion_breaks.end_date, potion_breaks.total_value, potion_breaks.status, potion_breaks.playtime_start, potion_breaks.app_id, games.name AS game_name, games.img_icon_url AS game_img_icon_url, games.img_logo_url AS game_img_logo_url, potion_breaks.charity_id, charities.name AS charity_name, charities.description AS charity_description FROM potion_breaks INNER JOIN games ON potion_breaks.app_id = games.app_id INNER JOIN charities ON potion_breaks.charity_id = charities.charity_id", [], function (err, rows) {
+        db.all("SELECT potion_breaks.potion_break_id, potion_breaks.start_date, potion_breaks.end_date, potion_breaks.user_id, potion_breaks.total_value, potion_breaks.status, potion_breaks.playtime_start, potion_breaks.app_id, games.name AS game_name, games.img_icon_url AS game_img_icon_url, games.img_logo_url AS game_img_logo_url, potion_breaks.charity_id, charities.name AS charity_name, charities.description AS charity_description FROM potion_breaks INNER JOIN games ON potion_breaks.app_id = games.app_id INNER JOIN charities ON potion_breaks.charity_id = charities.charity_id WHERE user_id = ?", [req.user.user_id], function (err, rows) {
             if (err) {
                 console.error(err);
             } else {
@@ -44,8 +51,14 @@ router.get('/potion-breaks/view/all', function (req, res) {
                     value.playtime_start_minutes = (value.playtime_start % 60);
                 })
 
+
+                var files = fs.readdirSync('public/images/hero/view-all-potion-breaks')
+                /* now files is an Array of the name of the files in the folder and you can pick a random name inside of that array */
+                let randomImage = files[Math.floor(Math.random() * files.length)]
+
                 res.render('view-all-potion-breaks', {
-                    potionBreakData: potionBreakData
+                    potionBreakData: potionBreakData,
+                    image: randomImage
                 });
             }
         })
@@ -84,13 +97,11 @@ router.post('/potion-break-creation-success', async function (req, res) {
                     console.error(err);
                 } else {
                     console.log("success");
-
                     // redirect user to summary page
                     return res.redirect('potion-break/create/' + potionBreakData.appId + '/success');
                 }
             })
     })
-    // 
 })
 
 router.get('/potion-break/create/:appid/success', function (req, res) {
@@ -123,15 +134,20 @@ router.get('/potion-break/create/:appid/success', function (req, res) {
                         potionBreakData.playtime_start_minutes = (potionBreakData.playtime_start % 60);
 
                         console.log(potionBreakData);
+
+                        var files = fs.readdirSync('public/images/hero/potion-break-success')
+                        /* now files is an Array of the name of the files in the folder and you can pick a random name inside of that array */
+                        let randomImage = files[Math.floor(Math.random() * files.length)]
+
                         res.render('potion-break-create-success', {
                             user: req.user,
-                            potionBreakData: potionBreakData
+                            potionBreakData: potionBreakData,
+                            image: randomImage
                         });
                     }
                 })
             }
         })
-
     })
 })
 

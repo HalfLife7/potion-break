@@ -4,7 +4,7 @@ var config = require("../../config/config.js");
 const Axios = require("axios");
 const response = require("express");
 var db = require("../../config/db.js");
-var stripe = require("stripe")(config.STRIPE_SK_TEST);
+var fs = require('fs');
 
 // convert playtime from minutes to hours:minutes
 function convertMinutesToHHMM(item, index) {
@@ -21,6 +21,11 @@ function convertMinutesToHHMM(item, index) {
 router.get("/game-library", function (req, res) {
   console.log(req.user);
   let userInfo = req.user;
+
+
+  var files = fs.readdirSync('public/images/hero/game-library')
+  /* now files is an Array of the name of the files in the folder and you can pick a random name inside of that array */
+  let randomImage = files[Math.floor(Math.random() * files.length)]
 
   // get user info from DB if this isn't the user's first time visiting this page after loading
   if (req.user.first_load === false) {
@@ -39,7 +44,8 @@ router.get("/game-library", function (req, res) {
           console.log(req.user);
           res.render("game-library", {
             user: req.user,
-            userSteamData: userGameData
+            userSteamData: userGameData,
+            image: randomImage
           });
         }
       })
@@ -137,7 +143,8 @@ router.get("/game-library", function (req, res) {
                           req.user.first_load = false;
                           res.render("game-library", {
                             user: userInfo,
-                            userSteamData: filteredGamesData
+                            userSteamData: filteredGamesData,
+                            image: randomImage
                           });
                         }
                       });

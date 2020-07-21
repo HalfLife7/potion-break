@@ -9,7 +9,7 @@
 <body>
     {{>nav-bar}}
     <section class="hero is-medium">
-        <div class="hero-body" style="background-image: url('/images/hero/fireplace.jpg'); background-position: center;">
+        <div class="hero-body" style="background-image: url('/images/hero/create-potion-break/{{image}}'); background-position: center;">
             <div class="container">
                 <h1 class="title outline-text has-text-centered has-text-white">
                     Start Potion Break
@@ -27,13 +27,13 @@
                 <div class="field">
                     <label class="label" for="name">Name</label>
                     <div class="control">
-                        <input required class="input" id="name" type="text" placeholder="John Smith" name="name">
+                        <input required class="input" id="name" type="text" placeholder="John Smith" name="name" value="{{user.name}}">
                     </div>
                 </div>
                 <div class="field">
                     <label class="label" for="email">Email</label>
                     <div class="control">
-                        <input required class="input" id="email" type="text" placeholder="john@example.com"
+                        <input required class="input" id="email" type="text" placeholder="john@example.com" value="{{user.email}}"
                             name="email">
                     </div>
                 </div>

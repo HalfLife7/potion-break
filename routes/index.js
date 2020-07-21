@@ -12,6 +12,7 @@ router.use("/", require("./controllers/gameLibraryController.js"));
 router.use("/", require("./controllers/potionBreakController.js"));
 router.use("/", require("./controllers/stripeController.js"));
 router.use("/", require("./controllers/cronController.js"));
+router.use("/", require("./controllers/userController.js"));
 
 // export these routes up to server.js
 module.exports = router;
