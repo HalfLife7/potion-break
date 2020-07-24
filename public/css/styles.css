@@ -100,3 +100,24 @@ https: //stackoverflow.com/questions/11323813/how-to-outline-text-in-html-css
 html {
     background-color: black;
 }
+
+.is-centered {
+    display: flex;
+    justify-content: center;
+    align-items: center
+}
+
+.icon.is-spaced {
+    margin-bottom: 1.5rem;
+}
+
+.columns.is-spaced,
+.subtitle.is-spaced {
+    margin-bottom: 5rem;
+}
+
+/* swiper styles */
+/* .swiper-container {
+    width: 600px;
+    height: 300px;
+} */

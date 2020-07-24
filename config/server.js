@@ -16,7 +16,7 @@ var db = require("./db.js");
 db.serialize(function () {
     // create tables
     db.run("CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY AUTOINCREMENT, steam_persona_name TEXT, steam_profile_url TEXT, steam_id TEXT UNIQUE, steam_avatar text, name TEXT, email TEXT, stripe_customer_id TEXT)");
-    db.run("CREATE TABLE IF NOT EXISTS games (app_id INTEGER PRIMARY KEY, name TEXT, img_icon_url TEXT, img_logo_url TEXT)");
+    db.run("CREATE TABLE IF NOT EXISTS games (app_id INTEGER PRIMARY KEY, name TEXT, img_icon_url TEXT, img_logo_url TEXT, header_image_url TEXT, screenshot_1_url TEXT, screenshot_2_url TEXT, screenshot_3_url TEXT, screenshot_4_url TEXT, screenshot_5_url TEXT, movie_1_webm_url TEXT, movie_1_mp4_url TEXT, last_updated TEXT)");
     db.run("CREATE TABLE IF NOT EXISTS user_games_owned (app_id INTEGER, user_id INTEGER, playtime_forever INTEGER, PRIMARY KEY(app_id, user_id), FOREIGN KEY(app_id) REFERENCES games(app_id), FOREIGN KEY(user_id) REFERENCES users(user_id))");
     db.run("CREATE TABLE IF NOT EXISTS potion_breaks (potion_break_id INTEGER PRIMARY KEY AUTOINCREMENT, start_date TEXT, end_date TEXT, user_id INTEGER, app_id INTEGER, total_value INTEGER, charity_id INTEGER, setup_intent_id TEXT, status TEXT, playtime_start TEXT, playtime_end TEXT, payment_status TEXT, stripe_payment_date_created TEXT, FOREIGN KEY(app_id) REFERENCES games(app_id), FOREIGN KEY(user_id) REFERENCES users(user_id), FOREIGN KEY(charity_id) REFERENCES charities(charity_id))");
     db.run("CREATE TABLE IF NOT EXISTS charities (charity_id INTEGER PRIMARY KEY, name TEXT UNIQUE, description TEXT, img_path TEXT)");
@@ -53,6 +53,17 @@ db.serialize(function () {
         }
     ]
 
+    const games = [{
+            id: "570"
+        },
+        {
+            id: "435150"
+        },
+        {
+            id: "546560"
+        }
+    ]
+
 
     // seed data into charities table if it is empty
     for (i = 0; i < charities.length; i++) {
@@ -61,6 +72,15 @@ db.serialize(function () {
                 console.error(err);
             }
         });
+    }
+
+    // seed data into games tables (for homepage purposes) if empty
+    for (i = 0; i < games.length; i++) {
+        db.run("INSERT OR IGNORE INTO games (app_id) VALUES (?)", [games[i].id], function (err) {
+            if (err) {
+                console.error(err);
+            }
+        })
     }
 });
 

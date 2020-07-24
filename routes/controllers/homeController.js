@@ -11,7 +11,33 @@ router.get("/", function (req, res) {
     if (req.user) {
         res.redirect("/game-library");
     } else {
-        res.render("home");
+        db.all("SELECT * FROM games WHERE app_id in (?,?,?)", ["570", "546560", "435150"], function (err, rows) {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log(rows);
+                let dota = rows[0];
+                let divinity = rows[1];
+                let halflife = rows[2];
+
+                db.all("SELECT * FROM charities", [], function (err, rows) {
+                    if (err) {
+                        console.error(err);
+                    } else {
+                        let charityData = rows;
+                        console.log(charityData);
+                        res.render("home", {
+                            dotaData: dota,
+                            halflifeData: halflife,
+                            divinityData: divinity,
+                            charityData: charityData
+                        });
+                    }
+                })
+
+
+            }
+        })
     }
 });
 

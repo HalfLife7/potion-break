@@ -2,6 +2,7 @@ var express = require("express");
 const db = require("../../config/db");
 var moment = require('moment');
 var config = require("../../config/config.js");
+var moment = require('moment');
 var router = express.Router();
 const Axios = require("axios");
 const stripe = require('stripe')(process.env.STRIPE_SK_TEST);
@@ -158,9 +159,77 @@ var stripePaymentDailyCheck = new CronJob('5 0 * * *', function () {
     })
 });
 
+var steamDataUpdate = new CronJob('*/1 * * * *', function () {
+
+    function sleep(time) {
+        return new Promise(resolve => {
+            setTimeout(resolve, time)
+        })
+    }
+
+    console.log("working");
+    db.serialize(function () {
+        db.all("SELECT app_id, last_updated FROM games", function (err, rows) {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log(rows);
+                gamesData = rows;
+                // update any games that have not been updated in a month OR if it is null
+                // TODO: use limiter to throttle API requests
+                gamesData.forEach(function (game, index, array) {
+                    console.log(game.app_id);
+                    // add date for 1 month
+                    if (game.last_updated === null) {
+                        // query API
+                        Axios.get('https://store.steampowered.com/api/appdetails', {
+                            params: {
+                                appids: game.app_id,
+                                format: 'json'
+                            }
+                        }).then(function (response) {
+                                let gameData = response.data[game.app_id].data;
+                                // console.log(gameData);
+                                let headerImage = gameData.header_image;
+                                // console.log(headerImage);
+                                // console.log(gameData.screenshots)
+                                //console.log(gameData.movies)
+                                let name = gameData.name;
+                                let screenshot1 = gameData.screenshots[0].path_full;
+                                let screenshot2 = gameData.screenshots[1].path_full;
+                                let screenshot3 = gameData.screenshots[2].path_full;
+                                let screenshot4 = gameData.screenshots[3].path_full;
+                                let screenshot5 = gameData.screenshots[4].path_full;
+                                let movie1thumbnail = gameData.movies[0].thumbnail;
+                                let movie1webm = gameData.movies[0].webm.max;
+                                let movie1mp4 = gameData.movies[0].mp4.max;
+                                const dateToday = moment().format("YYYY-MM-DD");
+                                db.run("UPDATE games SET name = ?, header_image_url = ?, screenshot_1_url = ?, screenshot_2_url = ?, screenshot_3_url = ?," +
+                                    "screenshot_4_url = ?, screenshot_5_url = ?, movie_1_thumbnail = ?, movie_1_webm_url = ?, movie_1_mp4_url = ?, last_updated = ? WHERE app_id = ? ",
+                                    [name, headerImage, screenshot1, screenshot2, screenshot3, screenshot4, screenshot5, movie1thumbnail, movie1webm, movie1mp4, dateToday, game.app_id],
+                                    function (err) {
+                                        if (err) {
+                                            console.error(err)
+                                        } else {
+                                            console.log("successfully ");
+                                        }
+                                    })
+                            },
+                            function (error) {
+                                console.error(error);
+                            })
+                    }
+                })
+            }
+        })
+    })
+})
+
 potionBreakDailyCheck.start();
 
 stripePaymentDailyCheck.start();
+
+//steamDataUpdate.start();
 
 // export routes up to routes.js
 module.exports = router;

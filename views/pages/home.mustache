@@ -1,4 +1,11 @@
-{{>header}}
+{{>custom-header}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css"
+    integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw=="
+    crossorigin="anonymous" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.5/css/swiper.min.css"
+    integrity="sha512-uCQmAoax6aJTxC03VlH0uCEtE0iLi83TW1Qh6VezEZ5Y17rTrIE+8irz4H4ehM7Fbfbm8rb30OkxVkuwhXxrRg=="
+    crossorigin="anonymous" />
 
 <body>
     <section class="hero is-black is-large">
@@ -12,17 +19,15 @@
                     </div>
                     <div id="navbarMenuHeroB" class="navbar-menu">
                         <div class="navbar-end">
-                            <!--
-                            <a class="navbar-item">
-                                Home
+                            <a class="navbar-item" href="#how-it-works">
+                                How it Works
                             </a>
-                            <a class="navbar-item">
-                                Examples
+                            <a class="navbar-item" href="#games">
+                                Games
                             </a>
-                            <a class="navbar-item">
-                                Documentation
+                            <a class="navbar-item" href="#charities">
+                                Charities
                             </a>
-                            -->
                             <span class="navbar-item">
                                 <a class="button is-black is-inverted" href="auth/steam">
                                     <span class="icon">
@@ -39,34 +44,400 @@
 
         <div class="hero-body" style="background-image: url('/images/hero/home/home-background-1.jpg');">
             <div class="container has-text-centered">
-                <p class="title outline-text">
+                <h1 class="title outline-text is-spaced">
                     Take a Potion Break!
-                </p>
-                <p class="subtitle outline-text">
+                </h1>
+                <h2 class="subtitle outline-text">
                     Sometimes you need a breather from slaying dragons or saving the world.
-                </p>
+                </h2>
             </div>
         </div>
-
-        <div class="hero-foot">
-            <nav class="tabs is-boxed is-fullwidth">
-                <div class="container">
-                    <ul>
-                        <li class="is-active">
-                            <a>Games</a>
-                        </li>
-                        <li>
-                            <a>Allies</a>
-                        </li>
-                        <li>
-                            <a>Foes</a>
-                        </li>
-                    </ul>
+    </section>
+    <section id="how-it-works" class="section has-background-light is-medium">
+        <div class="container is-small has-text-centered">
+            <div class="columns is-centered">
+                <div class="column is-half">
+                    <h1 class="title is-spaced">
+                        How it works
+                    </h1>
+                    <h2 class="subtitle is-spaced">
+                        Potion break allows you to leverage the power of loss aversion while you take a break from
+                        playing
+                        games.
+                    </h2>
                 </div>
-            </nav>
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <span class="icon is-large is-spaced">
+                        <i class="far fa-calendar-alt fa-3x"></i>
+                    </span>
+                    <h3 class="title is-5 is-spaced">
+                        Plan
+                    </h3>
+                    <p class="subtitle is-6">
+                        Customize your potion break.<br>Options include game, charity and duration.
+                    </p>
+                </div>
+                <div class="column">
+                    <span class="icon is-large is-spaced">
+                        <i class="fas fa-basketball-ball fa-3x"></i>
+                    </span>
+                    <h3 class="title is-5 is-spaced">
+                        Break
+                    </h3>
+                    <p class="subtitle is-6">
+                        Go AFK! Spend your extra time learning a new hobby, studying for that test or playing
+                        some basketball.
+                    </p>
+                </div>
+                <div class="column">
+                    <span class="icon is-large is-spaced">
+                        <i class="fas fa-donate fa-3x"></i>
+                    </span>
+                    <h3 class="title is-5 is-spaced">
+                        Goal
+                    </h3>
+                    <p class="subtitle is-6">
+                        Sucessfully take a break? Save your hard earned cash.
+                        <br>
+                        Give in to temptation? Lose your money to the charity of your choice
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--
+    <section id="" class="section has-background-white">
+        <div class="container is-small has-text-centered is-centered">
+            <div class="is-half">
+                <h1 class="title is-spaced">
+                    Heading
+                </h1>
+                <h2 class="subtitle is-spaced">
+                    Put something here
+                </h2>
+            </div>
+        </div>
+    </section>
+    -->
+    <section id="games" class="section has-background-dark is-medium">
+        <div class="container is-small">
+            <div class="columns is-centered">
+                <div class="column is-half has-text-centered">
+                    <div class="">
+                        <h1 class="title is-spaced has-text-white">
+                            Games
+                        </h1>
+                        <h2 class="subtitle is-spaced has-text-white">
+                            All your favourite Steam games are supported.
+                        </h2>
+                    </div>
+                </div>
+            </div>
+            <div class="columns is-vcentered">
+                <div class="column is-6 is-centered">
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <a href="{{dotaData.screenshot_1_url}}" data-fancybox="dota-images">
+                                    <img src="{{dotaData.screenshot_1_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{dotaData.screenshot_2_url}}" data-fancybox="dota-images">
+                                    <img src="{{dotaData.screenshot_2_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{dotaData.screenshot_3_url}}" data-fancybox="dota-images">
+                                    <img src="{{dotaData.screenshot_3_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{dotaData.screenshot_4_url}}" data-fancybox="dota-images">
+                                    <img src="{{dotaData.screenshot_4_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{dotaData.screenshot_5_url}}" data-fancybox="dota-images">
+                                    <img src="{{dotaData.screenshot_5_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="javascript:;" data-fancybox-trigger="dota-images" data-fancybox-index="5">
+                                    <img src="/images/home/dota_movie_thumbnail.png" alt="" />
+                                </a>
+                            </div>
+                        </div>
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
+                    </div>
+                </div>
+                <div class="column is-6 is-centered">
+                    <div class="columns is-multiline">
+                        <div class="column is-12">
+                            <h1 class="title is-spaced is-3 has-text-white has-text-centered">Dota 2</h1>
+                        </div>
+                        <!--
+                        <div class="column is-12">
+                                <figure class="image">
+                                    <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/{{dotaData.app_id}}/capsule_184x69.jpg"
+                                        alt="{{dotaData.name}} Banner">
+                                </figure>
+                        </div>
+                        -->
+                    </div>
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column is-6 is-centered is-hidden-tablet">
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+
+                            <div class="swiper-slide">
+                                <a href="{{halflifeData.screenshot_1_url}}" data-fancybox="halflife-images-1">
+                                    <img src="{{halflifeData.screenshot_1_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{halflifeData.screenshot_2_url}}" data-fancybox="halflife-images-1">
+                                    <img src="{{halflifeData.screenshot_2_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{halflifeData.screenshot_3_url}}" data-fancybox="halflife-images-1">
+                                    <img src="{{halflifeData.screenshot_3_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{halflifeData.screenshot_4_url}}" data-fancybox="halflife-images-1">
+                                    <img src="{{halflifeData.screenshot_4_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{halflifeData.screenshot_5_url}}" data-fancybox="halflife-images-1">
+                                    <img src="{{halflifeData.screenshot_5_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="javascript:;" data-fancybox-trigger="halflife-images-1"
+                                    data-fancybox-index="5">
+                                    <img src="/images/home/halflife_movie_thumbnail.png" alt="" />
+                                </a>
+                            </div>
+                        </div>
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
+                    </div>
+                </div>
+                <div class="column is-6 is-centered">
+                    <div class="columns is-multiline">
+                        <div class="column is-12">
+                            <h1 class="title is-spaced is-3 has-text-white has-text-centered">Half-Life: Alyx
+                            </h1>
+                        </div>
+                        <!--
+                        <div class="column is-12">
+                                <figure class="image">
+                                    <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/{{divinityData.app_id}}/capsule_184x69.jpg"
+                                        alt="{{divinityData.name}} Banner">
+                                </figure>
+                        </div>
+                        -->
+                    </div>
+                </div>
+                <div class="column is-6 is-centered is-hidden-mobile">
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+
+                            <div class="swiper-slide">
+                                <a href="{{halflifeData.screenshot_1_url}}" data-fancybox="halflife-images-2">
+                                    <img src="{{halflifeData.screenshot_1_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{halflifeData.screenshot_2_url}}" data-fancybox="halflife-images-2">
+                                    <img src="{{halflifeData.screenshot_2_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{halflifeData.screenshot_3_url}}" data-fancybox="halflife-images-2">
+                                    <img src="{{halflifeData.screenshot_3_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{halflifeData.screenshot_4_url}}" data-fancybox="halflife-images-2">
+                                    <img src="{{halflifeData.screenshot_4_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{halflifeData.screenshot_5_url}}" data-fancybox="halflife-images-2">
+                                    <img src="{{halflifeData.screenshot_5_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="javascript:;" data-fancybox-trigger="halflife-images-1"
+                                    data-fancybox-index="5">
+                                    <img src="/images/home/halflife_movie_thumbnail.png" alt="" />
+                                </a>
+                            </div>
+                        </div>
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column is-6 is-centered">
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+
+                            <div class="swiper-slide">
+                                <a href="{{divinityData.screenshot_1_url}}" data-fancybox="divinity-images">
+                                    <img src="{{divinityData.screenshot_1_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{divinityData.screenshot_2_url}}" data-fancybox="divinity-images">
+                                    <img src="{{divinityData.screenshot_2_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{divinityData.screenshot_3_url}}" data-fancybox="divinity-images">
+                                    <img src="{{divinityData.screenshot_3_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{divinityData.screenshot_4_url}}" data-fancybox="divinity-images">
+                                    <img src="{{divinityData.screenshot_4_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="{{divinityData.screenshot_5_url}}" data-fancybox="divinity-images">
+                                    <img src="{{divinityData.screenshot_5_url}}" alt="" />
+                                </a>
+                            </div>
+                            <div class="swiper-slide">
+                                <a href="javascript:;" data-fancybox-trigger="divinity-images" data-fancybox-index="5">
+                                    <img src="/images/home/divinity_movie_thumbnail.png" alt="" />
+                                </a>
+                            </div>
+                        </div>
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
+                    </div>
+                </div>
+                <div class="column is-6 is-centered">
+                    <div class="columns is-multiline">
+                        <div class="column is-12">
+                            <h1 class="title is-spaced is-3 has-text-white has-text-centered">Divinity: Original Sin II
+                            </h1>
+                        </div>
+                        <!--
+                        <div class="column is-12">
+                                <figure class="image">
+                                    <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/{{halflifeData.app_id}}/capsule_184x69.jpg"
+                                        alt="{{halflifeData.name}} Banner">
+                                </figure>
+                        </div>
+                        -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- section for videos at the end of fancybox -->
+        <a data-fancybox="dota-images" href="#dotaVideo" style="display:none;">
+            <img src="images/home/dota_movie_thumbnail.png" alt="" />
+        </a>
+        <video width=100% height=auto controls id="dotaVideo" style="display:none;">
+            <source src="{{dotaData.movie_1_webm_url}}" type="video/webm">
+            <source src="{{dotaData.movie_1_mp4_url}}" type="video/mp4">
+            Your browser doesn't support HTML5 video tag.
+        </video>
+
+        <a data-fancybox="halflife-images-1" href="#halflifeVideo" style="display:none;">
+            <img src="images/home/halflife_movie_thumbnail.png" alt="" />
+        </a>
+        <video width=100% height=auto controls id="halflifeVideo" style="display:none;">
+            <source src="{{halflifeData.movie_1_webm_url}}" type="video/webm">
+            <source src="{{halflifeData.movie_1_mp4_url}}" type="video/mp4">
+            Your browser doesn't support HTML5 video tag.
+        </video>
+
+        <a data-fancybox="halflife-images-2" href="#halflifeVideo" style="display:none;">
+            <img src="images/home/divinity_movie_thumbnail.png" alt="" />
+        </a>
+        <video width=100% height=auto controls id="halflifeVideo" style="display:none;">
+            <source src="{{halflifeData.movie_1_webm_url}}" type="video/webm">
+            <source src="{{halflifeData.movie_1_mp4_url}}" type="video/mp4">
+            Your browser doesn't support HTML5 video tag.
+        </video>
+
+        <a data-fancybox="divinity-images" href="#divinityVideo" style="display:none;">
+            <img src="{{divinityData.movie_1_thumbnail}}" alt="" />
+        </a>
+        <video width=100% height=auto controls id="divinityVideo" style="display:none;">
+            <source src="{{divinityData.movie_1_webm_url}}" type="video/webm">
+            <source src="{{divinityData.movie_1_mp4_url}}" type="video/mp4">
+            Your browser doesn't support HTML5 video tag.
+        </video>
+    </section>
+
+    <section id="charities" class="section has-background-light is-medium">
+        <div class="container">
+            <div class="columns is-multiline is-centered">
+                <div class="column is-12 has-text-centered">
+                    <h1 id="charities" class="title is-spaced">Charities</h1>
+                    <h2 class="subtitle">Donate to any one of the non-profit organizations available.</h2>
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column has-text-centered">
+
+
+                    <figure class="image is-4by3">
+                        <img src="{{charityData.0.img_path}}" alt="Logo of ">
+                    </figure>
+                    <h2 class="subtitle ">National Public Radio</h2>
+                </div>
+                <div class="column has-text-centered">
+
+
+                    <figure class="image is-4by3">
+                        <img src="{{charityData.1.img_path}}" alt="Logo of ">
+                    </figure>
+                    <h2 class="subtitle ">Nature Conservancy Canada</h2>
+                </div>
+                <div class="column has-text-centered">
+
+
+                    <figure class="image is-4by3">
+                        <img src="{{charityData.4.img_path}}" alt="Logo of ">
+                    </figure>
+                    <h2 class="subtitle ">Public Broadcasting Service</h2>
+                </div>
+            </div>
         </div>
     </section>
     {{>footer}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"
+        integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.5/js/swiper.min.js"
+        integrity="sha512-VHsNaV1C4XbgKSc2O0rZDmkUOhMKPg/rIi8abX9qTaVDzVJnrDGHFnLnCnuPmZ3cNi1nQJm+fzJtBbZU9yRCww=="
+        crossorigin="anonymous"></script>
+    <script>
+        $.fancybox.defaults.backFocus = false;
+        var mySwiper = new Swiper('.swiper-container', {
+            slidesPerView: 1,
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            }
+        })
+    </script>
 </body>
 
 </html>
