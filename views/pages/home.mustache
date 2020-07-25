@@ -16,8 +16,15 @@
                         <a class="navbar-item">
                             <!-- MOGRA font-->
                             <img src="/images/logo.png" alt="Potion Break Logo"></a>
+
+                        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+                            data-target="navbar-right">
+                            <span aria-hidden="true"></span>
+                            <span aria-hidden="true"></span>
+                            <span aria-hidden="true"></span>
+                        </a>
                     </div>
-                    <div id="navbarMenuHeroB" class="navbar-menu">
+                    <div id="navbar-right" class="navbar-menu">
                         <div class="navbar-end">
                             <a class="navbar-item" href="#how-it-works">
                                 How it Works
@@ -231,7 +238,8 @@
                             <div class="swiper-slide img-overlay-wrap">
                                 <a href="javascript:;" data-fancybox-trigger="halflife-images-1"
                                     data-fancybox-index="5">
-                                    <img src="/images/home/halflife_movie_preview.jpg" alt="Half-Life: Alyx movie screenshot" />
+                                    <img src="/images/home/halflife_movie_preview.jpg"
+                                        alt="Half-Life: Alyx movie screenshot" />
                                     <div class="play-btn">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26">
                                             <polygon class="play-btn__svg"
@@ -295,7 +303,8 @@
                             <div class="swiper-slide img-overlay-wrap">
                                 <a href="javascript:;" data-fancybox-trigger="halflife-images-1"
                                     data-fancybox-index="5">
-                                    <img src="/images/home/halflife_movie_preview.jpg" alt="Half-Life: Alyx movie screenshot" />
+                                    <img src="/images/home/halflife_movie_preview.jpg"
+                                        alt="Half-Life: Alyx movie screenshot" />
                                     <div class="play-btn">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26">
                                             <polygon class="play-btn__svg"
@@ -319,32 +328,38 @@
 
                             <div class="swiper-slide">
                                 <a href="{{divinityData.screenshot_1_url}}" data-fancybox="divinity-images">
-                                    <img src="{{divinityData.screenshot_1_url}}" alt="Divinity: Original Sin 2 screenshot" />
+                                    <img src="{{divinityData.screenshot_1_url}}"
+                                        alt="Divinity: Original Sin 2 screenshot" />
                                 </a>
                             </div>
                             <div class="swiper-slide">
                                 <a href="{{divinityData.screenshot_2_url}}" data-fancybox="divinity-images">
-                                    <img src="{{divinityData.screenshot_2_url}}" alt="Divinity: Original Sin 2 screenshot" />
+                                    <img src="{{divinityData.screenshot_2_url}}"
+                                        alt="Divinity: Original Sin 2 screenshot" />
                                 </a>
                             </div>
                             <div class="swiper-slide">
                                 <a href="{{divinityData.screenshot_3_url}}" data-fancybox="divinity-images">
-                                    <img src="{{divinityData.screenshot_3_url}}" alt="Divinity: Original Sin 2 screenshot" />
+                                    <img src="{{divinityData.screenshot_3_url}}"
+                                        alt="Divinity: Original Sin 2 screenshot" />
                                 </a>
                             </div>
                             <div class="swiper-slide">
                                 <a href="{{divinityData.screenshot_4_url}}" data-fancybox="divinity-images">
-                                    <img src="{{divinityData.screenshot_4_url}}" alt="Divinity: Original Sin 2 screenshot" />
+                                    <img src="{{divinityData.screenshot_4_url}}"
+                                        alt="Divinity: Original Sin 2 screenshot" />
                                 </a>
                             </div>
                             <div class="swiper-slide">
                                 <a href="{{divinityData.screenshot_5_url}}" data-fancybox="divinity-images">
-                                    <img src="{{divinityData.screenshot_5_url}}" alt="Divinity: Original Sin 2 screenshot" />
+                                    <img src="{{divinityData.screenshot_5_url}}"
+                                        alt="Divinity: Original Sin 2 screenshot" />
                                 </a>
                             </div>
                             <div class="swiper-slide img-overlay-wrap">
                                 <a href="javascript:;" data-fancybox-trigger="divinity-images" data-fancybox-index="5">
-                                    <img src="/images/home/divinity_movie_preview.jpg" alt="Divinity: Original Sin 2 movie screenshot" />
+                                    <img src="/images/home/divinity_movie_preview.jpg"
+                                        alt="Divinity: Original Sin 2 movie screenshot" />
                                     <div class="play-btn">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26">
                                             <polygon class="play-btn__svg"
@@ -453,7 +468,6 @@
         </div>
     </section>
     {{>footer}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"
         integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA=="
         crossorigin="anonymous"></script>
@@ -461,14 +475,16 @@
         integrity="sha512-VHsNaV1C4XbgKSc2O0rZDmkUOhMKPg/rIi8abX9qTaVDzVJnrDGHFnLnCnuPmZ3cNi1nQJm+fzJtBbZU9yRCww=="
         crossorigin="anonymous"></script>
     <script>
-        $.fancybox.defaults.backFocus = false;
-        var mySwiper = new Swiper('.swiper-container', {
-            slidesPerView: 1,
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            }
-        })
+        $(document).ready(function () {
+            $.fancybox.defaults.backFocus = false;
+            var mySwiper = new Swiper('.swiper-container', {
+                slidesPerView: 1,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                }
+            })
+        });
     </script>
 </body>
 

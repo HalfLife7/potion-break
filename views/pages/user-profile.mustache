@@ -1,5 +1,4 @@
 {{>custom-header}}
-<script src="/js/create-stripe-customer.js" defer></script>
 </head>
 <html>
 
@@ -39,6 +38,7 @@
     </section>
     <section class="section has-background-light">
         <div class="container">
+        <h1 class="title">Update Information</h1>
             <form method="POST" action="/update-user-profile">
                 <div class="field">
                     <label class="label" for="name">Name</label>
@@ -63,9 +63,6 @@
                 <div class="field is-grouped">
                     <div class="control">
                         <button type="submit" id="update-user-form-submit" class="button is-link">Submit</button>
-                    </div>
-                    <div class="control">
-                        <button id="update-user-form-reset" type="reset" class="button is-link is-light">Reset</button>
                     </div>
                 </div>
             </form>
