@@ -18,7 +18,6 @@ var potionBreakDailyCheck = new CronJob('0 0 * * *', function () {
     const dateToday = moment().format("YYYY-MM-DD");
     // update status of potion breaks
     db.serialize(function () {
-        console.log("UPDATING USER")
         db.all("SELECT potion_breaks.*, users.steam_id, users.stripe_customer_id FROM potion_breaks INNER JOIN users ON potion_breaks.user_id = users.user_id WHERE potion_breaks.end_date = ? AND status = ?", [dateToday, "Ongoing"], function (err, rows) {
             if (err) {
                 console.error(err);
@@ -90,7 +89,6 @@ var potionBreakDailyCheck = new CronJob('0 0 * * *', function () {
 var stripePaymentDailyCheck = new CronJob('5 0 * * *', function () {
     // charge users if they have failed
     db.serialize(function () {
-        console.log("CHARGE USERS");
         // get all potion breaks that have 'failed' and are 'unpaid'
         db.all("SELECT potion_breaks.*, users.steam_id, users.stripe_customer_id FROM potion_breaks INNER JOIN users ON potion_breaks.user_id = users.user_id WHERE potion_breaks.status = ? AND potion_breaks.payment_status = ?", ["Failure", "Unpaid"], function (err, rows) {
             if (err) {

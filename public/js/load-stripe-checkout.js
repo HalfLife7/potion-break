@@ -28,7 +28,6 @@ var stripeElements = function (publicKey, setupIntent) {
 // Handle payment submission when user clicks the pay button.
 var button = document.getElementById("potion-break-form-submit");
 button.addEventListener("click", function (event) {
-    console.log("BEGIN potion-break-form-submit")
     event.preventDefault();
     var displayError = document.getElementById("card-errors");
     displayError.textContent = "";
@@ -84,7 +83,6 @@ var getSetupIntent = function (publicKey) {
             return response.json();
         })
         .then(function (setupIntent) {
-            console.log("creating stripe elements");
             console.log(setupIntent);
             stripeElements(publicKey, setupIntent);
             card = elements.create("card", {

@@ -21,7 +21,6 @@ router.get("/public-key", function (req, res) {
 });
 
 router.post("/create-stripe-customer", function async (req, res) {
-    console.log("starting create-stripe-customer");
     // Create or use an existing Customer to associate with the SetupIntent.
     // The PaymentMethod will be stored to this Customer for later use.
     db.serialize(function () {
@@ -60,7 +59,6 @@ router.post("/create-stripe-customer", function async (req, res) {
 });
 
 router.post("/create-setup-intent", function async (req, res) {
-    console.log("STARTING create-setup-intent")
     // use an existing Customer to associate with the SetupIntent.
     // The PaymentMethod will be stored to this Customer for later use.
 
@@ -71,17 +69,14 @@ router.post("/create-setup-intent", function async (req, res) {
             console.log(row);
             stripe.customers.retrieve(row.stripe_customer_id, function (err, customer) {
                 // asynchronously called
-                console.log("GOT CUSTOMER");
                 console.log(customer);
                 if (err) {
                     console.error(err);
                 } else {
-                    console.log("BEGIN CREATING SETUPINTENTS")
                     stripe.setupIntents.create({
                             customer: customer.id
                         },
                         function (err, setupIntent) {
-                            console.log("created setupIntent!")
                             console.log(setupIntent);
                             // asynchronously called
                             if (err) {

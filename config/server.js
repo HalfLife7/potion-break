@@ -112,7 +112,7 @@ passport.use(
         function (identifier, profile, done) {
             // asynchronous verification, for effect...
             process.nextTick(function () {
-                console.log(profile._json);
+                //console.log(profile._json);
                 var userInfo = {
                     personaname: profile._json.personaname,
                     profileurl: profile._json.profileurl,
@@ -132,15 +132,13 @@ passport.use(
                 db.serialize(function () {
                     db.run("INSERT INTO users (steam_persona_name, steam_profile_url, steam_id, steam_avatar) VALUES (?,?,?,?) ON CONFLICT(steam_id) DO UPDATE SET steam_persona_name=excluded.steam_persona_name, steam_profile_url=excluded.steam_profile_url, steam_avatar=excluded.steam_avatar", [userInfo.personaname, userInfo.profileurl, userInfo.steamid, userInfo.avatarfull], function callback(err) {
                         if (err != null) {
-                            console.log(err);
+                            console.error(err);
                         } else {
                             // return all user information (steam, email, bnet, etc.)
                             db.get("SELECT * FROM users WHERE steam_id = (?)", [userInfo.steamid], function callback(err, row) {
                                 if (err != null) {
                                     console.err(err);
                                 } else {
-                                    console.log("HERE");
-                                    console.log(row);
                                     results = row;
                                     return done(null, results);
                                 }

@@ -1,5 +1,4 @@
 var createCustomer = function (publicKey) {
-    console.log("starting createCustomer");
     return fetch("/create-stripe-customer", {
             method: "post",
             headers: {
@@ -16,7 +15,6 @@ var createCustomer = function (publicKey) {
 };
 
 var getPublicKey = function () {
-    console.log("starting getPublicKey");
     return fetch("/public-key", {
             method: "get",
             headers: {

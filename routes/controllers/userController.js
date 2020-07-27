@@ -18,7 +18,6 @@ router.get("/user-profile", function (req, res) {
                     if (err) {
                         console.error(err);
                     } else {
-                        console.log("here");
                         console.log(row);
                         userData.total_minutes_played = row.total_minutes_played;
                         userData.total_games_played = row.total_games_played;

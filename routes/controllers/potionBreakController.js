@@ -66,9 +66,7 @@ router.get('/potion-breaks/view/all', function (req, res) {
 })
 
 router.post('/potion-break-creation-success', async function (req, res) {
-    console.log("starting potion-break-creation-success");
     console.log(req.body);
-    console.log("BEFORE");
     var potionBreakData = req.body;
 
     // conversions (to UNIX and $xx.xx format)
@@ -81,7 +79,6 @@ router.post('/potion-break-creation-success', async function (req, res) {
     const formattedStartDate = moment.unix(potionBreakData.dateCreated).format("YYYY-MM-DD");
     potionBreakData.formattedDate = formattedStartDate;
 
-    console.log("AFTER");
     console.log(potionBreakData);
 
     // update database with potion break
@@ -96,7 +93,6 @@ router.post('/potion-break-creation-success', async function (req, res) {
                 if (err) {
                     console.error(err);
                 } else {
-                    console.log("success");
                     // redirect user to summary page
                     return res.redirect('potion-break/create/' + potionBreakData.appId + '/success');
                 }

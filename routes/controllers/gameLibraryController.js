@@ -109,7 +109,7 @@ router.get("/game-library", function (req, res) {
         db.serialize(function () {
           var stmt = db.prepare("INSERT INTO games (app_id, name, img_icon_url, img_logo_url) VALUES (?,?,?,?) ON CONFLICT(app_id) DO UPDATE SET name=excluded.name, img_icon_url=excluded.img_icon_url, img_logo_url=excluded.img_logo_url", function callback(err) {
             if (err) {
-              console.log(err);
+              console.error(err);
             }
           });
 
@@ -119,12 +119,12 @@ router.get("/game-library", function (req, res) {
               // run this for the last row in the data
               db.run("INSERT INTO games (app_id, name, img_icon_url, img_logo_url) VALUES (?,?,?,?) ON CONFLICT(app_id) DO UPDATE SET name=excluded.name, img_icon_url=excluded.img_icon_url, img_logo_url=excluded.img_logo_url", [filteredGamesData[i].app_id, filteredGamesData[i].name, filteredGamesData[i].img_icon_url, filteredGamesData[i].img_logo_url], function callback(err) {
                 if (err) {
-                  console.log(err);
+                  console.error(err);
                 } else {
                   // update user's games owned and playtime
                   var stmt = db.prepare("INSERT INTO user_games_owned (app_id, user_id, playtime_forever) VALUES (?,?,?) ON CONFLICT(app_id, user_id) DO UPDATE SET playtime_forever=excluded.playtime_forever", function callback(err) {
                     if (err) {
-                      console.log(err);
+                      console.error(err);
                     }
                   });
 
@@ -134,10 +134,9 @@ router.get("/game-library", function (req, res) {
                       // run this for the last row in the data
                       db.run("INSERT INTO user_games_owned (app_id, user_id, playtime_forever) VALUES (?,?,?) ON CONFLICT(app_id, user_id) DO UPDATE SET playtime_forever=excluded.playtime_forever", [filteredGamesData[i].app_id, userInfo.user_id, filteredGamesData[i].playtime_forever], function callback(err) {
                         if (err) {
-                          console.log(err);
+                          console.error(err);
                         } else {
                           // render the page
-                          console.log("HERE!");
                           console.log(filteredGamesData);
                           console.log(userInfo);
                           req.user.first_load = false;
