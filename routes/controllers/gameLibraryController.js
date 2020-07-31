@@ -3,8 +3,10 @@ var router = express.Router();
 var config = require("../../config/config.js");
 const Axios = require("axios");
 const response = require("express");
-var db = require("../../config/db.js");
+var db = require("../../db/dao.js");
 var fs = require('fs');
+var Promise = require("bluebird");
+
 
 // convert playtime from minutes to hours:minutes
 function convertMinutesToHHMM(item, index) {
@@ -65,104 +67,103 @@ router.get("/game-library", function (req, res) {
 
       }
     }).then(function (response) {
-        var getOwnedGamesData = response.data.response;
+      let getOwnedGamesData = response.data.response;
 
-        // change appid to app_id
-        getOwnedGamesData.games.forEach(function (gameData, index, array) {
-          gameData.app_id = gameData.appid;
-          delete gameData.appid;
-        });
+      // change appid to app_id
+      getOwnedGamesData.games.forEach(function (gameData, index, array) {
+        gameData.app_id = gameData.appid;
+        delete gameData.appid;
+      });
 
-        // descending order in playtime
-        getOwnedGamesData.games.sort(function (a, b) {
-          return parseFloat(b.playtime_forever) - parseFloat(a.playtime_forever)
-        });
+      // descending order in playtime
+      getOwnedGamesData.games.sort(function (a, b) {
+        return parseFloat(b.playtime_forever) - parseFloat(a.playtime_forever)
+      });
 
-        // remove games with no playtime
-        let filteredGamesData = getOwnedGamesData.games.filter(function (game) {
-          return game.playtime_forever > 0;
-        });
+      // remove games with no playtime
+      let filteredGamesData = getOwnedGamesData.games.filter(function (game) {
+        return game.playtime_forever > 0;
+      });
 
-        filteredGamesData.forEach(convertMinutesToHHMM);
+      filteredGamesData.forEach(convertMinutesToHHMM);
 
-        // get some additional player stats
-        // get total games owned
-        userInfo.total_games_owned = getOwnedGamesData.game_count;
-        db.run("UPDATE users SET total_steam_games_owned = ? WHERE user_id = ?", [userInfo.total_games_owned, userInfo.user_id], function (err) {
+      // get some additional player stats
+      // get total games owned
+      userInfo.total_games_owned = getOwnedGamesData.game_count;
+      db.run("UPDATE users SET total_steam_games_owned = ? WHERE user_id = ?", [userInfo.total_games_owned, userInfo.user_id], function (err) {
+        if (err) {
+          console.error(err);
+        }
+      })
+
+      // get total games played
+      userInfo.total_games_played = Object.keys(filteredGamesData).length;
+
+      let total_minutes_played = 0;
+      // get total minutes played
+      filteredGamesData.forEach(function (item, index) {
+        total_minutes_played += item.playtime_forever;
+      });
+      userInfo.total_minutes_played = total_minutes_played;
+      userInfo.total_time_played = (Math.floor(total_minutes_played / 60) + " hours and " + (total_minutes_played - (Math.floor(total_minutes_played / 60)) * 60) + " minutes");
+
+      // update database of games
+      db.serialize(function () {
+        var stmt = db.prepare("INSERT INTO games (app_id, name, img_icon_url, img_logo_url) VALUES (?,?,?,?) ON CONFLICT(app_id) DO UPDATE SET name=excluded.name, img_icon_url=excluded.img_icon_url, img_logo_url=excluded.img_logo_url", function callback(err) {
           if (err) {
             console.error(err);
           }
-        })
-
-        // get total games played
-        userInfo.total_games_played = Object.keys(filteredGamesData).length;
-
-        let total_minutes_played = 0;
-        // get total minutes played
-        filteredGamesData.forEach(function (item, index) {
-          total_minutes_played += item.playtime_forever;
         });
-        userInfo.total_minutes_played = total_minutes_played;
-        userInfo.total_time_played = (Math.floor(total_minutes_played / 60) + " hours and " + (total_minutes_played - (Math.floor(total_minutes_played / 60)) * 60) + " minutes");
 
-        // update database of games
-        db.serialize(function () {
-          var stmt = db.prepare("INSERT INTO games (app_id, name, img_icon_url, img_logo_url) VALUES (?,?,?,?) ON CONFLICT(app_id) DO UPDATE SET name=excluded.name, img_icon_url=excluded.img_icon_url, img_logo_url=excluded.img_logo_url", function callback(err) {
-            if (err) {
-              console.error(err);
-            }
-          });
-
-          for (var i = 0; i < filteredGamesData.length; i++) {
-            if (i === (filteredGamesData.length - 1)) {
-              stmt.finalize();
-              // run this for the last row in the data
-              db.run("INSERT INTO games (app_id, name, img_icon_url, img_logo_url) VALUES (?,?,?,?) ON CONFLICT(app_id) DO UPDATE SET name=excluded.name, img_icon_url=excluded.img_icon_url, img_logo_url=excluded.img_logo_url", [filteredGamesData[i].app_id, filteredGamesData[i].name, filteredGamesData[i].img_icon_url, filteredGamesData[i].img_logo_url], function callback(err) {
-                if (err) {
-                  console.error(err);
-                } else {
-                  // update user's games owned and playtime
-                  var stmt = db.prepare("INSERT INTO user_games_owned (app_id, user_id, playtime_forever) VALUES (?,?,?) ON CONFLICT(app_id, user_id) DO UPDATE SET playtime_forever=excluded.playtime_forever", function callback(err) {
-                    if (err) {
-                      console.error(err);
-                    }
-                  });
-
-                  for (var i = 0; i < filteredGamesData.length; i++) {
-                    if (i === (filteredGamesData.length - 1)) {
-                      stmt.finalize();
-                      // run this for the last row in the data
-                      db.run("INSERT INTO user_games_owned (app_id, user_id, playtime_forever) VALUES (?,?,?) ON CONFLICT(app_id, user_id) DO UPDATE SET playtime_forever=excluded.playtime_forever", [filteredGamesData[i].app_id, userInfo.user_id, filteredGamesData[i].playtime_forever], function callback(err) {
-                        if (err) {
-                          console.error(err);
-                        } else {
-                          // render the page
-                          console.log(filteredGamesData);
-                          console.log(userInfo);
-                          req.user.first_load = false;
-                          res.render("game-library", {
-                            user: userInfo,
-                            userSteamData: filteredGamesData,
-                            image: randomImage
-                          });
-                        }
-                      });
-                    } else {
-                      stmt.run(filteredGamesData[i].app_id, userInfo.user_id, filteredGamesData[i].playtime_forever);
-                    }
+        for (var i = 0; i < filteredGamesData.length; i++) {
+          if (i === (filteredGamesData.length - 1)) {
+            stmt.finalize();
+            // run this for the last row in the data
+            db.run("INSERT INTO games (app_id, name, img_icon_url, img_logo_url) VALUES (?,?,?,?) ON CONFLICT(app_id) DO UPDATE SET name=excluded.name, img_icon_url=excluded.img_icon_url, img_logo_url=excluded.img_logo_url", [filteredGamesData[i].app_id, filteredGamesData[i].name, filteredGamesData[i].img_icon_url, filteredGamesData[i].img_logo_url], function callback(err) {
+              if (err) {
+                console.error(err);
+              } else {
+                // update user's games owned and playtime
+                var stmt = db.prepare("INSERT INTO user_games_owned (app_id, user_id, playtime_forever) VALUES (?,?,?) ON CONFLICT(app_id, user_id) DO UPDATE SET playtime_forever=excluded.playtime_forever", function callback(err) {
+                  if (err) {
+                    console.error(err);
                   }
+                });
 
+                for (var i = 0; i < filteredGamesData.length; i++) {
+                  if (i === (filteredGamesData.length - 1)) {
+                    stmt.finalize();
+                    // run this for the last row in the data
+                    db.run("INSERT INTO user_games_owned (app_id, user_id, playtime_forever) VALUES (?,?,?) ON CONFLICT(app_id, user_id) DO UPDATE SET playtime_forever=excluded.playtime_forever", [filteredGamesData[i].app_id, userInfo.user_id, filteredGamesData[i].playtime_forever], function callback(err) {
+                      if (err) {
+                        console.error(err);
+                      } else {
+                        // render the page
+                        console.log(filteredGamesData);
+                        console.log(userInfo);
+                        req.user.first_load = false;
+                        res.render("game-library", {
+                          user: userInfo,
+                          userSteamData: filteredGamesData,
+                          image: randomImage
+                        });
+                      }
+                    });
+                  } else {
+                    stmt.run(filteredGamesData[i].app_id, userInfo.user_id, filteredGamesData[i].playtime_forever);
+                  }
                 }
-              });
-            } else {
-              stmt.run(filteredGamesData[i].app_id, filteredGamesData[i].name, filteredGamesData[i].img_icon_url, filteredGamesData[i].img_logo_url);
-            }
+
+              }
+            });
+          } else {
+            stmt.run(filteredGamesData[i].app_id, filteredGamesData[i].name, filteredGamesData[i].img_icon_url, filteredGamesData[i].img_logo_url);
           }
-        })
-      },
-      function (error) {
-        console.error(error);
+        }
       })
+    }.catch(function (err) {
+      console.error(err)
+    }));
   }
 })
 

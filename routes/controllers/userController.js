@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-var db = require("../../config/db.js");
+var db = require("../../db/dao.js");
 var checkLogin = require("../../config/checkLoginMiddleware.js");
 var fs = require('fs');
 

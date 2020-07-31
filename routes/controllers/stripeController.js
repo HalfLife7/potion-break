@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var config = require("../../config/config.js");
-var db = require("../../config/db.js");
+var db = require("../../db/dao.js");
 
 
 const {

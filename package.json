@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
     "bulma": "^0.9.0",
     "cron": "^1.8.2",

@@ -2,42 +2,55 @@ var express = require("express");
 var router = express.Router();
 var passport = require("passport");
 var config = require("../../config/config.js");
-var db = require("../../config/db.js");
 var checkLogin = require("../../config/checkLoginMiddleware.js");
 const stripe = require('stripe')(process.env.STRIPE_SK_TEST);
+const AppDAO = require("../../db/dao.js");
+const {
+    resolve,
+    reject,
+    join
+} = require("bluebird");
+
+const dao = new AppDAO('./database.db');
 
 // middleware to check if logged in
 router.get("/", function (req, res) {
     if (req.user) {
         res.redirect("/game-library");
     } else {
-        db.all("SELECT * FROM games WHERE app_id in (?,?,?)", ["570", "546560", "435150"], function (err, rows) {
-            if (err) {
-                console.error(err);
-            } else {
-                console.log(rows);
-                let dota = rows[0];
-                let divinity = rows[1];
-                let halflife = rows[2];
 
-                db.all("SELECT * FROM charities", [], function (err, rows) {
-                    if (err) {
-                        console.error(err);
-                    } else {
-                        let charityData = rows;
-                        console.log(charityData);
-                        res.render("home", {
-                            dotaData: dota,
-                            halflifeData: halflife,
-                            divinityData: divinity,
-                            charityData: charityData
-                        });
-                    }
+        var sql = `
+            SELECT * FROM games 
+            WHERE app_id 
+            IN (?, ?, ?)
+        `;
+        var params = ["570", "546560", "435150"];
+        let getGames = dao.all(sql, params);
+
+        var sql = `
+                    SELECT * FROM charities
+                `;
+        let getCharities = dao.all(sql, []);
+
+        join(getGames, getCharities,
+                function (gamesData, charitiesData) {
+                    console.log(gamesData);
+                    console.log(charitiesData);
+
+                    let dota = gamesData[0];
+                    let divinity = gamesData[1];
+                    let halflife = gamesData[2];
+
+                    res.render("home", {
+                        dotaData: dota,
+                        halflifeData: halflife,
+                        divinityData: divinity,
+                        charityData: charitiesData
+                    });
                 })
-
-
-            }
-        })
+            .catch((err) => {
+                console.error("Error: " + err);
+            })
     }
 });
 

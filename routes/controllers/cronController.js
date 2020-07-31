@@ -1,5 +1,5 @@
 var express = require("express");
-const db = require("../../config/db");
+const db = require("../../db/dao");
 var moment = require('moment');
 var config = require("../../config/config.js");
 var moment = require('moment');
@@ -230,9 +230,9 @@ var steamDataUpdate = new CronJob('*/2 * * * *', function () {
 })
 
 // start cronjobs
-potionBreakDailyCheck.start();
-stripePaymentDailyCheck.start();
-steamDataUpdate.start();
+// potionBreakDailyCheck.start();
+// stripePaymentDailyCheck.start();
+// steamDataUpdate.start();
 
 // export routes up to routes.js
 module.exports = router;
