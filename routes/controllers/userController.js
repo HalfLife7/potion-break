@@ -1,6 +1,5 @@
 var express = require("express");
 var router = express.Router();
-var db = require("../../db/dao.js");
 var checkLogin = require("../../config/checkLoginMiddleware.js");
 var fs = require('fs');
 var Promise = require("bluebird");
@@ -56,7 +55,6 @@ router.get("/user-profile", function (req, res) {
 
             let fs = require('fs');
             let files = fs.readdirSync('public/images/hero/user-profile')
-            /* now files is an Array of the name of the files in the folder and you can pick a random name inside of that array */
             let randomImage = files[Math.floor(Math.random() * files.length)]
             console.log(randomImage);
 

@@ -1,8 +1,14 @@
 var express = require("express");
 var router = express.Router();
 var config = require("../../config/config.js");
-var db = require("../../db/dao.js");
-
+var Promise = require("bluebird");
+const AppDAO = require("../../db/dao.js");
+const {
+    join,
+    resolve,
+    reject
+} = require("bluebird");
+const dao = new AppDAO('./database.db');
 
 const {
     default: Axios
@@ -23,75 +29,136 @@ router.get("/public-key", function (req, res) {
 router.post("/create-stripe-customer", function async (req, res) {
     // Create or use an existing Customer to associate with the SetupIntent.
     // The PaymentMethod will be stored to this Customer for later use.
-    db.serialize(function () {
-        db.get("SELECT stripe_customer_id FROM users WHERE user_id = (?)", [req.user.user_id], function (err, row) {
-            if (err) {
-                console.error(err);
+    var sql = `
+    SELECT stripe_customer_id 
+    FROM users 
+    WHERE user_id = ( ? )
+    `;
+    var params = [req.user.user_id];
+    let dbGetUserStripeId = dao.get(sql, params)
+        .then((userData) => {
+            // if nothing is returned, create a new customer and tie it to the user
+            if (userData.stripe_customer_id === null) {
+                // create customer
+                return stripe.customers.create({
+                    description: req.user.steam_id
+                }).then((customer) => {
+                    var sql = `
+                    UPDATE users 
+                    SET stripe_customer_id = ( ? ) 
+                    WHERE user_id = ( ? )
+                    `;
+                    var params = [customer.id, req.user.user_id];
+                    let dbUpdateUserStripeId = dao.run(sql, params);
+                })
             } else {
-                console.log(row.stripe_customer_id);
-                // if nothing is returned, create a new customer and tie it to the user
-                if (row.stripe_customer_id == null) {
-                    // create customer
-                    stripe.customers.create({
-                        description: req.user.steam_id
-                    }, function (err, customer) {
-                        console.log(customer);
-                        if (err) {
-                            console.error(err);
-                        } else {
-                            // update the user with the customer_id
-                            db.run("UPDATE users SET stripe_customer_id = (?) WHERE user_id = (?)", [customer.id, req.user.user_id], function (err) {
-                                if (err) {
-                                    console.error(err);
-                                } else {
-                                    return;
-                                }
-                            })
-                        }
-                    });
-                } else {
-                    // do nothing if user already is a customer in stripe
-                    return;
-                }
+                // do nothing if user already is a customer in stripe
+                resolve("stripeUserAlreadyExists");
             }
         })
-    })
+        .catch((err) => {
+            console.error("Error: " + err);
+        });
+
+    // db.serialize(function () {
+    //     db.get("SELECT stripe_customer_id FROM users WHERE user_id = (?)", [req.user.user_id], function (err, row) {
+    //         if (err) {
+    //             console.error(err);
+    //         } else {
+    //             console.log(row.stripe_customer_id);
+    //             // if nothing is returned, create a new customer and tie it to the user
+    //             if (row.stripe_customer_id == null) {
+    //                 // create customer
+    //                 stripe.customers.create({
+    //                     description: req.user.steam_id
+    //                 }, function (err, customer) {
+    //                     console.log(customer);
+    //                     if (err) {
+    //                         console.error(err);
+    //                     } else {
+    //                         // update the user with the customer_id
+    //                         db.run("UPDATE users SET stripe_customer_id = (?) WHERE user_id = (?)", [customer.id, req.user.user_id], function (err) {
+    //                             if (err) {
+    //                                 console.error(err);
+    //                             } else {
+    //                                 return;
+    //                             }
+    //                         })
+    //                     }
+    //                 });
+    //             } else {
+    //                 // do nothing if user already is a customer in stripe
+    //                 return;
+    //             }
+    //         }
+    //     })
+    // })
 });
 
 router.post("/create-setup-intent", function async (req, res) {
     // use an existing Customer to associate with the SetupIntent.
     // The PaymentMethod will be stored to this Customer for later use.
 
-    db.get("SELECT stripe_customer_id FROM users WHERE user_id = (?)", [req.user.user_id], function (err, row) {
-        if (err) {
-            console.error(err);
-        } else {
-            console.log(row);
-            stripe.customers.retrieve(row.stripe_customer_id, function (err, customer) {
-                // asynchronously called
-                console.log(customer);
-                if (err) {
-                    console.error(err);
-                } else {
-                    stripe.setupIntents.create({
-                            customer: customer.id
-                        },
-                        function (err, setupIntent) {
-                            console.log(setupIntent);
-                            // asynchronously called
-                            if (err) {
-                                console.error(err);
-                            } else {
-                                res.send({
-                                    setupIntent: setupIntent
-                                });
-                            }
-                        }
-                    );
-                }
+    var sql = `
+    SELECT stripe_customer_id 
+    FROM users 
+    WHERE user_id = ( ? )
+    `;
+    var params = [req.user.user_id];
+    let dbGetUserStripeId = dao.get(sql, params)
+        .then((userData) => {
+            console.log("dbGetUserStripeId");
+            console.log(userData);
+            return stripe.customers.retrieve(userData.stripe_customer_id);
+        })
+        .then((customer) => {
+            console.log("stripe.customers.retrieve");
+            console.log(customer);
+            return stripe.setupIntents.create({
+                customer: customer.id
+            })
+        })
+        .then((setupIntent) => {
+            console.log("stripe.setupIntents.create");
+            console.log(setupIntent);
+            res.send({
+                setupIntent: setupIntent
             });
-        }
-    })
+        })
+        .catch((err) => {
+            console.error("Error: " + err);
+        })
+
+    // db.get("SELECT stripe_customer_id FROM users WHERE user_id = (?)", [req.user.user_id], function (err, row) {
+    //     if (err) {
+    //         console.error(err);
+    //     } else {
+    //         console.log(row);
+    //         stripe.customers.retrieve(row.stripe_customer_id, function (err, customer) {
+    //             // asynchronously called
+    //             console.log(customer);
+    //             if (err) {
+    //                 console.error(err);
+    //             } else {
+    //                 stripe.setupIntents.create({
+    //                         customer: customer.id
+    //                     },
+    //                     function (err, setupIntent) {
+    //                         console.log(setupIntent);
+    //                         // asynchronously called
+    //                         if (err) {
+    //                             console.error(err);
+    //                         } else {
+    //                             res.send({
+    //                                 setupIntent: setupIntent
+    //                             });
+    //                         }
+    //                     }
+    //                 );
+    //             }
+    //         });
+    //     }
+    // })
 });
 
 // Webhook handler for asynchronous events.

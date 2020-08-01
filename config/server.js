@@ -24,6 +24,7 @@ const UserRepository = require("../db/userRepository.js");
 
 // TODO: update stripe API to use the newset version (currently using 2019-11-05, newest is 2020-03-02)
 // TODO: create automated test cases
+// TODO: add check login middleware to all routes
 
 function main() {
     const dao = new AppDAO('./database.db');

@@ -31,7 +31,6 @@ router.get("/game-library", function (req, res) {
   let userInfo = req.user;
 
   let files = fs.readdirSync('public/images/hero/game-library');
-  /* now files is an Array of the name of the files in the folder and you can pick a random name inside of that array */
   let randomImage = files[Math.floor(Math.random() * files.length)];
 
   // get user info from DB if this isn't the user's first time visiting this page after loading
