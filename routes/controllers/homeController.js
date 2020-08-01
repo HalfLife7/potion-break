@@ -5,10 +5,11 @@ var config = require("../../config/config.js");
 var checkLogin = require("../../config/checkLoginMiddleware.js");
 const stripe = require('stripe')(process.env.STRIPE_SK_TEST);
 const AppDAO = require("../../db/dao.js");
+var Promise = require("bluebird");
 const {
+    join,
     resolve,
-    reject,
-    join
+    reject
 } = require("bluebird");
 const dao = new AppDAO('./database.db');
 

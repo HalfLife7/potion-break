@@ -7,6 +7,12 @@ const mustacheExpress = require("mustache-express");
 var config = require("./config.js");
 var passport = require("passport");
 var SteamStrategy = require("../lib/passport-steam/index.js").Strategy;
+var Promise = require("bluebird");
+const {
+    join,
+    resolve,
+    reject
+} = require("bluebird");
 
 // db stuff
 const AppDAO = require("../db/dao.js");
@@ -15,9 +21,6 @@ const GameRepository = require("../db/gameRepository.js");
 const PotionBreakRepository = require("../db/potionBreakRepository.js");
 const UserGamesRepository = require("../db/userGamesRepository.js");
 const UserRepository = require("../db/userRepository.js");
-const {
-    resolve
-} = require("bluebird");
 
 // TODO: update stripe API to use the newset version (currently using 2019-11-05, newest is 2020-03-02)
 // TODO: create automated test cases
@@ -187,25 +190,6 @@ function main() {
 
                             resolve(done(null, results));
                         })
-
-
-                    // db.serialize(function () {
-                    //     db.run("INSERT INTO users (steam_persona_name, steam_profile_url, steam_id, steam_avatar) VALUES (?,?,?,?) ON CONFLICT(steam_id) DO UPDATE SET steam_persona_name=excluded.steam_persona_name, steam_profile_url=excluded.steam_profile_url, steam_avatar=excluded.steam_avatar", [userInfo.personaname, userInfo.profileurl, userInfo.steamid, userInfo.avatarfull], function callback(err) {
-                    //         if (err != null) {
-                    //             console.error(err);
-                    //         } else {
-                    //             // return all user information (steam, email, bnet, etc.)
-                    //             db.get("SELECT * FROM users WHERE steam_id = (?)", [userInfo.steamid], function callback(err, row) {
-                    //                 if (err != null) {
-                    //                     console.err(err);
-                    //                 } else {
-                    //                     results = row;
-                    //                     return done(null, results);
-                    //                 }
-                    //             })
-                    //         }
-                    //     });
-                    // })
                 });
             }
         )

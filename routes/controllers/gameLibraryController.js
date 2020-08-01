@@ -7,7 +7,9 @@ var fs = require('fs');
 var Promise = require("bluebird");
 const AppDAO = require("../../db/dao.js");
 const {
-  join
+  join,
+  resolve,
+  reject
 } = require("bluebird");
 const dao = new AppDAO('./database.db');
 
@@ -28,9 +30,9 @@ router.get("/game-library", function (req, res) {
   console.log(req.user);
   let userInfo = req.user;
 
-  var files = fs.readdirSync('public/images/hero/game-library')
+  let files = fs.readdirSync('public/images/hero/game-library');
   /* now files is an Array of the name of the files in the folder and you can pick a random name inside of that array */
-  let randomImage = files[Math.floor(Math.random() * files.length)]
+  let randomImage = files[Math.floor(Math.random() * files.length)];
 
   // get user info from DB if this isn't the user's first time visiting this page after loading
   if (req.user.first_load === false) {
@@ -68,7 +70,6 @@ router.get("/game-library", function (req, res) {
   } else {
     // if this is the user's first time visiting this page after logging in, query Steam API for updated data
     // axios get request to API to get game information
-    console.log("HERE!");
     Axios.get("https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/", {
         params: {
           steamid: userInfo.steam_id,
@@ -80,7 +81,6 @@ router.get("/game-library", function (req, res) {
           //'appids_filter[1]': 730
         }
       }).then((response) => {
-        console.log("HERE2");
         let getOwnedGamesData = response.data.response;
 
         // change appid to app_id
@@ -129,6 +129,7 @@ router.get("/game-library", function (req, res) {
         let dbUpsertGames = Promise.all(filteredGamesData.map((game) => {
           let = {
             app_id,
+            name,
             img_icon_url,
             img_logo_url
           } = game;
@@ -146,14 +147,13 @@ router.get("/game-library", function (req, res) {
               img_logo_url = excluded.img_logo_url
             `;
 
-          return dao.run(sql, [game.app_id, game.img_icon_url, game.img_logo_url]);
+          return dao.run(sql, [game.app_id, game.name, game.img_icon_url, game.img_logo_url]);
         }))
 
         let dbUpsertUserGames = Promise.all(filteredGamesData).map((game) => {
           let = {
             app_id,
-            user_id,
-            platime_forever
+            playtime_forever
           } = game;
 
           var sql = `
@@ -166,7 +166,7 @@ router.get("/game-library", function (req, res) {
             playtime_forever = excluded.playtime_forever
           `;
 
-          return dao.run(sql, [game.app_id, game.user_id, game.playtime_forever]);
+          return dao.run(sql, [game.app_id, req.user.user_id, game.playtime_forever]);
         })
 
         join(dbUpdateUserTotalGamesPlayed, dbUpsertGames, dbUpsertUserGames,
