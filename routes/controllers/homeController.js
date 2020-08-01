@@ -10,7 +10,6 @@ const {
     reject,
     join
 } = require("bluebird");
-
 const dao = new AppDAO('./database.db');
 
 // middleware to check if logged in
@@ -25,14 +24,14 @@ router.get("/", function (req, res) {
             IN (?, ?, ?)
         `;
         var params = ["570", "546560", "435150"];
-        let getGames = dao.all(sql, params);
+        let dbGetGames = dao.all(sql, params);
 
         var sql = `
                     SELECT * FROM charities
                 `;
-        let getCharities = dao.all(sql, []);
+        let dbGetCharities = dao.all(sql, []);
 
-        join(getGames, getCharities,
+        join(dbGetGames, dbGetCharities,
                 function (gamesData, charitiesData) {
                     console.log(gamesData);
                     console.log(charitiesData);

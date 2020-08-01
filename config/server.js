@@ -154,8 +154,6 @@ function main() {
                         avatarfull: profile._json.avatarfull
                     };
 
-                    console.log(userInfo);
-
                     // To keep the example simple, the user's Steam profile is returned to
                     // represent the logged-in user. 
                     // TODO: Add support/functionality for other platforms such as Blizzard's Battle.net
@@ -179,13 +177,14 @@ function main() {
 
                     dao.run(sql, params)
                         .then(() => {
-                            let sql = `
+                            var sql = `
                             SELECT * FROM users 
                             WHERE steam_id = ( ? )
                             `;
-                            let params = [userInfo.steamid];
-                            return dao.run(sql, params);
+                            var params = [userInfo.steamid];
+                            return dao.get(sql, params);
                         }).then((results) => {
+
                             resolve(done(null, results));
                         })
 
