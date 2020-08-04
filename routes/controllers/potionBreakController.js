@@ -75,7 +75,32 @@ router.get('/potion-breaks/view/all', function (req, res) {
             potionBreakData.forEach(function (value, index, array) {
                 value.playtime_start_hours = (Math.floor(value.playtime_start / 60));
                 value.playtime_start_minutes = (value.playtime_start % 60);
+                var start = moment(value.start_date);
+                var end = moment(value.end_date);
+                var today = moment();
+                var daysLeft = end.diff(today, 'days');
+                var totalDays = end.diff(start, 'days');
+                var progress_percentage = (((totalDays - daysLeft) / totalDays) * 100).toFixed(2);
+                // set progress bar fill percentage
+                if (progress_percentage < 0 || progress_percentage > 100 || daysLeft == 0) {
+                    progress_percentage = 100;
+                } else if (today.diff(start, 'days') == 0) {
+                    progress_percentage = 0;
+                }
+                // set progress bar colour
+                if (value.status == "Ongoing") {
+                    value.progress_colour = "is-link";
+                } else if (value.status == "Failure") {
+                    value.progress_colour = "is-danger";
+                } else if (value.status == "Success") {
+                    value.progress_colour = "is-success";
+                }
+                value.days_left = end.diff(today, 'days');
+                value.total_days = end.diff(start, 'days');
+                value.progress_percentage = progress_percentage;
             })
+
+
 
             var files = fs.readdirSync('public/images/hero/view-all-potion-breaks')
             let randomImage = files[Math.floor(Math.random() * files.length)]

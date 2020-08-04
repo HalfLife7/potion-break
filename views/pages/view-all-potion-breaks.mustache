@@ -29,7 +29,7 @@
                             <th>End Date</th>
                             <th>Value</th>
                             <th>Status</th>
-                            <th>Initial Playtime</th>
+                            <th>Progress</th>
                             <th>Charity</th>
                         </tr>
                     </thead>
@@ -47,7 +47,13 @@
                             <td>{{end_date}}</td>
                             <td>{{total_value}}</td>
                             <td>{{status}}</td>
-                            <td>{{playtime_start_hours}} hours and {{playtime_start_minutes}} minutes</td>
+                            <td class="is-vcentered">
+                            <div class="progress-wrapper">
+                            <progress class="progress {{progress_colour}} is-medium" style="margin-bottom: 0;" value="{{progress_percentage}}" max="100">{{progress_percentage}}%</progress>
+                            <p class="progress-value has-text-black">{{progress_percentage}}%</p>
+                            </div>
+                            </td>
+                            <!-- <td>{{playtime_start_hours}} hours and {{playtime_start_minutes}} minutes</td> -->
                             <td>{{charity_name}}</td>
                         </tr>
                         {{/potionBreakData}}
