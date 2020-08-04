@@ -213,7 +213,8 @@ var stripePaymentDailyCheck = new CronJob('5 0 * * *', function () {
         })
 });
 
-var steamDataUpdate = new CronJob('*/1 * * * *', function () {
+// run everyday at 1:00am
+var steamDataUpdate = new CronJob('0 1 * * *', function () {
     // cron job to update steam game screenshots, movies, etc.
     // get all games in db
     var sql = `
