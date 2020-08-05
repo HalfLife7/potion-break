@@ -1,3 +1,4 @@
+var checkLogin = require("../../config/checkLoginMiddleware");
 var express = require("express");
 var router = express.Router();
 var checkLogin = require("../../config/checkLoginMiddleware.js");
@@ -12,7 +13,7 @@ const {
 const dao = new AppDAO('./database.db');
 
 // middleware to check if logged in
-router.get("/user-profile", function (req, res) {
+router.get("/user-profile", checkLogin, function (req, res) {
     var sql = `
     SELECT 
         users.user_id, 

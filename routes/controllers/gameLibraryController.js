@@ -1,3 +1,4 @@
+var checkLogin = require("../../config/checkLoginMiddleware");
 var express = require("express");
 var router = express.Router();
 var config = require("../../config/config.js");
@@ -14,6 +15,7 @@ const {
 const dao = new AppDAO('./database.db');
 
 
+
 // convert playtime from minutes to hours:minutes
 function convertMinutesToHHMM(item, index) {
   totalMinutes = item.playtime_forever;
@@ -26,7 +28,7 @@ function convertMinutesToHHMM(item, index) {
   }
 }
 
-router.get("/game-library", function (req, res) {
+router.get("/game-library", checkLogin, function (req, res) {
   console.log(req.user);
   let userInfo = req.user;
 

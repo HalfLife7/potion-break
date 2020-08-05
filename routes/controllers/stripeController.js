@@ -1,3 +1,4 @@
+var checkLogin = require("../../config/checkLoginMiddleware");
 var express = require("express");
 var router = express.Router();
 var config = require("../../config/config.js");

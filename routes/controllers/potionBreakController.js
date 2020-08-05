@@ -1,3 +1,4 @@
+var checkLogin = require("../../config/checkLoginMiddleware");
 var express = require("express");
 var router = express.Router();
 var config = require("../../config/config.js");
@@ -14,7 +15,7 @@ const dao = new AppDAO('./database.db');
 
 // TODO: ADD MANDATE PAGE - https://stripe.com/docs/payments/setup-intents#mandates (more information)
 
-router.get('/potion-break/create/:appid', function (req, res) {
+router.get('/potion-break/create/:appid', checkLogin, function (req, res) {
     const appId = req.params.appid;
 
     var sql = `
@@ -46,7 +47,7 @@ router.get('/potion-break/create/:appid', function (req, res) {
         })
 })
 
-router.get('/potion-breaks/view/all', function (req, res) {
+router.get('/potion-breaks/view/all', checkLogin, function (req, res) {
     var sql = `
     SELECT 
     potion_breaks.potion_break_id, 
@@ -186,7 +187,7 @@ router.post('/potion-break-creation-success', async function (req, res) {
         })
 })
 
-router.get('/potion-break/create/:appid/success', function (req, res) {
+router.get('/potion-break/create/:appid/success', checkLogin, function (req, res) {
     console.log('starting potion-break/create/:appid/success');
     const appId = req.params.appid;
 
