@@ -13,7 +13,6 @@ const {
 const dao = new AppDAO('./database.db');
 
 // TODO: ADD MANDATE PAGE - https://stripe.com/docs/payments/setup-intents#mandates (more information)
-// TODO: a game can only have 1 potion break active at a time???
 
 router.get('/potion-break/create/:appid', function (req, res) {
     const appId = req.params.appid;
@@ -84,7 +83,8 @@ router.get('/potion-breaks/view/all', function (req, res) {
                 // set progress bar fill percentage
                 if (progress_percentage < 0 || progress_percentage > 100 || daysLeft == 0) {
                     progress_percentage = 100;
-                } else if (today.diff(start, 'days') == 0) {
+                }
+                if (today.diff(start, 'days') == 0) {
                     progress_percentage = 0;
                 }
                 // set progress bar colour
@@ -164,14 +164,25 @@ router.post('/potion-break-creation-success', async function (req, res) {
         req.user.user_id,
         potionBreakData.dateCreated
     ];
+
     // update database with potion break
-    let dbInsertPotionBreak = dao.run(sql, params)
-        .then(() => {
-            // redirect user to summary page
-            return res.redirect('potion-break/create/' + potionBreakData.appId + '/success');
-        })
+    let dbInsertPotionBreak = dao.run(sql, params);
+
+    var sql = `
+        UPDATE user_games_owned
+        SET potion_break_active = ?
+        WHERE app_id = ? AND user_id = ?
+    `;
+    var params = ["true", potionBreakData.appId, req.user.user_id];
+    let dbUpdateUserGamesOwned = dao.run(sql, params);
+
+    join(dbInsertPotionBreak, dbUpdateUserGamesOwned,
+            function () {
+                // redirect user to summary page
+                return res.redirect('potion-break/create/' + potionBreakData.appId + '/success');
+            })
         .catch((err) => {
-            console.error("Error : " + err);
+            console.error("Error: " + err);
         })
 })
 

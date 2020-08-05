@@ -18,6 +18,7 @@ var Bottleneck = require("bottleneck/es5");
 const Bluebird = require("bluebird");
 
 //  0 0 * * * - at midnight every night
+// 1-59/2 * * * * - odd minute for testing
 var potionBreakDailyCheck = new CronJob('0 0 * * *', function () {
     // get users who have potion break ending that night
     const dateToday = moment().format("YYYY-MM-DD");
@@ -60,38 +61,54 @@ var potionBreakDailyCheck = new CronJob('0 0 * * *', function () {
 
             // compare user current playtime to initial playtime (when potion break started)
             return Promise.all(potionBreakData.map((potionBreak, i) => {
-                let userPreviousPlaytime = potionBreak.playtime_start;
-                let userCurrentPlaytime = userGameData[i].playtime_forever;
+                    let userPreviousPlaytime = potionBreak.playtime_start;
+                    let userCurrentPlaytime = userGameData[i].playtime_forever;
 
-                // if user played (increase playtime) -> fail potion break
-                if (userPreviousPlaytime < userCurrentPlaytime) {
-                    // update user game data
-                    var sql = `
+                    // if user played (increase playtime) -> fail potion break
+                    if (userPreviousPlaytime < userCurrentPlaytime) {
+                        // update user game data
+                        var sql = `
                     UPDATE potion_breaks 
                     SET status = ?, 
                     playtime_end = ?, 
                     payment_status = ? 
                     WHERE potion_break_id = ?
                     `;
-                    var params = ["Failure", userCurrentPlaytime, "Unpaid", potionBreak.potion_break_id];
+                        var params = ["Failure", userCurrentPlaytime, "Unpaid", potionBreak.potion_break_id];
 
-                    let dbUpdateUserPotionBreakFail = dao.run(sql, params);
-                    return dbUpdateUserPotionBreakFail;
+                        let dbUpdateUserPotionBreakFail = dao.run(sql, params);
+                        return dbUpdateUserPotionBreakFail;
 
-                } else {
-                    // if user hasn't played (same playtime) -> succeed potion break
-                    var sql = `
+                    } else {
+                        // if user hasn't played (same playtime) -> succeed potion break
+                        var sql = `
                         UPDATE potion_breaks 
                         SET status = ?, 
                         playtime_end = ?, 
                         payment_status = ? 
                         WHERE potion_break_id = ?
                     `;
-                    params = ["Success", userCurrentPlaytime, "N/A", potionBreak.potion_break_id];
-                    let dbUpdateUserPotionBreakSuccess = dao.run(sql, params);
+                        params = ["Success", userCurrentPlaytime, "N/A", potionBreak.potion_break_id];
+                        let dbUpdateUserPotionBreakSuccess = dao.run(sql, params);
 
-                    return dbUpdateUserPotionBreakSuccess;
-                }
+                        return dbUpdateUserPotionBreakSuccess;
+                    }
+                }))
+                .then(() => {
+                    return (potionBreakData);
+                })
+        })
+        .then((potionBreakData) => {
+            // update status games for all finished potionBreaks to 'false'
+            return Promise.all(potionBreakData.map((potionBreak) => {
+                var sql = `
+                    UPDATE user_games_owned
+                    SET potion_break_active = ?
+                    WHERE app_id = ? AND user_id = ?
+                `;
+                var params = ["false", potionBreak.app_id, potionBreak.user_id];
+                let dbUpdateUserGamesOwned = dao.run(sql, params);
+                return dbUpdateUserGamesOwned;
             }))
         })
         .then(() => {
@@ -135,6 +152,7 @@ var potionBreakDailyCheck = new CronJob('0 0 * * *', function () {
 });
 
 // 5 0 * * * - at 12:05 every night
+// */2 * * * * - even minutes for testing
 var stripePaymentDailyCheck = new CronJob('5 0 * * *', function () {
 
     // get failed potion breaks that haven't been paid yet

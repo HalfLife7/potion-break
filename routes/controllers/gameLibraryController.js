@@ -35,28 +35,33 @@ router.get("/game-library", function (req, res) {
 
   // get user info from DB if this isn't the user's first time visiting this page after loading
   if (req.user.first_load === false) {
-
     var sql = `
-    SELECT 
-      user_games_owned.*, 
-      games.*
-    FROM user_games_owned 
-    INNER JOIN games 
-    ON user_games_owned.app_id = games.app_id 
-    WHERE user_id = ?
-    `
+      SELECT 
+        user_games_owned.*, 
+        games.*
+      FROM user_games_owned 
+      INNER JOIN games 
+      ON user_games_owned.app_id = games.app_id 
+      WHERE user_id = ?
+      `
     var params = [userInfo.user_id];
 
     dao.all(sql, params)
       .then((userGameData) => {
-        console.log(userGameData);
-
         // descending order in playtime
         userGameData.sort(function (a, b) {
           return parseFloat(b.playtime_forever) - parseFloat(a.playtime_forever)
         });
 
-        userGameData.forEach(convertMinutesToHHMM);
+        userGameData.map((game) => {
+          if (game.potion_break_active === "true") {
+            game.potion_break_active = "disabled";
+          } else if (game.potion_break_active === "false") {
+            game.potion_break_active = null;
+          }
+          convertMinutesToHHMM(game);
+        });
+
         console.log(userGameData);
         console.log(req.user);
 
@@ -168,15 +173,46 @@ router.get("/game-library", function (req, res) {
           return dao.run(sql, [game.app_id, req.user.user_id, game.playtime_forever]);
         })
 
-        join(dbUpdateUserTotalGamesPlayed, dbUpsertGames, dbUpsertUserGames,
+        // update db from steam api query
+        return join(dbUpdateUserTotalGamesPlayed, dbUpsertGames, dbUpsertUserGames,
           function () {
-            // render the page
-            console.log(filteredGamesData);
-            console.log(userInfo);
-            req.user.first_load = false;
+
+          })
+      })
+      .then(() => {
+        var sql = `
+          SELECT 
+            user_games_owned.*, 
+            games.*
+          FROM user_games_owned 
+          INNER JOIN games 
+          ON user_games_owned.app_id = games.app_id 
+          WHERE user_id = ?
+          `
+        var params = [userInfo.user_id];
+
+        dao.all(sql, params)
+          .then((userGameData) => {
+            // descending order in playtime
+            userGameData.sort(function (a, b) {
+              return parseFloat(b.playtime_forever) - parseFloat(a.playtime_forever)
+            });
+
+            userGameData.map((game) => {
+              if (game.potion_break_active === "true") {
+                game.potion_break_active = "disabled";
+              } else if (game.potion_break_active === "false") {
+                game.potion_break_active = null;
+              }
+              convertMinutesToHHMM(game);
+            });
+
+            console.log(userGameData);
+            console.log(req.user);
+
             res.render("game-library", {
-              user: userInfo,
-              userSteamData: filteredGamesData,
+              user: req.user,
+              userSteamData: userGameData,
               image: randomImage
             });
           })

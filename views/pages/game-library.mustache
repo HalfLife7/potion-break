@@ -5,7 +5,8 @@
 <body>
     {{>nav-bar}}
     <section class="hero is-medium">
-        <div class="hero-body" style="background-image: url('/images/hero/game-library/{{image}}'); background-position: center;">
+        <div class="hero-body"
+            style="background-image: url('/images/hero/game-library/{{image}}'); background-position: center;">
             <div class="container">
                 <h1 class="title outline-text has-text-centered has-text-white">
                     Game Library
@@ -47,7 +48,9 @@
                                     </div>
                                 </div>
                                 <div class="content">
-                                    <a href="/potion-break/create/{{app_id}}"> <button class="button is-large is-fullwidth">Start Potion Break</button></a>
+                                    <a href="/potion-break/create/{{app_id}}"> <button
+                                            class="button is-large is-fullwidth {{potion_break_active}}-button"
+                                            {{potion_break_active}}>Start Potion Break</button></a>
                                 </div>
                             </div>
                         </div>
@@ -59,5 +62,12 @@
     </section>
     {{>footer}}
     <script src="/js/create-stripe-customer.js" defer></script>
+    <script>
+        var disabledButtons = document.getElementsByClassName("disabled-button");
+        for (var i = 0; i < disabledButtons.length; i++) {
+            disabledButtons[i].innerHTML = "Potion Break in Progress"
+        }
+    </script>
 </body>
+
 </html>
