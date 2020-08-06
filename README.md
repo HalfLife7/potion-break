@@ -23,7 +23,7 @@
 - [About](#about)
 - [Getting Started](#getting_started)
 - [Built Using](#built_using)
-- [TODO](../TODO.md)
+- [TODO](./TODO.md)
 - [Acknowledgments](#acknowledgement)
 
 ## 🧐 About <a name = "about"></a>
