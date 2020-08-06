@@ -86,6 +86,7 @@ Open `potion-break/.env.example` then edit it with your settings and rename to O
 ## Running the project
 ```
     $ npm run start
+    app will be hosted at localhost:3000/
 ```
 ## ⛏️ Built Using <a name = "built_using"></a>
 ### Backend
