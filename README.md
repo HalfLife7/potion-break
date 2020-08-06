@@ -112,6 +112,7 @@ Open `potion-break/.env.example` then edit it with your settings and rename to O
 
 ## 🎉 Acknowledgements <a name = "acknowledgement"></a>
 - Big thanks to anyone whose code was used (acknowledged in code comments)
-- Pocket Article on Killing Bad Habits for intial idea - https://getpocket.com/explore/item/the-behavioral-economics-diet-the-science-of-killing-a-bad-habit
-- stickK for validation that the concept works - https://www.stickk.com/
+- Pocket Article on Killing Bad Habits for initial idea - https://getpocket.com/explore/item/the-behavioral-economics-diet-the-science-of-killing-a-bad-habit
+- stickK for an example that loss aversion works - https://www.stickk.com/
+- Images used are attribution free from unsplash.com and pexels.com
 
