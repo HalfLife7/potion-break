@@ -31,6 +31,8 @@
 
 <p>By committing to pay a charity 'x' amount of dollars if you fail to take a break from playing, it might give you that extra bit of motivation you need to resist playing.</p>
 
+<p>**Note that Potion Break is still in testing and no real money is involved! Use test cards such as '4242 4242 4242 4242' for testing.</p>
+
 <p>3 Steps to Potion Break:</p>
 
 <ol>
