@@ -50,7 +50,7 @@ What things you need to install the software and how to install them.
 ---
 ## Requirements
 
-For development, you will only need Node.js and a node package manager installed in your environement.
+For development, you will only need Node.js and a node package manager installed in your environment.
 
 ### Node
 - #### Node installation on Windows
@@ -66,10 +66,7 @@ If the installation was successful, you should be able to run the following comm
     $ npm --version
     6.14.5
 ```
-If you need to update `npm`, you can make it using `npm`! Cool right? After running the following command, just open again the command line and be happy.
-```
-    $ npm install npm -g
-```
+
 ## Install
 ```
     $ git clone https://github.com/HalfLife7/potion-break
