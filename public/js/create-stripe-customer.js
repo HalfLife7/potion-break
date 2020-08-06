@@ -6,7 +6,7 @@ var createCustomer = function (publicKey) {
             }
         })
         .then(function (response) {
-            console.log(response);
+            // console.log(response);
             return;
         })
         .catch(function (error) {
@@ -22,7 +22,7 @@ var getPublicKey = function () {
             }
         })
         .then(function (response) {
-            console.log(response);
+            // console.log(response);
             return response.json();
         })
         .then(function (response) {

@@ -60,40 +60,6 @@ router.post("/create-stripe-customer", function async (req, res) {
         .catch((err) => {
             console.error("Error: " + err);
         });
-
-    // db.serialize(function () {
-    //     db.get("SELECT stripe_customer_id FROM users WHERE user_id = (?)", [req.user.user_id], function (err, row) {
-    //         if (err) {
-    //             console.error(err);
-    //         } else {
-    //             console.log(row.stripe_customer_id);
-    //             // if nothing is returned, create a new customer and tie it to the user
-    //             if (row.stripe_customer_id == null) {
-    //                 // create customer
-    //                 stripe.customers.create({
-    //                     description: req.user.steam_id
-    //                 }, function (err, customer) {
-    //                     console.log(customer);
-    //                     if (err) {
-    //                         console.error(err);
-    //                     } else {
-    //                         // update the user with the customer_id
-    //                         db.run("UPDATE users SET stripe_customer_id = (?) WHERE user_id = (?)", [customer.id, req.user.user_id], function (err) {
-    //                             if (err) {
-    //                                 console.error(err);
-    //                             } else {
-    //                                 return;
-    //                             }
-    //                         })
-    //                     }
-    //                 });
-    //             } else {
-    //                 // do nothing if user already is a customer in stripe
-    //                 return;
-    //             }
-    //         }
-    //     })
-    // })
 });
 
 router.post("/create-setup-intent", function async (req, res) {
@@ -129,37 +95,6 @@ router.post("/create-setup-intent", function async (req, res) {
         .catch((err) => {
             console.error("Error: " + err);
         })
-
-    // db.get("SELECT stripe_customer_id FROM users WHERE user_id = (?)", [req.user.user_id], function (err, row) {
-    //     if (err) {
-    //         console.error(err);
-    //     } else {
-    //         console.log(row);
-    //         stripe.customers.retrieve(row.stripe_customer_id, function (err, customer) {
-    //             // asynchronously called
-    //             console.log(customer);
-    //             if (err) {
-    //                 console.error(err);
-    //             } else {
-    //                 stripe.setupIntents.create({
-    //                         customer: customer.id
-    //                     },
-    //                     function (err, setupIntent) {
-    //                         console.log(setupIntent);
-    //                         // asynchronously called
-    //                         if (err) {
-    //                             console.error(err);
-    //                         } else {
-    //                             res.send({
-    //                                 setupIntent: setupIntent
-    //                             });
-    //                         }
-    //                     }
-    //                 );
-    //             }
-    //         });
-    //     }
-    // })
 });
 
 // Webhook handler for asynchronous events.
