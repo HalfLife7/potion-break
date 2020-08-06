@@ -76,7 +76,7 @@ If you need to update `npm`, you can make it using `npm`! Cool right? After runn
 ```
 ## Configure app
 
-Open `potion-break/.env.example` then edit it with your settings. You will need:
+Open `potion-break/.env.example` then edit it with your settings and rename to ONLY '.env'. You will need:
 ```
 - STEAM_API_KEY - https://steamcommunity.com/dev/apikey
 - STRIPE_API_KEYS - https://stripe.com/docs/keys
