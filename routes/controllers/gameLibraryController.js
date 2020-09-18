@@ -1,34 +1,28 @@
-var checkLogin = require("../../config/checkLoginMiddleware");
-var express = require("express");
+var checkLogin = require('../../config/checkLoginMiddleware');
+var express = require('express');
 var router = express.Router();
-var config = require("../../config/config.js");
-const Axios = require("axios");
-const response = require("express");
+var config = require('../../config/config.js');
+const Axios = require('axios');
+const response = require('express');
 var fs = require('fs');
-var Promise = require("bluebird");
-const AppDAO = require("../../db/dao.js");
-const {
-  join,
-  resolve,
-  reject
-} = require("bluebird");
+var Promise = require('bluebird');
+const AppDAO = require('../../db/dao.js');
+const { join, resolve, reject } = require('bluebird');
 const dao = new AppDAO('./database.db');
-
-
 
 // convert playtime from minutes to hours:minutes
 function convertMinutesToHHMM(item, index) {
   totalMinutes = item.playtime_forever;
-  var hours = Math.floor(totalMinutes / 60)
-  var minutes = totalMinutes - (hours * 60)
+  var hours = Math.floor(totalMinutes / 60);
+  var minutes = totalMinutes - hours * 60;
   if (hours === 0) {
-    item.total_time_played = minutes + " minutes"
+    item.total_time_played = minutes + ' minutes';
   } else {
-    item.total_time_played = hours + " hours and " + minutes + " minutes";
+    item.total_time_played = hours + ' hours and ' + minutes + ' minutes';
   }
 }
 
-router.get("/game-library", checkLogin, function (req, res) {
+router.get('/game-library', checkLogin, function (req, res) {
   console.log(req.user);
   let userInfo = req.user;
 
@@ -45,48 +39,48 @@ router.get("/game-library", checkLogin, function (req, res) {
       INNER JOIN games 
       ON user_games_owned.app_id = games.app_id 
       WHERE user_id = ?
-      `
+      `;
     var params = [userInfo.user_id];
 
-    dao.all(sql, params)
-      .then((userGameData) => {
-        // descending order in playtime
-        userGameData.sort(function (a, b) {
-          return parseFloat(b.playtime_forever) - parseFloat(a.playtime_forever)
-        });
+    dao.all(sql, params).then((userGameData) => {
+      // descending order in playtime
+      userGameData.sort(function (a, b) {
+        return parseFloat(b.playtime_forever) - parseFloat(a.playtime_forever);
+      });
 
-        userGameData.map((game) => {
-          if (game.potion_break_active === "true") {
-            game.potion_break_active = "disabled";
-          } else if (game.potion_break_active === "false") {
-            game.potion_break_active = null;
-          }
-          convertMinutesToHHMM(game);
-        });
+      userGameData.map((game) => {
+        if (game.potion_break_active === 'true') {
+          game.potion_break_active = 'disabled';
+        } else if (game.potion_break_active === 'false') {
+          game.potion_break_active = null;
+        }
+        convertMinutesToHHMM(game);
+      });
 
-        console.log(userGameData);
-        console.log(req.user);
+      console.log(userGameData);
+      console.log(req.user);
 
-        res.render("game-library", {
-          user: req.user,
-          userSteamData: userGameData,
-          image: randomImage
-        });
-      })
+      res.render('game-library', {
+        user: req.user,
+        userSteamData: userGameData,
+        image: randomImage,
+      });
+    });
   } else {
     // if this is the user's first time visiting this page after logging in, query Steam API for updated data
     // axios get request to API to get game information
-    Axios.get("https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/", {
-        params: {
-          steamid: userInfo.steam_id,
-          key: process.env.STEAM_API_KEY,
-          include_played_free_games: true,
-          include_appinfo: true,
-          format: 'json'
-          //'appids_filter[0]': 570,
-          //'appids_filter[1]': 730
-        }
-      }).then((response) => {
+    Axios.get('https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/', {
+      params: {
+        steamid: userInfo.steam_id,
+        key: process.env.STEAM_API_KEY,
+        include_played_free_games: true,
+        include_appinfo: true,
+        format: 'json',
+        //'appids_filter[0]': 570,
+        //'appids_filter[1]': 730
+      },
+    })
+      .then((response) => {
         let getOwnedGamesData = response.data.response;
 
         // change appid to app_id
@@ -97,7 +91,9 @@ router.get("/game-library", checkLogin, function (req, res) {
 
         // descending order in playtime
         getOwnedGamesData.games.sort(function (a, b) {
-          return parseFloat(b.playtime_forever) - parseFloat(a.playtime_forever)
+          return (
+            parseFloat(b.playtime_forever) - parseFloat(a.playtime_forever)
+          );
         });
 
         // remove games with no playtime
@@ -121,7 +117,11 @@ router.get("/game-library", checkLogin, function (req, res) {
           total_minutes_played += item.playtime_forever;
         });
         userInfo.total_minutes_played = total_minutes_played;
-        userInfo.total_time_played = (Math.floor(total_minutes_played / 60) + " hours and " + (total_minutes_played - (Math.floor(total_minutes_played / 60)) * 60) + " minutes");
+        userInfo.total_time_played =
+          Math.floor(total_minutes_played / 60) +
+          ' hours and ' +
+          (total_minutes_played - Math.floor(total_minutes_played / 60) * 60) +
+          ' minutes';
 
         var sql = `
         UPDATE users 
@@ -132,15 +132,11 @@ router.get("/game-library", checkLogin, function (req, res) {
         var params = [userInfo.total_games_owned, userInfo.user_id];
         let dbUpdateUserTotalGamesPlayed = dao.run(sql, params);
 
-        let dbUpsertGames = Promise.all(filteredGamesData.map((game) => {
-          let = {
-            app_id,
-            name,
-            img_icon_url,
-            img_logo_url
-          } = game;
+        let dbUpsertGames = Promise.all(
+          filteredGamesData.map((game) => {
+            let = { app_id, name, img_icon_url, img_logo_url } = game;
 
-          var sql = `
+            var sql = `
             INSERT INTO games (
               app_id, 
               name, 
@@ -153,14 +149,17 @@ router.get("/game-library", checkLogin, function (req, res) {
               img_logo_url = excluded.img_logo_url
             `;
 
-          return dao.run(sql, [game.app_id, game.name, game.img_icon_url, game.img_logo_url]);
-        }))
+            return dao.run(sql, [
+              game.app_id,
+              game.name,
+              game.img_icon_url,
+              game.img_logo_url,
+            ]);
+          })
+        );
 
         let dbUpsertUserGames = Promise.all(filteredGamesData).map((game) => {
-          let = {
-            app_id,
-            playtime_forever
-          } = game;
+          let = { app_id, playtime_forever } = game;
 
           var sql = `
           INSERT INTO user_games_owned (
@@ -172,14 +171,20 @@ router.get("/game-library", checkLogin, function (req, res) {
             playtime_forever = excluded.playtime_forever
           `;
 
-          return dao.run(sql, [game.app_id, req.user.user_id, game.playtime_forever]);
-        })
+          return dao.run(sql, [
+            game.app_id,
+            req.user.user_id,
+            game.playtime_forever,
+          ]);
+        });
 
         // update db from steam api query
-        return join(dbUpdateUserTotalGamesPlayed, dbUpsertGames, dbUpsertUserGames,
-          function () {
-
-          })
+        return join(
+          dbUpdateUserTotalGamesPlayed,
+          dbUpsertGames,
+          dbUpsertUserGames,
+          function () {}
+        );
       })
       .then(() => {
         var sql = `
@@ -190,40 +195,41 @@ router.get("/game-library", checkLogin, function (req, res) {
           INNER JOIN games 
           ON user_games_owned.app_id = games.app_id 
           WHERE user_id = ?
-          `
+          `;
         var params = [userInfo.user_id];
 
-        dao.all(sql, params)
-          .then((userGameData) => {
-            // descending order in playtime
-            userGameData.sort(function (a, b) {
-              return parseFloat(b.playtime_forever) - parseFloat(a.playtime_forever)
-            });
+        dao.all(sql, params).then((userGameData) => {
+          // descending order in playtime
+          userGameData.sort(function (a, b) {
+            return (
+              parseFloat(b.playtime_forever) - parseFloat(a.playtime_forever)
+            );
+          });
 
-            userGameData.map((game) => {
-              if (game.potion_break_active === "true") {
-                game.potion_break_active = "disabled";
-              } else if (game.potion_break_active === "false") {
-                game.potion_break_active = null;
-              }
-              convertMinutesToHHMM(game);
-            });
+          userGameData.map((game) => {
+            if (game.potion_break_active === 'true') {
+              game.potion_break_active = 'disabled';
+            } else if (game.potion_break_active === 'false') {
+              game.potion_break_active = null;
+            }
+            convertMinutesToHHMM(game);
+          });
 
-            console.log(userGameData);
-            console.log(req.user);
+          console.log(userGameData);
+          console.log(req.user);
 
-            res.render("game-library", {
-              user: req.user,
-              userSteamData: userGameData,
-              image: randomImage
-            });
-          })
+          res.render('game-library', {
+            user: req.user,
+            userSteamData: userGameData,
+            image: randomImage,
+          });
+        });
       })
       .catch((err) => {
-        console.error("Error: " + err);
-      })
+        console.error('Error: ' + err);
+      });
   }
-})
+});
 
 // export routes up to routes.js
 module.exports = router;
