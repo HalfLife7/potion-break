@@ -4,28 +4,28 @@ const knex = require('../db/knex')
 
 Model.knex(knex)
 
-class UserGame extends Model {
+class GameMovie extends Model {
     static get tableName() {
-        return 'user_games'
+        return 'game_movies'
     }
 
     static get idColumn() {
-        return ['user_id', 'game_id']
+        return ['game_id', 'id']
     }
 
     static get relationMappings() {
-        const User = require('./user')
+        const Game = require('./game')
         return {
-            user: {
+            game: {
                 relation: Model.BelongsToOneRelation,
-                modelClass: User,
+                modelClass: Game,
                 join: {
-                    from: 'user_games.user_id',
-                    to: 'users.id',
+                    from: 'game_movies.game_id',
+                    to: 'games.id',
                 },
             },
         }
     }
 }
 
-module.exports = UserGame
+module.exports = GameMovie

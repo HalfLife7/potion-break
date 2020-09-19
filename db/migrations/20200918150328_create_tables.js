@@ -24,6 +24,7 @@ exports.up = async (knex) => {
                 .notNull()
             t.text('playtime_forever')
             t.text('potion_break_active')
+            t.primary(['user_id', 'game_id'])
         })
         await knex.schema.createTable('games', (t) => {
             t.integer('id').unsigned().primary()
@@ -67,7 +68,7 @@ exports.up = async (knex) => {
             t.text('img_path')
         })
         await knex.schema.createTable('potion_breaks', (t) => {
-            t.integer('id').unsigned().primary()
+            t.increments('id')
             t.date('start_date')
             t.date('end_date')
             t.integer('user_id')
