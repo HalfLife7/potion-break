@@ -4,7 +4,7 @@ var router = express.Router();
 var checkLogin = require('../../config/checkLoginMiddleware.js');
 var fs = require('fs');
 var Promise = require('bluebird');
-const AppDAO = require('../../db/dao.js');
+const AppDAO = require('../../db.bak/dao.js');
 const { join, resolve, reject } = require('bluebird');
 const dao = new AppDAO('./database.db');
 

@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 var config = require('../../config/config.js');
 var Promise = require('bluebird');
-const AppDAO = require('../../db/dao.js');
+const AppDAO = require('../../db.bak/dao.js');
 const { join, resolve, reject } = require('bluebird');
 const dao = new AppDAO('./database.db');
 
