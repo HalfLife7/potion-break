@@ -1,54 +1,92 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var passport = require('passport');
-var config = require('../../config/config.js');
-var checkLogin = require('../../config/checkLoginMiddleware.js');
-const stripe = require('stripe')(process.env.STRIPE_SK_TEST);
-const AppDAO = require('../../db.bak/dao.js');
-var Promise = require('bluebird');
-const { join, resolve, reject } = require('bluebird');
-const dao = new AppDAO('./database.db');
+var passport = require("passport");
+var config = require("../../config/config.js");
+var checkLogin = require("../../config/checkLoginMiddleware.js");
+const stripe = require("stripe")(process.env.STRIPE_SK_TEST);
+var Promise = require("bluebird");
+const { join, resolve, reject } = require("bluebird");
+
+const axios = require("axios").default;
+
+const Game = require("../../models/game");
+const Charity = require("../../models/charity");
 
 // middleware to check if logged in
-router.get('/', function (req, res) {
+router.get("/", async (req, res) => {
   if (req.user) {
-    res.redirect('/game-library');
+    res.redirect("/game-library");
   } else {
-    var sql = `
-            SELECT * FROM games 
-            WHERE app_id 
-            IN (?, ?, ?)
-        `;
-    var params = ['570', '546560', '435150'];
-    let dbGetGames = dao.all(sql, params);
+    const getDotaData = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: "http://localhost:5000/db/games/570",
+        });
+        return response.data;
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
 
-    var sql = `
-                    SELECT * FROM charities
-                `;
-    let dbGetCharities = dao.all(sql, []);
+    const getDivinityData = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: "http://localhost:5000/db/games/435150",
+        });
+        return response.data;
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
 
-    join(dbGetGames, dbGetCharities, function (gamesData, charitiesData) {
-      console.log(gamesData);
-      console.log(charitiesData);
+    const getHalflifeData = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: "http://localhost:5000/db/games/546560",
+        });
+        return response.data;
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
 
-      let dota = gamesData[0];
-      let divinity = gamesData[1];
-      let halflife = gamesData[2];
+    const getCharitiesData = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url:
+            "http://localhost:5000/db/charities/get-multiple-charities?id1=1&id2=2&id3=5",
+        });
+        return response.data;
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
 
-      res.render('home', {
-        dotaData: dota,
-        halflifeData: halflife,
-        divinityData: divinity,
-        charityData: charitiesData,
-      });
-    }).catch((err) => {
-      console.error('Error: ' + err);
+    const dota = await getDotaData();
+    const divinity = await getDivinityData();
+    const halflife = await getHalflifeData();
+    const charities = await getCharitiesData();
+
+    //charities = charities.slice(0, 3);
+
+    console.log(dota);
+    console.log(charities);
+
+    res.render("home", {
+      dotaData: dota,
+      halflifeData: halflife,
+      divinityData: divinity,
+      charityData: charities,
     });
   }
 });
 
-router.get('/login', checkLogin, function (req, res) {
-  res.render('login');
+router.get("/login", checkLogin, function (req, res) {
+  res.render("login");
 });
 
 // export routes up to routes.js

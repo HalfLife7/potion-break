@@ -146,34 +146,16 @@
                 <div class="column is-6 is-centered">
                     <div class="swiper-container">
                         <div class="swiper-wrapper">
-                            <div class="swiper-slide">
-                                <a href="{{dotaData.screenshot_1_url}}" data-fancybox="dota-media">
-                                    <img src="{{dotaData.screenshot_1_url}}" alt="DOTA 2 screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="{{dotaData.screenshot_2_url}}" data-fancybox="dota-media">
-                                    <img src="{{dotaData.screenshot_2_url}}" alt="DOTA 2 screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="{{dotaData.screenshot_3_url}}" data-fancybox="dota-media">
-                                    <img src="{{dotaData.screenshot_3_url}}" alt="DOTA 2 screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="{{dotaData.screenshot_4_url}}" data-fancybox="dota-media">
-                                    <img src="{{dotaData.screenshot_4_url}}" alt="DOTA 2 screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="{{dotaData.screenshot_5_url}}" data-fancybox="dota-media">
-                                    <img src="{{dotaData.screenshot_5_url}}" alt="DOTA 2 screenshot" />
-                                </a>
-                            </div>
+                            {{#dotaData.screenshots}}
+                                <div class="swiper-slide">
+                                    <a href="{{path_full}}" data-fancybox="dota-media">
+                                        <img src="{{path_full}}" alt="DOTA 2 Screenshot" />
+                                    </a>
+                                </div>
+                            {{/dotaData.screenshots}}
                             <div class="swiper-slide img-overlay-wrap">
-                                <a href="javascript:;" data-fancybox-trigger="dota-media" data-fancybox-index="5">
-                                    <img src="/images/home/dota_movie_preview.jpg" alt="DOTA 2 movie screenshot" />
+                                <a href="javascript:;" data-fancybox-trigger="dota-media" data-fancybox-index="-1">
+                                    <img src="/images/home/dota_movie_preview.jpg" alt="DOTA 2 Movie Screenshot" />
                                     <div class="play-btn">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26">
                                             <polygon class="play-btn__svg"
@@ -209,36 +191,17 @@
                 <div class="column is-6 is-centered is-hidden-tablet">
                     <div class="swiper-container">
                         <div class="swiper-wrapper">
-
-                            <div class="swiper-slide">
-                                <a href="{{halflifeData.screenshot_1_url}}" data-fancybox="halflife-media">
-                                    <img src="{{halflifeData.screenshot_1_url}}" alt="Half-Life: Alyx screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="{{halflifeData.screenshot_2_url}}" data-fancybox="halflife-media">
-                                    <img src="{{halflifeData.screenshot_2_url}}" alt="Half-Life: Alyx screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="{{halflifeData.screenshot_3_url}}" data-fancybox="halflife-media">
-                                    <img src="{{halflifeData.screenshot_3_url}}" alt="Half-Life: Alyx screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="{{halflifeData.screenshot_4_url}}" data-fancybox="halflife-media">
-                                    <img src="{{halflifeData.screenshot_4_url}}" alt="Half-Life: Alyx screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="{{halflifeData.screenshot_5_url}}" data-fancybox="halflife-media">
-                                    <img src="{{halflifeData.screenshot_5_url}}" alt="Half-Life: Alyx screenshot" />
-                                </a>
-                            </div>
+                            {{#halflifeData.screenshots}}
+                                <div class="swiper-slide">
+                                    <a href="{{path_full}}" data-fancybox="halflife-media">
+                                        <img src="{{path_full}}" alt="Half-Life: Alyx Screenshot" />
+                                    </a>
+                                </div>
+                            {{/halflifeData.screenshots}}
                             <div class="swiper-slide img-overlay-wrap">
-                                <a href="javascript:;" data-fancybox-trigger="halflife-media" data-fancybox-index="5">
+                                <a href="javascript:;" data-fancybox-trigger="halflife-media" data-fancybox-index="-1">
                                     <img src="/images/home/halflife_movie_preview.jpg"
-                                        alt="Half-Life: Alyx movie screenshot" />
+                                        alt="Half-Life: Alyx Movie Screenshot" />
                                     <div class="play-btn">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26">
                                             <polygon class="play-btn__svg"
@@ -273,36 +236,18 @@
                 <div class="column is-6 is-centered is-hidden-mobile">
                     <div class="swiper-container">
                         <div class="swiper-wrapper">
-
+                        <!-- data-fancybox-index="0" -->
+                            {{#halflifeData.screenshots}}
                             <div class="swiper-slide">
-                                <a href="javascript:;" data-fancybox-trigger="halflife-media" data-fancybox-index="0">
-                                    <img src="{{halflifeData.screenshot_1_url}}" alt="Half-Life: Alyx screenshot" />
+                                <a href="javascript:;" data-fancybox-trigger="halflife-media" >
+                                    <img src="{{path_full}}" alt="Half-Life: Alyx Screenshot" />
                                 </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="javascript:;" data-fancybox-trigger="halflife-media" data-fancybox-index="1">
-                                    <img src="{{halflifeData.screenshot_2_url}}" alt="Half-Life: Alyx screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="javascript:;" data-fancybox-trigger="halflife-media" data-fancybox-index="2">
-                                    <img src="{{halflifeData.screenshot_3_url}}" alt="Half-Life: Alyx screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="javascript:;" data-fancybox-trigger="halflife-media" data-fancybox-index="3">
-                                    <img src="{{halflifeData.screenshot_4_url}}" alt="Half-Life: Alyx screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="javascript:;" data-fancybox-trigger="halflife-media" data-fancybox-index="4">
-                                    <img src="{{halflifeData.screenshot_5_url}}" alt="Half-Life: Alyx screenshot" />
-                                </a>
-                            </div>
+                            </div>                            
+                            {{/halflifeData.screenshots}}
                             <div class="swiper-slide img-overlay-wrap">
-                                <a href="javascript:;" data-fancybox-trigger="halflife-media" data-fancybox-index="5">
+                                <a href="javascript:;" data-fancybox-trigger="halflife-media" data-fancybox-index="-1">
                                     <img src="/images/home/halflife_movie_preview.jpg"
-                                        alt="Half-Life: Alyx movie screenshot" />
+                                        alt="Half-Life: Alyx Movie Screenshot" />
                                     <div class="play-btn">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26">
                                             <polygon class="play-btn__svg"
@@ -323,41 +268,17 @@
                 <div class="column is-6 is-centered">
                     <div class="swiper-container">
                         <div class="swiper-wrapper">
-
-                            <div class="swiper-slide">
-                                <a href="{{divinityData.screenshot_1_url}}" data-fancybox="divinity-media">
-                                    <img src="{{divinityData.screenshot_1_url}}"
-                                        alt="Divinity: Original Sin 2 screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="{{divinityData.screenshot_2_url}}" data-fancybox="divinity-media">
-                                    <img src="{{divinityData.screenshot_2_url}}"
-                                        alt="Divinity: Original Sin 2 screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="{{divinityData.screenshot_3_url}}" data-fancybox="divinity-media">
-                                    <img src="{{divinityData.screenshot_3_url}}"
-                                        alt="Divinity: Original Sin 2 screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="{{divinityData.screenshot_4_url}}" data-fancybox="divinity-media">
-                                    <img src="{{divinityData.screenshot_4_url}}"
-                                        alt="Divinity: Original Sin 2 screenshot" />
-                                </a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="{{divinityData.screenshot_5_url}}" data-fancybox="divinity-media">
-                                    <img src="{{divinityData.screenshot_5_url}}"
-                                        alt="Divinity: Original Sin 2 screenshot" />
-                                </a>
-                            </div>
+                            {{#divinityData.screenshots}}
+                                <div class="swiper-slide">
+                                    <a href="{{path_full}}" data-fancybox="divinity-media">
+                                        <img src="{{path_full}}" alt="Divinity: Original Sin II Screenshot" />
+                                    </a>
+                                </div>
+                            {{/divinityData.screenshots}}                        
                             <div class="swiper-slide img-overlay-wrap">
-                                <a href="javascript:;" data-fancybox-trigger="divinity-media" data-fancybox-index="5">
-                                    <img src="/images/home/divinity_movie_preview.jpg"
-                                        alt="Divinity: Original Sin 2 movie screenshot" />
+                                <a href="javascript:;" data-fancybox-trigger="divinity-media" data-fancybox-index="-1">
+                                    <img src="/images/home/halflife_movie_preview.jpg"
+                                        alt="Divinity: Original Sin II Movie Screenshot" />
                                     <div class="play-btn">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26">
                                             <polygon class="play-btn__svg"
@@ -393,29 +314,29 @@
         </div>
         <!-- section for videos at the end of fancybox -->
         <a data-fancybox="dota-media" href="#dotaVideo" style="display:none;">
-            <img src="images/home/dota_movie_preview.jpg" alt="dota movie thumbnail" />
+            <img src="images/home/dota_movie_preview.jpg" alt="dota Movie Thumbnail" />
         </a>
         <video width=100% height=auto controls id="dotaVideo" style="display:none;">
-            <source src="{{dotaData.movie_1_webm_url}}" type="video/webm">
-            <source src="{{dotaData.movie_1_mp4_url}}" type="video/mp4">
+            <source src="{{dotaData.movies.0.webm_max}}" type="video/webm">
+            <source src="{{dotaData.movies.0.mp4_max}}" type="video/mp4">
             Your browser doesn't support HTML5 video tag.
         </video>
 
         <a data-fancybox="halflife-media" href="#halflifeVideo" style="display:none;">
-            <img src="images/home/halflife_movie_preview.jpg" alt="Half-Life: Alyx movie thumbnail" />
+            <img src="images/home/halflife_movie_preview.jpg" alt="Half-Life: Alyx Movie Thumbnail" />
         </a>
         <video width=100% height=auto controls id="halflifeVideo" style="display:none;">
-            <source src="{{halflifeData.movie_1_webm_url}}" type="video/webm">
-            <source src="{{halflifeData.movie_1_mp4_url}}" type="video/mp4">
+            <source src="{{halflifeData.movies.0.webm_max}}" type="video/webm">
+            <source src="{{halflifeData.movies.0.mp4_max}}" type="video/mp4">
             Your browser doesn't support HTML5 video tag.
         </video>
 
         <a data-fancybox="divinity-media" href="#divinityVideo" style="display:none;">
-            <img src="images/home/divinity_movie_preview.jpg" alt="Half-Life: Alyx movie thumbnail" />
+            <img src="images/home/divinity_movie_preview.jpg" alt="Half-Life: Alyx Movie Thumbnail" />
         </a>
         <video width=100% height=auto controls id="divinityVideo" style="display:none;">
-            <source src="{{divinityData.movie_1_webm_url}}" type="video/webm">
-            <source src="{{divinityData.movie_1_mp4_url}}" type="video/mp4">
+            <source src="{{divinityData.movies.0.webm_max}}" type="video/webm">
+            <source src="{{divinityData.movies.0.mp4_max}}" type="video/mp4">
             Your browser doesn't support HTML5 video tag.
         </video>
     </section>
@@ -429,30 +350,14 @@
                 </div>
             </div>
             <div class="columns">
-                <div class="column has-text-centered">
-
-
-                    <figure class="image is-4by3">
-                        <img src="{{charityData.0.img_path}}" alt="Logo of {{charityData.0.name}}">
-                    </figure>
-                    <h2 class="subtitle ">National Public Radio</h2>
-                </div>
-                <div class="column has-text-centered">
-
-
-                    <figure class="image is-4by3">
-                        <img src="{{charityData.1.img_path}}" alt="Logo of {{charityData.1.name}}">
-                    </figure>
-                    <h2 class="subtitle ">Nature Conservancy Canada</h2>
-                </div>
-                <div class="column has-text-centered">
-
-
-                    <figure class="image is-4by3">
-                        <img src="{{charityData.4.img_path}}" alt="Logo of {{charityData.4.name}}">
-                    </figure>
-                    <h2 class="subtitle ">Public Broadcasting Service</h2>
-                </div>
+                {{#charityData}}
+                    <div class="column has-text-centered">
+                        <figure class="image is-4by3">
+                            <img src="{{img_path}}" alt="Logo of {{name}}">
+                        </figure>
+                        <h2 class="subtitle">{{full_name}}</h2>
+                    </div>
+                {{/charityData}}
             </div>
         </div>
     </section>

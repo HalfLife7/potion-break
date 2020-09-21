@@ -2,8 +2,8 @@
 
 module.exports = {
   test: {
-    client: 'pg',
-    connection: 'postgres://localhost/test_db',
+    client: "pg",
+    connection: "postgres://localhost/test_db",
     migrations: {
       directory: `${__dirname}/db/migrations`,
     },
@@ -12,11 +12,13 @@ module.exports = {
     },
   },
   development: {
-    client: 'pg',
+    client: "pg",
     connection: {
-      database: 'potion_break',
+      host: "localhost",
+      database: "potion_break",
       user: process.env.DB_USER_NAME,
       password: process.env.DB_USER_PASSWORD,
+      port: 5432,
     },
     migrations: {
       directory: `${__dirname}/db/migrations`,
@@ -26,9 +28,9 @@ module.exports = {
     },
   },
   production: {
-    client: 'pg',
+    client: "pg",
     connection: {
-      database: 'potion_break',
+      database: "potion_break",
       user: process.env.DB_USER_NAME,
       password: process.env.DB_USER_PASSWORD,
     },
