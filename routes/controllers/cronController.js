@@ -1,22 +1,22 @@
-var express = require('express');
-var moment = require('moment');
-var config = require('../../config/config.js');
+var express = require("express");
+var moment = require("moment");
+var config = require("../../config/config.js");
 var router = express.Router();
-const Axios = require('axios');
-const stripe = require('stripe')(process.env.STRIPE_SK_TEST);
-var CronJob = require('cron').CronJob;
-var Promise = require('bluebird');
-const AppDAO = require('../../db.bak/dao.js');
-const { join, resolve, reject } = require('bluebird');
-const dao = new AppDAO('./database.db');
-var Bottleneck = require('bottleneck/es5');
-const Bluebird = require('bluebird');
+const Axios = require("axios");
+const stripe = require("stripe")(process.env.STRIPE_SK_TEST);
+var CronJob = require("cron").CronJob;
+var Promise = require("bluebird");
+const AppDAO = require("../../db.bak/dao.js");
+const { join, resolve, reject } = require("bluebird");
+const dao = new AppDAO("./database.db");
+var Bottleneck = require("bottleneck/es5");
+const Bluebird = require("bluebird");
 
 //  0 0 * * * - at midnight every night
 // 1-59/2 * * * * - odd minute for testing
-var potionBreakDailyCheck = new CronJob('0 0 * * *', function () {
+var potionBreakDailyCheck = new CronJob("0 0 * * *", function () {
   // get users who have potion break ending that night
-  const dateToday = moment().format('YYYY-MM-DD');
+  const dateToday = moment().format("YYYY-MM-DD");
 
   var sql = `
     SELECT 
@@ -27,7 +27,7 @@ var potionBreakDailyCheck = new CronJob('0 0 * * *', function () {
     INNER JOIN users ON potion_breaks.user_id = users.user_id 
     WHERE potion_breaks.end_date = ? AND status = ?
     `;
-  var params = [dateToday, 'Ongoing'];
+  var params = [dateToday, "Ongoing"];
   let dbGetAllEndingPotionBreaks = dao
     .all(sql, params)
     .then((potionBreakData) => {
@@ -35,15 +35,15 @@ var potionBreakDailyCheck = new CronJob('0 0 * * *', function () {
       return Promise.all(
         potionBreakData.map((potionBreak) => {
           return Axios.get(
-            'https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/',
+            "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/",
             {
               params: {
                 steamid: potionBreak.steam_id,
                 key: process.env.STEAM_API_KEY,
                 include_played_free_games: true,
                 include_appinfo: true,
-                format: 'json',
-                'appids_filter[0]': potionBreak.app_id,
+                format: "json",
+                "appids_filter[0]": potionBreak.app_id,
               },
             }
           ).then((response) => {
@@ -75,9 +75,9 @@ var potionBreakDailyCheck = new CronJob('0 0 * * *', function () {
                     WHERE potion_break_id = ?
                     `;
             var params = [
-              'Failure',
+              "Failure",
               userCurrentPlaytime,
-              'Unpaid',
+              "Unpaid",
               potionBreak.potion_break_id,
             ];
 
@@ -93,9 +93,9 @@ var potionBreakDailyCheck = new CronJob('0 0 * * *', function () {
                         WHERE potion_break_id = ?
                     `;
             params = [
-              'Success',
+              "Success",
               userCurrentPlaytime,
-              'N/A',
+              "N/A",
               potionBreak.potion_break_id,
             ];
             let dbUpdateUserPotionBreakSuccess = dao.run(sql, params);
@@ -116,7 +116,7 @@ var potionBreakDailyCheck = new CronJob('0 0 * * *', function () {
                     SET potion_break_active = ?
                     WHERE app_id = ? AND user_id = ?
                 `;
-          var params = ['false', potionBreak.app_id, potionBreak.user_id];
+          var params = ["false", potionBreak.app_id, potionBreak.user_id];
           let dbUpdateUserGamesOwned = dao.run(sql, params);
           return dbUpdateUserGamesOwned;
         })
@@ -133,7 +133,7 @@ var potionBreakDailyCheck = new CronJob('0 0 * * *', function () {
                 INNER JOIN users ON potion_breaks.user_id = users.user_id 
                 WHERE potion_breaks.end_date = ? AND status = ?
                 `;
-      var params = [dateToday, 'Success'];
+      var params = [dateToday, "Success"];
       let dbGetAllSuccessPotionBreaksFromToday = dao.all(sql, params);
       return dbGetAllSuccessPotionBreaksFromToday;
     })
@@ -158,13 +158,13 @@ var potionBreakDailyCheck = new CronJob('0 0 * * *', function () {
       );
     })
     .catch((err) => {
-      console.error('Error: ' + err);
+      console.error("Error: " + err);
     });
 });
 
 // 5 0 * * * - at 12:05 every night
 // */2 * * * * - even minutes for testing
-var stripePaymentDailyCheck = new CronJob('5 0 * * *', function () {
+var stripePaymentDailyCheck = new CronJob("5 0 * * *", function () {
   // get failed potion breaks that haven't been paid yet
   var sql = `
     SELECT 
@@ -175,7 +175,7 @@ var stripePaymentDailyCheck = new CronJob('5 0 * * *', function () {
     INNER JOIN users ON potion_breaks.user_id = users.user_id 
     WHERE potion_breaks.status = ? AND potion_breaks.payment_status = ?
     `;
-  var params = ['Failure', 'Unpaid'];
+  var params = ["Failure", "Unpaid"];
   let dbGetAllUnpaidPotionBreaks = dao
     .all(sql, params)
     .then((unpaidPotionBreaks) => {
@@ -198,8 +198,8 @@ var stripePaymentDailyCheck = new CronJob('5 0 * * *', function () {
         setupIntents.map((setupIntent, i) => {
           return stripe.paymentIntents.create({
             amount: unpaidPotionBreaks[i].total_value,
-            currency: 'cad',
-            payment_method_types: ['card'],
+            currency: "cad",
+            payment_method_types: ["card"],
             customer: unpaidPotionBreaks[i].stripe_customer_id,
             payment_method: setupIntent.payment_method,
             off_session: true,
@@ -236,19 +236,19 @@ var stripePaymentDailyCheck = new CronJob('5 0 * * *', function () {
                     SET payment_status = ? 
                     WHERE setup_intent_id = ?
                 `;
-          var params = ['Paid', setupIntent.id];
+          var params = ["Paid", setupIntent.id];
           let dbUpdatePotionBreakStatus = dao.run(sql, params);
           return dbUpdatePotionBreakStatus;
         })
       );
     })
     .catch((err) => {
-      console.error('Error: ' + err);
+      console.error("Error: " + err);
     });
 });
 
 // run everyday at 1:00am
-var steamDataUpdate = new CronJob('0 1 * * *', function () {
+var steamDataUpdate = new CronJob("0 1 * * *", function () {
   // cron job to update steam game screenshots, movies, etc.
   // get all games in db
   var sql = `
@@ -270,15 +270,15 @@ var steamDataUpdate = new CronJob('0 1 * * *', function () {
       return Promise.all(
         gamesData.map((game) => {
           return (myValues = limiter.schedule(() => {
-            return Axios.get('https://store.steampowered.com/api/appdetails', {
+            return Axios.get("https://store.steampowered.com/api/appdetails", {
               params: {
                 appids: game.app_id,
-                format: 'json',
+                format: "json",
               },
             })
               .then((response) => {
-                let timeNow = moment().format('DD MM YYYY hh:mm:ss.SSS');
-                console.log(game.name + ' - ' + game.app_id + ' - ' + timeNow);
+                let timeNow = moment().format("DD MM YYYY hh:mm:ss.SSS");
+                console.log(game.name + " - " + game.app_id + " - " + timeNow);
 
                 // fix for games that cannot be queried by the store.steampowered api (such as dead island - 91310)
                 if (response.data[game.app_id].data === undefined) {
@@ -289,14 +289,14 @@ var steamDataUpdate = new CronJob('0 1 * * *', function () {
                 }
               })
               .catch((err) => {
-                console.error('Error: ' + err);
+                console.error("Error: " + err);
               });
           }));
         })
       );
     })
     .then((steamGameData) => {
-      const dateToday = moment().format('YYYY-MM-DD');
+      const dateToday = moment().format("YYYY-MM-DD");
       return Promise.all(
         steamGameData.map((gameData, i) => {
           // https://stackoverflow.com/questions/33757931/is-there-something-like-the-swift-optional-chaining-in-javascript
@@ -376,14 +376,14 @@ var steamDataUpdate = new CronJob('0 1 * * *', function () {
       );
     })
     .catch((err) => {
-      console.error('Error: ' + err);
+      console.error("Error: " + err);
     });
 });
 
 // start cronjobs
-potionBreakDailyCheck.start();
-stripePaymentDailyCheck.start();
-steamDataUpdate.start();
+// potionBreakDailyCheck.start();
+// stripePaymentDailyCheck.start();
+// steamDataUpdate.start();
 
 // export routes up to routes.js
 module.exports = router;

@@ -1,16 +1,7 @@
 var express = require("express");
 var router = express.Router();
-var passport = require("passport");
-var config = require("../../config/config.js");
 var checkLogin = require("../../config/checkLoginMiddleware.js");
-const stripe = require("stripe")(process.env.STRIPE_SK_TEST);
-var Promise = require("bluebird");
-const { join, resolve, reject } = require("bluebird");
-
 const axios = require("axios").default;
-
-const Game = require("../../models/game");
-const Charity = require("../../models/charity");
 
 // middleware to check if logged in
 router.get("/", async (req, res) => {
@@ -70,11 +61,6 @@ router.get("/", async (req, res) => {
     const divinity = await getDivinityData();
     const halflife = await getHalflifeData();
     const charities = await getCharitiesData();
-
-    //charities = charities.slice(0, 3);
-
-    console.log(dota);
-    console.log(charities);
 
     res.render("home", {
       dotaData: dota,

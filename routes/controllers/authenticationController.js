@@ -1,6 +1,6 @@
-var express = require('express')
-var router = express.Router()
-var passport = require('passport')
+var express = require("express");
+var router = express.Router();
+var passport = require("passport");
 
 // GET /auth/steam
 //   Use passport.authenticate() as route middleware to authenticate the
@@ -8,14 +8,14 @@ var passport = require('passport')
 //   the user to steamcommunity.com.  After authenticating, Steam will redirect the
 //   user back to this application at /auth/steam/return
 router.get(
-    '/steam',
-    passport.authenticate('steam', {
-        failureRedirect: '/',
-    }),
-    function (req, res) {
-        res.redirect('/')
-    }
-)
+  "/steam",
+  passport.authenticate("steam", {
+    failureRedirect: "/",
+  }),
+  function (req, res) {
+    res.redirect("/");
+  }
+);
 
 // GET /auth/steam/return
 //   Use passport.authenticate() as route middleware to authenticate the
@@ -23,25 +23,24 @@ router.get(
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
 router.get(
-    '/steam/return',
-    // Issue #37 - Workaround for Express router module stripping the full url, causing assertion to fail
-    function (req, res, next) {
-        req.url = req.originalUrl
-        console.log('testing?')
-        next()
-    },
-    passport.authenticate('steam', {
-        failureRedirect: '/',
-    }),
-    function (req, res) {
-        console.log('testing2?')
-        res.redirect('/game-library')
-    }
-)
+  "/steam/return",
+  // Issue #37 - Workaround for Express router module stripping the full url, causing assertion to fail
+  function (req, res, next) {
+    req.url = req.originalUrl;
+    next();
+  },
+  passport.authenticate("steam", {
+    failureRedirect: "/",
+  }),
+  function (req, res) {
+    console.log("success");
+    res.redirect("/game-library");
+  }
+);
 
-router.get('/logout', function (req, res) {
-    req.logout()
-    res.redirect('/')
-})
+router.get("/logout", function (req, res) {
+  req.logout();
+  res.redirect("/");
+});
 
-module.exports = router
+module.exports = router;

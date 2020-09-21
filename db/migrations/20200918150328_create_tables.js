@@ -1,10 +1,10 @@
 exports.up = async (knex) => {
   try {
     await knex.schema.createTable("users", (t) => {
-      t.integer("id").unsigned().primary();
+      t.increments("id");
       t.text("steam_persona_name");
       t.text("steam_profile");
-      t.integer("steam_id").unsigned();
+      t.text("steam_id").unique();
       t.text("steam_avatar");
       t.integer("total_steam_games_owned");
       t.text("name");
