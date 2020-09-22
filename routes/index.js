@@ -16,6 +16,7 @@ router.use("/", require("./controllers/userController.js"));
 router.use("/db/games", require("./db/games.js"));
 router.use("/db/charities", require("./db/charities.js"));
 router.use("/db/users", require("./db/users.js"));
+router.use("/db/user-games", require("./db/userGames.js"));
 
 // export these routes up to server.js
 module.exports = router;

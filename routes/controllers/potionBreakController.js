@@ -1,17 +1,13 @@
-var checkLogin = require('../../config/checkLoginMiddleware');
-var express = require('express');
+var checkLogin = require("../../config/checkLoginMiddleware");
+var express = require("express");
 var router = express.Router();
-var config = require('../../config/config.js');
-var moment = require('moment');
-var fs = require('fs');
-var Promise = require('bluebird');
-const AppDAO = require('../../db.bak/dao.js');
-const { join, resolve, reject } = require('bluebird');
-const dao = new AppDAO('./database.db');
+var config = require("../../config/config.js");
+var moment = require("moment");
+var fs = require("fs");
 
 // TODO: ADD MANDATE PAGE - https://stripe.com/docs/payments/setup-intents#mandates (more information)
 
-router.get('/potion-break/create/:appid', checkLogin, function (req, res) {
+router.get("/potion-break/create/:appid", checkLogin, function (req, res) {
   const appId = req.params.appid;
 
   var sql = `
@@ -28,21 +24,21 @@ router.get('/potion-break/create/:appid', checkLogin, function (req, res) {
   let dbGetAllCharities = dao.all(sql, params);
 
   join(dbGetGame, dbGetAllCharities, function (gameData, charitiesData) {
-    var files = fs.readdirSync('public/images/hero/create-potion-break');
+    var files = fs.readdirSync("public/images/hero/create-potion-break");
     let randomImage = files[Math.floor(Math.random() * files.length)];
 
-    res.render('create-potion-break', {
+    res.render("create-potion-break", {
       user: req.user,
       game: gameData,
       charities: charitiesData,
       image: randomImage,
     });
   }).catch((err) => {
-    console.error('Error: ' + err);
+    console.error("Error: " + err);
   });
 });
 
-router.get('/potion-breaks/view/all', checkLogin, function (req, res) {
+router.get("/potion-breaks/view/all", checkLogin, function (req, res) {
   var sql = `
     SELECT 
     potion_breaks.potion_break_id, 
@@ -74,8 +70,8 @@ router.get('/potion-breaks/view/all', checkLogin, function (req, res) {
         var start = moment(value.start_date);
         var end = moment(value.end_date);
         var today = moment();
-        var daysLeft = end.diff(today, 'days');
-        var totalDays = end.diff(start, 'days');
+        var daysLeft = end.diff(today, "days");
+        var totalDays = end.diff(start, "days");
         var progress_percentage = (
           ((totalDays - daysLeft) / totalDays) *
           100
@@ -88,36 +84,36 @@ router.get('/potion-breaks/view/all', checkLogin, function (req, res) {
         ) {
           progress_percentage = 100;
         }
-        if (today.diff(start, 'days') == 0) {
+        if (today.diff(start, "days") == 0) {
           progress_percentage = 0;
         }
         // set progress bar colour
-        if (value.status == 'Ongoing') {
-          value.progress_colour = 'is-link';
-        } else if (value.status == 'Failure') {
-          value.progress_colour = 'is-danger';
-        } else if (value.status == 'Success') {
-          value.progress_colour = 'is-success';
+        if (value.status == "Ongoing") {
+          value.progress_colour = "is-link";
+        } else if (value.status == "Failure") {
+          value.progress_colour = "is-danger";
+        } else if (value.status == "Success") {
+          value.progress_colour = "is-success";
         }
-        value.days_left = end.diff(today, 'days');
-        value.total_days = end.diff(start, 'days');
+        value.days_left = end.diff(today, "days");
+        value.total_days = end.diff(start, "days");
         value.progress_percentage = progress_percentage;
       });
 
-      var files = fs.readdirSync('public/images/hero/view-all-potion-breaks');
+      var files = fs.readdirSync("public/images/hero/view-all-potion-breaks");
       let randomImage = files[Math.floor(Math.random() * files.length)];
 
-      res.render('view-all-potion-breaks', {
+      res.render("view-all-potion-breaks", {
         potionBreakData: potionBreakData,
         image: randomImage,
       });
     })
     .catch((err) => {
-      console.error('Error: ' + err);
+      console.error("Error: " + err);
     });
 });
 
-router.post('/potion-break-creation-success', async function (req, res) {
+router.post("/potion-break-creation-success", async function (req, res) {
   var potionBreakData = req.body;
   console.log(potionBreakData);
 
@@ -130,7 +126,7 @@ router.post('/potion-break-creation-success', async function (req, res) {
   // conversion from UNIX timestamp to YYYY-MM-DD
   const formattedStartDate = moment
     .unix(potionBreakData.dateCreated)
-    .format('YYYY-MM-DD');
+    .format("YYYY-MM-DD");
   potionBreakData.formattedDate = formattedStartDate;
 
   var sql = `
@@ -163,7 +159,7 @@ router.post('/potion-break-creation-success', async function (req, res) {
     potionBreakData.paymentAmount,
     potionBreakData.charityName,
     potionBreakData.setupIntentId,
-    'Ongoing',
+    "Ongoing",
     potionBreakData.appId,
     req.user.user_id,
     potionBreakData.dateCreated,
@@ -177,24 +173,24 @@ router.post('/potion-break-creation-success', async function (req, res) {
         SET potion_break_active = ?
         WHERE app_id = ? AND user_id = ?
     `;
-  var params = ['true', potionBreakData.appId, req.user.user_id];
+  var params = ["true", potionBreakData.appId, req.user.user_id];
   let dbUpdateUserGamesOwned = dao.run(sql, params);
 
   join(dbInsertPotionBreak, dbUpdateUserGamesOwned, function () {
     // redirect user to summary page
     return res.redirect(
-      'potion-break/create/' + potionBreakData.appId + '/success'
+      "potion-break/create/" + potionBreakData.appId + "/success"
     );
   }).catch((err) => {
-    console.error('Error: ' + err);
+    console.error("Error: " + err);
   });
 });
 
-router.get('/potion-break/create/:appid/success', checkLogin, function (
+router.get("/potion-break/create/:appid/success", checkLogin, function (
   req,
   res
 ) {
-  console.log('starting potion-break/create/:appid/success');
+  console.log("starting potion-break/create/:appid/success");
   const appId = req.params.appid;
 
   var sql = `
@@ -207,7 +203,7 @@ router.get('/potion-break/create/:appid/success', checkLogin, function (
     .get(sql, params)
     .then((potionBreakData) => {
       console.log(potionBreakData);
-      const potionBreakId = potionBreakData['MAX (potion_break_id)'];
+      const potionBreakId = potionBreakData["MAX (potion_break_id)"];
       console.log(potionBreakId);
       var sql = `
             SELECT 
@@ -238,14 +234,14 @@ router.get('/potion-break/create/:appid/success', checkLogin, function (
       // convert unix time to this format - Thursday, July 23rd 2020
       potionBreakData.formatted_start_date = moment(
         potionBreakData.start_date
-      ).format('dddd, MMMM Do YYYY');
+      ).format("dddd, MMMM Do YYYY");
       potionBreakData.formatted_end_date = moment(
         potionBreakData.end_date
-      ).format('dddd, MMMM Do YYYY');
+      ).format("dddd, MMMM Do YYYY");
       // calculate duration of potion break
       var start = moment(potionBreakData.start_date);
       var end = moment(potionBreakData.end_date);
-      potionBreakData.total_days = end.diff(start, 'days');
+      potionBreakData.total_days = end.diff(start, "days");
       // convert total time played from minutes to hours:minutes
       potionBreakData.playtime_start_hours = Math.floor(
         potionBreakData.playtime_start / 60
@@ -255,17 +251,17 @@ router.get('/potion-break/create/:appid/success', checkLogin, function (
 
       console.log(potionBreakData);
 
-      var files = fs.readdirSync('public/images/hero/potion-break-success');
+      var files = fs.readdirSync("public/images/hero/potion-break-success");
       let randomImage = files[Math.floor(Math.random() * files.length)];
 
-      res.render('potion-break-create-success', {
+      res.render("potion-break-create-success", {
         user: req.user,
         potionBreakData: potionBreakData,
         image: randomImage,
       });
     })
     .catch((err) => {
-      console.error('Error: ' + err);
+      console.error("Error: " + err);
     });
 });
 

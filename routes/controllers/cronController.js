@@ -5,12 +5,8 @@ var router = express.Router();
 const Axios = require("axios");
 const stripe = require("stripe")(process.env.STRIPE_SK_TEST);
 var CronJob = require("cron").CronJob;
-var Promise = require("bluebird");
-const AppDAO = require("../../db.bak/dao.js");
-const { join, resolve, reject } = require("bluebird");
-const dao = new AppDAO("./database.db");
+
 var Bottleneck = require("bottleneck/es5");
-const Bluebird = require("bluebird");
 
 //  0 0 * * * - at midnight every night
 // 1-59/2 * * * * - odd minute for testing

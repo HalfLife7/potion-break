@@ -7,6 +7,7 @@ exports.up = async (knex) => {
       t.text("steam_id").unique();
       t.text("steam_avatar");
       t.integer("total_steam_games_owned");
+      t.integer("total_steam_games_played");
       t.text("name");
       t.text("email");
       t.text("stripe_customer_id");

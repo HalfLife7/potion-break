@@ -1,25 +1,21 @@
-var checkLogin = require('../../config/checkLoginMiddleware');
-var express = require('express');
+var checkLogin = require("../../config/checkLoginMiddleware");
+var express = require("express");
 var router = express.Router();
-var config = require('../../config/config.js');
-var Promise = require('bluebird');
-const AppDAO = require('../../db.bak/dao.js');
-const { join, resolve, reject } = require('bluebird');
-const dao = new AppDAO('./database.db');
+var config = require("../../config/config.js");
 
-const { default: Axios } = require('axios');
-const { response } = require('express');
+const { default: Axios } = require("axios");
+const { response } = require("express");
 
 // stripe setup
-var stripe = require('stripe')(config.STRIPE_SK_TEST);
+var stripe = require("stripe")(config.STRIPE_SK_TEST);
 
-router.get('/public-key', function (req, res) {
+router.get("/public-key", function (req, res) {
   res.send({
     publicKey: config.STRIPE_PK_TEST,
   });
 });
 
-router.post('/create-stripe-customer', function async(req, res) {
+router.post("/create-stripe-customer", function async(req, res) {
   // Create or use an existing Customer to associate with the SetupIntent.
   // The PaymentMethod will be stored to this Customer for later use.
   var sql = `
@@ -49,15 +45,15 @@ router.post('/create-stripe-customer', function async(req, res) {
           });
       } else {
         // do nothing if user already is a customer in stripe
-        resolve('stripeUserAlreadyExists');
+        resolve("stripeUserAlreadyExists");
       }
     })
     .catch((err) => {
-      console.error('Error: ' + err);
+      console.error("Error: " + err);
     });
 });
 
-router.post('/create-setup-intent', function async(req, res) {
+router.post("/create-setup-intent", function async(req, res) {
   // use an existing Customer to associate with the SetupIntent.
   // The PaymentMethod will be stored to this Customer for later use.
 
@@ -70,31 +66,31 @@ router.post('/create-setup-intent', function async(req, res) {
   let dbGetUserStripeId = dao
     .get(sql, params)
     .then((userData) => {
-      console.log('dbGetUserStripeId');
+      console.log("dbGetUserStripeId");
       console.log(userData);
       return stripe.customers.retrieve(userData.stripe_customer_id);
     })
     .then((customer) => {
-      console.log('stripe.customers.retrieve');
+      console.log("stripe.customers.retrieve");
       console.log(customer);
       return stripe.setupIntents.create({
         customer: customer.id,
       });
     })
     .then((setupIntent) => {
-      console.log('stripe.setupIntents.create');
+      console.log("stripe.setupIntents.create");
       console.log(setupIntent);
       res.send({
         setupIntent: setupIntent,
       });
     })
     .catch((err) => {
-      console.error('Error: ' + err);
+      console.error("Error: " + err);
     });
 });
 
 // Webhook handler for asynchronous events.
-router.post('/webhook', async function (req, res) {
+router.post("/webhook", async function (req, res) {
   let data;
   let eventType;
 
@@ -102,7 +98,7 @@ router.post('/webhook', async function (req, res) {
   if (process.env.STRIPE_WEBHOOK_SECRET) {
     // Retrieve the event by verifying the signature using the raw body and secret.
     let event;
-    let signature = req.headers['stripe-signature'];
+    let signature = req.headers["stripe-signature"];
 
     try {
       event = await stripe.webhooks.constructEvent(
@@ -124,21 +120,21 @@ router.post('/webhook', async function (req, res) {
     eventType = req.body.type;
   }
 
-  if (eventType === 'setup_intent.created') {
+  if (eventType === "setup_intent.created") {
     console.log(`🔔  A new SetupIntent is created. ${data.object.id}`);
   }
 
-  if (eventType === 'setup_intent.setup_failed') {
+  if (eventType === "setup_intent.setup_failed") {
     console.log(`🔔  A SetupIntent has failed to set up a PaymentMethod.`);
   }
 
-  if (eventType === 'setup_intent.succeeded') {
+  if (eventType === "setup_intent.succeeded") {
     console.log(
       `🔔  A SetupIntent has successfully set up a PaymentMethod for future use.`
     );
   }
 
-  if (eventType === 'payment_method.attached') {
+  if (eventType === "payment_method.attached") {
     console.log(
       `🔔  A PaymentMethod ${data.object.id} has successfully been saved to a Customer ${data.object.customer}.`
     );

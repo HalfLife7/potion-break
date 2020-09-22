@@ -3,6 +3,9 @@ var router = express.Router();
 var checkLogin = require("../../config/checkLoginMiddleware.js");
 const axios = require("axios").default;
 
+const Game = require("../../models/game");
+const Charity = require("../../models/charity");
+
 // middleware to check if logged in
 router.get("/", async (req, res) => {
   if (req.user) {
@@ -10,11 +13,14 @@ router.get("/", async (req, res) => {
   } else {
     const getDotaData = async () => {
       try {
-        const response = await axios({
-          method: "get",
-          url: "http://localhost:5000/db/games/570",
-        });
-        return response.data;
+        const response = await Game.query()
+          .findById(570)
+          .withGraphFetched("screenshots")
+          .withGraphFetched("movies")
+          .then((game) => {
+            return game;
+          });
+        return response;
       } catch (err) {
         console.error(err.message);
       }
@@ -22,11 +28,14 @@ router.get("/", async (req, res) => {
 
     const getDivinityData = async () => {
       try {
-        const response = await axios({
-          method: "get",
-          url: "http://localhost:5000/db/games/435150",
-        });
-        return response.data;
+        const response = await Game.query()
+          .findById(435150)
+          .withGraphFetched("screenshots")
+          .withGraphFetched("movies")
+          .then((game) => {
+            return game;
+          });
+        return response;
       } catch (err) {
         console.error(err.message);
       }
@@ -34,11 +43,14 @@ router.get("/", async (req, res) => {
 
     const getHalflifeData = async () => {
       try {
-        const response = await axios({
-          method: "get",
-          url: "http://localhost:5000/db/games/546560",
-        });
-        return response.data;
+        const response = await Game.query()
+          .findById(546560)
+          .withGraphFetched("screenshots")
+          .withGraphFetched("movies")
+          .then((game) => {
+            return game;
+          });
+        return response;
       } catch (err) {
         console.error(err.message);
       }
@@ -46,12 +58,12 @@ router.get("/", async (req, res) => {
 
     const getCharitiesData = async () => {
       try {
-        const response = await axios({
-          method: "get",
-          url:
-            "http://localhost:5000/db/charities/get-multiple-charities?id1=1&id2=2&id3=5",
-        });
-        return response.data;
+        const response = Charity.query()
+          .findByIds([1, 2, 5])
+          .then((charities) => {
+            return charities;
+          });
+        return response;
       } catch (err) {
         console.error(err.message);
       }

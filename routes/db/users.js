@@ -37,7 +37,7 @@ router.post("/new", (req, res, next) => {
     });
 });
 
-router.put("/update", (req, res, next) => {
+router.put("/update/passport", (req, res, next) => {
   const userDetails = req.body;
 
   User.query()
@@ -48,7 +48,26 @@ router.put("/update", (req, res, next) => {
       steam_avatar: userDetails.steam_avatar,
     })
     .then((user) => {
-      console.log("complete updateUser");
+      console.log("complete update/passport");
+      console.log(user);
+      res.send("Successfully updated User ID: " + user);
+    })
+    .catch((err) => {
+      console.error(err.message);
+    });
+});
+
+router.put("/update/total-games", (req, res, next) => {
+  const userDetails = req.body;
+
+  User.query()
+    .findOne("id", "=", userDetails.user_id)
+    .patch({
+      total_steam_games_owned: userInfo.total_steam_games_owned,
+      total_steam_games_played: userInfo.total_steam_games_played,
+    })
+    .then((user) => {
+      console.log("complete update/total-games");
       console.log(user);
       res.send("Successfully updated User ID: " + user);
     })

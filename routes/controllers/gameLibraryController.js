@@ -5,10 +5,6 @@ var config = require("../../config/config.js");
 const Axios = require("axios");
 const response = require("express");
 var fs = require("fs");
-var Promise = require("bluebird");
-const AppDAO = require("../../db.bak/dao.js");
-const { join, resolve, reject } = require("bluebird");
-const dao = new AppDAO("./database.db");
 
 // convert playtime from minutes to hours:minutes
 function convertMinutesToHHMM(item, index) {
@@ -81,40 +77,39 @@ router.get("/game-library", checkLogin, function (req, res) {
       },
     })
       .then((response) => {
-        let getOwnedGamesData = response.data.response;
-        console.log(getOwnedGamesData);
+        let ownedGames = response.data.response;
 
-        // change appid to app_id
-        getOwnedGamesData.games.forEach(function (gameData, index, array) {
-          gameData.app_id = gameData.appid;
-          delete gameData.appid;
-        });
+        // // change appid to app_id
+        // ownedGames.games.forEach(function (gameData, index, array) {
+        //   gameData.app_id = gameData.appid;
+        //   delete gameData.appid;
+        // });
 
         // descending order in playtime
-        getOwnedGamesData.games.sort(function (a, b) {
+        ownedGames.games.sort(function (a, b) {
           return (
             parseFloat(b.playtime_forever) - parseFloat(a.playtime_forever)
           );
         });
 
         // remove games with no playtime
-        let filteredGamesData = getOwnedGamesData.games.filter(function (game) {
+        let playedGames = ownedGames.games.filter(function (game) {
           return game.playtime_forever > 0;
         });
 
-        filteredGamesData.forEach(convertMinutesToHHMM);
+        playedGames.forEach(convertMinutesToHHMM);
 
         // get some additional player stats
         // get total games owned
-        userInfo.total_games_owned = getOwnedGamesData.game_count;
+        userInfo.total_games_owned = response.data.response.game_count;
 
         // get total games played
-        userInfo.total_games_played = Object.keys(filteredGamesData).length;
+        userInfo.total_games_played = Object.keys(playedGames).length;
 
         let total_minutes_played = 0;
 
         // get total minutes played
-        filteredGamesData.forEach(function (item, index) {
+        playedGames.forEach(function (item, index) {
           total_minutes_played += item.playtime_forever;
         });
         userInfo.total_minutes_played = total_minutes_played;
@@ -124,60 +119,144 @@ router.get("/game-library", checkLogin, function (req, res) {
           (total_minutes_played - Math.floor(total_minutes_played / 60) * 60) +
           " minutes";
 
-        var sql = `
-        UPDATE users 
-        SET total_steam_games_owned = ? 
-        WHERE user_id = ?
-        `;
+        function updateUser() {
+          return Axios({
+            method: "PUT",
+            url: `http://localhost:5000/db/users/update/total-games`,
+            data: {
+              total_steam_games_owned: userInfo.total_games_owned,
+              total_steam_games_played: userInfo.total_games_played,
+              user_id: userInfo.user_id,
+            },
+          });
+        }
 
-        var params = [userInfo.total_games_owned, userInfo.user_id];
-        let dbUpdateUserTotalGamesPlayed = dao.run(sql, params);
+        function getGame(id) {
+          return Axios({
+            method: "GET",
+            url: `http://localhost:5000/db/games/${id}`,
+          });
+        }
 
-        let dbUpsertGames = Promise.all(
-          filteredGamesData.map((game) => {
-            //// let = { app_id, name, img_icon_url, img_logo_url } = game;
+        function insertGame(game) {
+          return Axios({
+            method: "POST",
+            url: `http://localhost:5000/db/games`,
+            data: {
+              app_id: game.appid,
+              name: game.name,
+              img_icon_url: game.img_icon_url,
+              img_logo_url: game.img_logo_url,
+            },
+          });
+        }
 
-            var sql = `
-            INSERT INTO games (
-              app_id, 
-              name, 
-              img_icon_url, 
-              img_logo_url) 
-              VALUES(?, ?, ?, ?) 
-              ON CONFLICT(app_id) DO UPDATE SET 
-              name = excluded.name, 
-              img_icon_url = excluded.img_icon_url, 
-              img_logo_url = excluded.img_logo_url
-            `;
+        function updateGame(game) {
+          return Axios({
+            method: "PUT",
+            url: `http://localhost:5000/db/games/${game.id}`,
+            data: {
+              name: game.name,
+              img_icon_url: game.img_icon_url,
+              img_logo_url: game.img_logo_url,
+            },
+          });
+        }
 
-            return dao.run(sql, [
-              game.app_id,
-              game.name,
-              game.img_icon_url,
-              game.img_logo_url,
-            ]);
-          })
-        );
+        function getUserGame(userId, gameId) {
+          return Axios({
+            method: "GET",
+            url: `http://localhost:5000/db/user-games/?userId=${userId}&gameId=${gameId}`,
+          });
+        }
 
-        let dbUpsertUserGames = Promise.all(filteredGamesData).map((game) => {
-          // let = { app_id, playtime_forever } = game;
+        function insertUserGame() {
+          return Axios({
+            method: "POST",
+            url: `http://localhost:5000/db/user-games/insert`,
+            data: {
+              user_id: req.user.user_id,
+              game_id: game.appid,
+              playtime_forever: game.playtime_forever,
+            },
+          });
+        }
 
-          var sql = `
-          INSERT INTO user_games_owned (
-            app_id, 
-            user_id, 
-            playtime_forever) 
-            VALUES(?, ?, ?) 
-            ON CONFLICT(app_id, user_id) DO UPDATE SET 
-            playtime_forever = excluded.playtime_forever
-          `;
+        function updateUserGame() {
+          return Axios({
+            method: "PUT",
+            url: `http://localhost:5000/db/user-games/update?userId=${userId}&gameId=${gameId}`,
+            data: {
+              playtime_forever: game.playtime_forever,
+            },
+          });
+        }
 
-          return dao.run(sql, [
-            game.app_id,
-            req.user.user_id,
-            game.playtime_forever,
-          ]);
-        });
+        // update user's total games owned/played
+
+        // check if the games in playedGames exist in the games table
+        // if they don't add them
+        // if they do, update them
+
+        // check if the games in playedGames exist in the user_games_owned table
+        // if they don't add them
+        // if they do, update them
+
+        //OLD SQLITE
+        // var sql = `
+        // UPDATE users
+        // SET total_steam_games_owned = ?
+        // WHERE user_id = ?
+        // `;
+
+        // var params = [userInfo.total_games_owned, userInfo.user_id];
+        // let dbUpdateUserTotalGamesPlayed = dao.run(sql, params);
+
+        // let dbUpsertGames = Promise.all(
+        //   playedGames.map((game) => {
+        //     //// let = { app_id, name, img_icon_url, img_logo_url } = game;
+
+        //     var sql = `
+        //     INSERT INTO games (
+        //       app_id,
+        //       name,
+        //       img_icon_url,
+        //       img_logo_url)
+        //       VALUES(?, ?, ?, ?)
+        //       ON CONFLICT(app_id) DO UPDATE SET
+        //       name = excluded.name,
+        //       img_icon_url = excluded.img_icon_url,
+        //       img_logo_url = excluded.img_logo_url
+        //     `;
+
+        //     return dao.run(sql, [
+        //       game.app_id,
+        //       game.name,
+        //       game.img_icon_url,
+        //       game.img_logo_url,
+        //     ]);
+        //   })
+        // );
+
+        // let dbUpsertUserGames = Promise.all(playedGames).map((game) => {
+        //   // let = { app_id, playtime_forever } = game;
+
+        //   var sql = `
+        //   INSERT INTO user_games_owned (
+        //     app_id,
+        //     user_id,
+        //     playtime_forever)
+        //     VALUES(?, ?, ?)
+        //     ON CONFLICT(app_id, user_id) DO UPDATE SET
+        //     playtime_forever = excluded.playtime_forever
+        //   `;
+
+        //   return dao.run(sql, [
+        //     game.app_id,
+        //     req.user.user_id,
+        //     game.playtime_forever,
+        //   ]);
+        // });
 
         // update db from steam api query
         return join(

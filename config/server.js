@@ -1,4 +1,3 @@
-const os = require("os");
 var express = require("express");
 var session = require("express-session");
 var bodyParser = require("body-parser");
@@ -7,12 +6,10 @@ const mustacheExpress = require("mustache-express");
 var config = require("./config.js");
 var passport = require("passport");
 var SteamStrategy = require("../lib/passport-steam/index.js").Strategy;
-var Promise = require("bluebird");
-const { join, resolve, reject } = require("bluebird");
-require("dotenv").config();
 
-const axios = require("axios").default;
 const User = require("../models/user");
+
+require("dotenv").config();
 
 // TODO: update stripe API to use the newset version (currently using 2019-11-05, newest is 2020-03-02)
 // TODO: create automated test cases
@@ -53,6 +50,7 @@ passport.use(
           steamid: profile._json.steamid,
           avatarfull: profile._json.avatarfull,
         };
+        console.log(userInfo);
 
         // To keep the example simple, the user's Steam profile is returned to
         // represent the logged-in user.
@@ -60,42 +58,53 @@ passport.use(
         // Associate the Steam account with a user record in your database,
         // and return that user instead in case they have other connections.
         function getUser() {
-          return axios({
-            method: "GET",
-            url: `http://localhost:5000/db/users/steam/${userInfo.steamid}`,
-          });
+          return User.query()
+            .findOne("steam_id", "=", userInfo.steamid)
+            .then((user) => {
+              console.log(user);
+              return user;
+            })
+            .catch((err) => {
+              console.error(err.message);
+            });
         }
 
         function insertUser() {
-          return axios({
-            method: "POST",
-            url: `http://localhost:5000/db/users/new`,
-            data: {
+          return User.query()
+            .insert({
               steam_persona_name: userInfo.personaname,
               steam_profile: userInfo.profileurl,
               steam_id: userInfo.steamid,
               steam_avatar: userInfo.avatarfull,
-            },
-          });
+            })
+            .then((user) => {
+              return user;
+            })
+            .catch((err) => {
+              console.error(err.message);
+            });
         }
 
         function updateUser() {
-          return axios({
-            method: "PUT",
-            url: `http://localhost:5000/db/users/update`,
-            data: {
+          return User.query()
+            .findOne("steam_id", "=", userInfo.steamid)
+            .patch({
               steam_persona_name: userInfo.personaname,
               steam_profile: userInfo.profileurl,
-              steam_id: userInfo.steamid,
               steam_avatar: userInfo.avatarfull,
-            },
-          });
+            })
+            .then((user) => {
+              return "Successfully updated User ID: " + user;
+            })
+            .catch((err) => {
+              console.error(err.message);
+            });
         }
 
         // check if user exists
         getUser()
           .then((user) => {
-            if (user.data === undefined) {
+            if (user === undefined) {
               // if user does not exist, insert new
               return insertUser();
             } else {
@@ -105,10 +114,11 @@ passport.use(
           })
           .then((response) => {
             // get user data at the end
+            console.log(response);
             return getUser();
           })
           .then((results) => {
-            resolve(done(null, results.data));
+            return done(null, results);
           });
       });
     }
