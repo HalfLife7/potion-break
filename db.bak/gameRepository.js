@@ -1,14 +1,15 @@
 class GameRepository {
-    constructor(dao) {
-        this.dao = dao;
-    }
+  constructor(dao) {
+    this.dao = dao;
+  }
 
-    createTable() {
-        const sql = `
+  createTable() {
+    const sql = `
         CREATE TABLE 
         IF NOT EXISTS games (
             app_id INTEGER PRIMARY KEY, 
-            name TEXT, img_icon_url TEXT, 
+            name TEXT, 
+            img_icon_url TEXT, 
             img_logo_url TEXT, 
             header_image_url TEXT, 
             screenshot_1_url TEXT, 
@@ -19,9 +20,9 @@ class GameRepository {
             movie_1_webm_url TEXT, 
             movie_1_mp4_url TEXT, 
             last_updated TEXT)
-        `
-        return this.dao.run(sql);
-    }
+        `;
+    return this.dao.run(sql);
+  }
 }
 
 module.exports = GameRepository;

@@ -50,7 +50,6 @@ passport.use(
           steamid: profile._json.steamid,
           avatarfull: profile._json.avatarfull,
         };
-        console.log(userInfo);
 
         // To keep the example simple, the user's Steam profile is returned to
         // represent the logged-in user.
@@ -61,7 +60,6 @@ passport.use(
           return User.query()
             .findOne("steam_id", "=", userInfo.steamid)
             .then((user) => {
-              console.log(user);
               return user;
             })
             .catch((err) => {
@@ -114,7 +112,6 @@ passport.use(
           })
           .then((response) => {
             // get user data at the end
-            console.log(response);
             return getUser();
           })
           .then((results) => {

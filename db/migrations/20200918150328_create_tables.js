@@ -16,6 +16,7 @@ exports.up = async (knex) => {
       t.integer("id").unsigned().primary();
       t.text("name");
       t.text("img_icon");
+      t.text("img_logo");
       t.text("header_image");
       t.text("last_updated");
     });
