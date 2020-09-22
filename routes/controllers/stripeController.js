@@ -6,6 +6,8 @@ var config = require("../../config/config.js");
 const { default: Axios } = require("axios");
 const { response } = require("express");
 
+const User = require("../../models/user");
+
 // stripe setup
 var stripe = require("stripe")(config.STRIPE_SK_TEST);
 
@@ -18,38 +20,39 @@ router.get("/public-key", function (req, res) {
 router.post("/create-stripe-customer", function async(req, res) {
   // Create or use an existing Customer to associate with the SetupIntent.
   // The PaymentMethod will be stored to this Customer for later use.
-  var sql = `
-    SELECT stripe_customer_id 
-    FROM users 
-    WHERE user_id = ( ? )
-    `;
-  var params = [req.user.user_id];
-  let dbGetUserStripeId = dao
-    .get(sql, params)
-    .then((userData) => {
+
+  function getUser(userId) {
+    return User.query()
+      .findById(userId)
+      .select("stripe_customer_id")
+      .then((user) => {
+        return user;
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  }
+
+  getUser(req.user.id)
+    .then((user) => {
       // if nothing is returned, create a new customer and tie it to the user
-      if (userData.stripe_customer_id === null) {
+      if (user.stripe_customer_id === null) {
         // create customer
         return stripe.customers
           .create({
             description: req.user.steam_id,
           })
           .then((customer) => {
-            var sql = `
-                    UPDATE users 
-                    SET stripe_customer_id = ( ? ) 
-                    WHERE user_id = ( ? )
-                    `;
-            var params = [customer.id, req.user.user_id];
-            let dbUpdateUserStripeId = dao.run(sql, params);
+            return User.query().findById(req.user.id).patch({
+              stripe_customer_id: customer.id,
+            });
           });
       } else {
-        // do nothing if user already is a customer in stripe
         resolve("stripeUserAlreadyExists");
       }
     })
     .catch((err) => {
-      console.error("Error: " + err);
+      console.error(err.message);
     });
 });
 
