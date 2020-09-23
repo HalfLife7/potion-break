@@ -104,10 +104,10 @@ router.get("/game-library", checkLogin, function (req, res) {
 
         // get some additional player stats
         // get total games owned
-        userInfo.total_games_owned = response.data.response.game_count;
+        userInfo.total_steam_games_owned = response.data.response.game_count;
 
         // get total games played
-        userInfo.total_games_played = Object.keys(playedGames).length;
+        userInfo.total_steam_games_played = Object.keys(playedGames).length;
 
         let totalMinutesPlayed = 0;
 

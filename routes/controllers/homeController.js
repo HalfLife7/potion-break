@@ -27,7 +27,7 @@ router.get("/", async (req, res) => {
         .withGraphFetched("screenshots")
         .withGraphFetched("movies");
 
-      const charities = Charity.query().findByIds([1, 2, 5]);
+      const charities = await Charity.query().findByIds([1, 2, 5]);
 
       res.render("home", {
         dotaData: dota,

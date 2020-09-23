@@ -4,7 +4,7 @@ let style;
 let stripe;
 let setupIntents;
 
-let orderComplete = function (stripe, clientSecret) {
+const orderComplete = function (stripe, clientSecret) {
   stripe.retrieveSetupIntent(clientSecret).then(function (result) {
     const { setupIntent } = result;
 

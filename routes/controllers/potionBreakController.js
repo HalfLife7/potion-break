@@ -20,7 +20,6 @@ router.get("/potion-break/create/:appid", checkLogin, async (req, res) => {
 
   const files = fs.readdirSync("public/images/hero/create-potion-break");
   const randomImage = files[Math.floor(Math.random() * files.length)];
-  console.log(game);
 
   res.render("create-potion-break", {
     user: req.user,

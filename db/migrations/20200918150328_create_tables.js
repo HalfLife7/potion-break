@@ -31,7 +31,7 @@ exports.up = async (knex) => {
         .references("id")
         .inTable("games")
         .notNull();
-      t.text("playtime_forever");
+      t.integer("playtime_forever");
       t.text("potion_break_active");
       t.primary(["user_id", "game_id"]);
     });
@@ -89,7 +89,7 @@ exports.up = async (knex) => {
         .references("id")
         .inTable("charities")
         .notNull();
-      t.integer("total_value");
+      t.decimal("total_value");
       t.text("setup_intent_id");
       t.text("status");
       t.integer("playtime_start");
