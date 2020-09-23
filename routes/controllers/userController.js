@@ -1,8 +1,9 @@
+const express = require("express");
 var checkLogin = require("../../config/checkLoginMiddleware");
-var express = require("express");
-var router = express.Router();
+
+const router = express.Router();
 var checkLogin = require("../../config/checkLoginMiddleware.js");
-var fs = require("fs");
+const fs = require("fs");
 
 // middleware to check if logged in
 router.get("/user-profile", checkLogin, function (req, res) {
@@ -20,7 +21,7 @@ router.get("/user-profile", checkLogin, function (req, res) {
     WHERE user_id = ?
     `;
   var params = [req.user.user_id];
-  let dbGetUser = dao.get(sql, params);
+  const dbGetUser = dao.get(sql, params);
 
   var sql = `
     SELECT COUNT (app_id) AS total_games_played, 
@@ -29,7 +30,7 @@ router.get("/user-profile", checkLogin, function (req, res) {
     WHERE user_id = ?
     `;
   var params = [req.user.user_id];
-  let dbGetUserPlayTime = dao.get(sql, params);
+  const dbGetUserPlayTime = dao.get(sql, params);
 
   join(dbGetUser, dbGetUserPlayTime, function (userData, userPlayData) {
     console.log(userData);
@@ -38,17 +39,17 @@ router.get("/user-profile", checkLogin, function (req, res) {
     userData.total_minutes_played = userPlayData.total_minutes_played;
     userData.total_games_played = userPlayData.total_games_played;
 
-    let hours = Math.floor(userData.total_minutes_played / 60);
-    let minutes = userData.total_minutes_played - hours * 60;
+    const hours = Math.floor(userData.total_minutes_played / 60);
+    const minutes = userData.total_minutes_played - hours * 60;
     if (hours === 0) {
-      userData.total_time_played = minutes + " minutes";
+      userData.total_time_played = `${minutes  } minutes`;
     } else {
-      userData.total_time_played = hours + " hours and " + minutes + " minutes";
+      userData.total_time_played = `${hours  } hours and ${  minutes  } minutes`;
     }
 
-    let fs = require("fs");
-    let files = fs.readdirSync("public/images/hero/user-profile");
-    let randomImage = files[Math.floor(Math.random() * files.length)];
+    const fs = require("fs");
+    const files = fs.readdirSync("public/images/hero/user-profile");
+    const randomImage = files[Math.floor(Math.random() * files.length)];
     console.log(randomImage);
 
     console.log(userData);
@@ -57,28 +58,28 @@ router.get("/user-profile", checkLogin, function (req, res) {
       image: randomImage,
     });
   }).catch((err) => {
-    console.error("Error: " + err);
+    console.error(`Error: ${  err}`);
   });
 });
 
 router.post("/update-user-profile", function (req, res) {
-  let formData = req.body;
+  const formData = req.body;
   console.log(formData);
 
-  var sql = `
+  const sql = `
     UPDATE users SET 
         name = ?,
         email = ? 
     WHERE user_id = ?
     `;
-  var params = [formData.name, formData.email, req.user.user_id];
-  let dbUpdateUser = dao
+  const params = [formData.name, formData.email, req.user.user_id];
+  const dbUpdateUser = dao
     .run(sql, params)
     .then(() => {
       res.redirect("/user-profile");
     })
     .catch((err) => {
-      console.error("Error: " + err);
+      console.error(`Error: ${  err}`);
     });
 });
 // export routes up to routes.js

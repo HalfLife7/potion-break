@@ -1,6 +1,7 @@
-var express = require("express");
-var router = express.Router();
-var passport = require("passport");
+const express = require("express");
+
+const router = express.Router();
+const passport = require("passport");
 
 // GET /auth/steam
 //   Use passport.authenticate() as route middleware to authenticate the

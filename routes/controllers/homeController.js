@@ -1,13 +1,13 @@
-var express = require("express");
-var router = express.Router();
-var checkLogin = require("../../config/checkLoginMiddleware.js");
-const axios = require("axios").default;
+const express = require("express");
+
+const router = express.Router();
+const checkLogin = require("../../config/checkLoginMiddleware.js");
 
 const Game = require("../../models/game");
 const Charity = require("../../models/charity");
 
 // middleware to check if logged in
-router.get("/", async (req, res, next) => {
+router.get("/", async (req, res) => {
   try {
     if (req.user) {
       res.redirect("/game-library");

@@ -1,20 +1,20 @@
-var express = require("express");
-var moment = require("moment");
-var config = require("../../config/config.js");
-var router = express.Router();
+const express = require("express");
+const moment = require("moment");
+
+const router = express.Router();
 const Axios = require("axios");
 const stripe = require("stripe")(process.env.STRIPE_SK_TEST);
-var CronJob = require("cron").CronJob;
+const { CronJob } = require("cron");
 
-var Bottleneck = require("bottleneck/es5");
+const Bottleneck = require("bottleneck/es5");
 
 //  0 0 * * * - at midnight every night
 // 1-59/2 * * * * - odd minute for testing
-var potionBreakDailyCheck = new CronJob("0 0 * * *", function () {
+const potionBreakDailyCheck = new CronJob("0 0 * * *", function () {
   // get users who have potion break ending that night
   const dateToday = moment().format("YYYY-MM-DD");
 
-  var sql = `
+  const sql = `
     SELECT 
         potion_breaks.*, 
         users.steam_id, 
@@ -23,8 +23,8 @@ var potionBreakDailyCheck = new CronJob("0 0 * * *", function () {
     INNER JOIN users ON potion_breaks.user_id = users.user_id 
     WHERE potion_breaks.end_date = ? AND status = ?
     `;
-  var params = [dateToday, "Ongoing"];
-  let dbGetAllEndingPotionBreaks = dao
+  const params = [dateToday, "Ongoing"];
+  const dbGetAllEndingPotionBreaks = dao
     .all(sql, params)
     .then((potionBreakData) => {
       // get user play time through steam api
@@ -51,14 +51,14 @@ var potionBreakDailyCheck = new CronJob("0 0 * * *", function () {
       });
     })
     .then((data) => {
-      let potionBreakData = data[0];
-      let userGameData = data[1];
+      const potionBreakData = data[0];
+      const userGameData = data[1];
 
       // compare user current playtime to initial playtime (when potion break started)
       return Promise.all(
         potionBreakData.map((potionBreak, i) => {
-          let userPreviousPlaytime = potionBreak.playtime_start;
-          let userCurrentPlaytime = userGameData[i].playtime_forever;
+          const userPreviousPlaytime = potionBreak.playtime_start;
+          const userCurrentPlaytime = userGameData[i].playtime_forever;
 
           // if user played (increase playtime) -> fail potion break
           if (userPreviousPlaytime < userCurrentPlaytime) {
@@ -77,27 +77,26 @@ var potionBreakDailyCheck = new CronJob("0 0 * * *", function () {
               potionBreak.potion_break_id,
             ];
 
-            let dbUpdateUserPotionBreakFail = dao.run(sql, params);
+            const dbUpdateUserPotionBreakFail = dao.run(sql, params);
             return dbUpdateUserPotionBreakFail;
-          } else {
-            // if user hasn't played (same playtime) -> succeed potion break
-            var sql = `
+          }
+          // if user hasn't played (same playtime) -> succeed potion break
+          var sql = `
                         UPDATE potion_breaks 
                         SET status = ?, 
                         playtime_end = ?, 
                         payment_status = ? 
                         WHERE potion_break_id = ?
                     `;
-            params = [
-              "Success",
-              userCurrentPlaytime,
-              "N/A",
-              potionBreak.potion_break_id,
-            ];
-            let dbUpdateUserPotionBreakSuccess = dao.run(sql, params);
+          params = [
+            "Success",
+            userCurrentPlaytime,
+            "N/A",
+            potionBreak.potion_break_id,
+          ];
+          const dbUpdateUserPotionBreakSuccess = dao.run(sql, params);
 
-            return dbUpdateUserPotionBreakSuccess;
-          }
+          return dbUpdateUserPotionBreakSuccess;
         })
       ).then(() => {
         return potionBreakData;
@@ -107,20 +106,20 @@ var potionBreakDailyCheck = new CronJob("0 0 * * *", function () {
       // update status games for all finished potionBreaks to 'false'
       return Promise.all(
         potionBreakData.map((potionBreak) => {
-          var sql = `
+          const sql = `
                     UPDATE user_games_owned
                     SET potion_break_active = ?
                     WHERE app_id = ? AND user_id = ?
                 `;
-          var params = ["false", potionBreak.app_id, potionBreak.user_id];
-          let dbUpdateUserGamesOwned = dao.run(sql, params);
+          const params = ["false", potionBreak.app_id, potionBreak.user_id];
+          const dbUpdateUserGamesOwned = dao.run(sql, params);
           return dbUpdateUserGamesOwned;
         })
       );
     })
     .then(() => {
       // get successful potion breaks
-      var sql = `
+      const sql = `
                 SELECT 
                     potion_breaks.*, 
                     users.steam_id, 
@@ -129,15 +128,15 @@ var potionBreakDailyCheck = new CronJob("0 0 * * *", function () {
                 INNER JOIN users ON potion_breaks.user_id = users.user_id 
                 WHERE potion_breaks.end_date = ? AND status = ?
                 `;
-      var params = [dateToday, "Success"];
-      let dbGetAllSuccessPotionBreaksFromToday = dao.all(sql, params);
+      const params = [dateToday, "Success"];
+      const dbGetAllSuccessPotionBreaksFromToday = dao.all(sql, params);
       return dbGetAllSuccessPotionBreaksFromToday;
     })
     .then((potionBreaks) => {
       // get the setupIntents from stripe api
       return Promise.all(
         potionBreaks.map((potionBreak) => {
-          let { setup_intent_id } = potionBreak;
+          const { setup_intent_id } = potionBreak;
           return stripe.setupIntents.retrieve(potionBreak.setup_intent_id);
         })
       );
@@ -148,21 +147,21 @@ var potionBreakDailyCheck = new CronJob("0 0 * * *", function () {
       console.log(setupIntents);
       return Promise.all(
         setupIntents.map((setupIntent) => {
-          let { payment_method } = setupIntent;
+          const { payment_method } = setupIntent;
           return stripe.paymentMethods.detach(setupIntent.payment_method);
         })
       );
     })
     .catch((err) => {
-      console.error("Error: " + err);
+      console.error(`Error: ${err}`);
     });
 });
 
 // 5 0 * * * - at 12:05 every night
 // */2 * * * * - even minutes for testing
-var stripePaymentDailyCheck = new CronJob("5 0 * * *", function () {
+const stripePaymentDailyCheck = new CronJob("5 0 * * *", function () {
   // get failed potion breaks that haven't been paid yet
-  var sql = `
+  const sql = `
     SELECT 
         potion_breaks.*, 
         users.steam_id, 
@@ -171,14 +170,14 @@ var stripePaymentDailyCheck = new CronJob("5 0 * * *", function () {
     INNER JOIN users ON potion_breaks.user_id = users.user_id 
     WHERE potion_breaks.status = ? AND potion_breaks.payment_status = ?
     `;
-  var params = ["Failure", "Unpaid"];
-  let dbGetAllUnpaidPotionBreaks = dao
+  const params = ["Failure", "Unpaid"];
+  const dbGetAllUnpaidPotionBreaks = dao
     .all(sql, params)
     .then((unpaidPotionBreaks) => {
       // get the setupintents from the stripe api
       return Promise.all(
         unpaidPotionBreaks.map((potionBreak) => {
-          potionBreak.total_value = potionBreak.total_value * 100;
+          potionBreak.total_value *= 100;
           return stripe.setupIntents.retrieve(potionBreak.setup_intent_id);
         })
       ).then((setupIntents) => {
@@ -186,8 +185,8 @@ var stripePaymentDailyCheck = new CronJob("5 0 * * *", function () {
       });
     })
     .then((data) => {
-      let unpaidPotionBreaks = data[0];
-      let setupIntents = data[1];
+      const unpaidPotionBreaks = data[0];
+      const setupIntents = data[1];
 
       // charge the users by creating paymentIntents through stripe api
       return Promise.all(
@@ -201,9 +200,9 @@ var stripePaymentDailyCheck = new CronJob("5 0 * * *", function () {
             off_session: true,
             confirm: true,
             error_on_requires_action: true,
-            //, mandate: true (TODO: NEED TO ADD)
-            //, receipt_email: potionBreak[i].user_email
-            //, on_behalf_of: USED FOR STRIPE CONNECT
+            // , mandate: true (TODO: NEED TO ADD)
+            // , receipt_email: potionBreak[i].user_email
+            // , on_behalf_of: USED FOR STRIPE CONNECT
           });
         })
       ).then((paymentIntents) => {
@@ -227,34 +226,34 @@ var stripePaymentDailyCheck = new CronJob("5 0 * * *", function () {
 
       return Promise.all(
         setupIntents.map((setupIntent) => {
-          var sql = `
+          const sql = `
                     UPDATE potion_breaks 
                     SET payment_status = ? 
                     WHERE setup_intent_id = ?
                 `;
-          var params = ["Paid", setupIntent.id];
-          let dbUpdatePotionBreakStatus = dao.run(sql, params);
+          const params = ["Paid", setupIntent.id];
+          const dbUpdatePotionBreakStatus = dao.run(sql, params);
           return dbUpdatePotionBreakStatus;
         })
       );
     })
     .catch((err) => {
-      console.error("Error: " + err);
+      console.error(`Error: ${err}`);
     });
 });
 
 // run everyday at 1:00am
-var steamDataUpdate = new CronJob("0 1 * * *", function () {
+const steamDataUpdate = new CronJob("0 1 * * *", function () {
   // cron job to update steam game screenshots, movies, etc.
   // get all games in db
-  var sql = `
+  const sql = `
     SELECT 
         app_id, 
         name
     FROM games
     `;
-  var params = [];
-  let dbGetAllGames = dao
+  const params = [];
+  const dbGetAllGames = dao
     .all(sql, params)
     .then((gamesData) => {
       // use bottleneck's limiter to throttle api calls to 1/sec (1000ms)
@@ -273,19 +272,18 @@ var steamDataUpdate = new CronJob("0 1 * * *", function () {
               },
             })
               .then((response) => {
-                let timeNow = moment().format("DD MM YYYY hh:mm:ss.SSS");
-                console.log(game.name + " - " + game.app_id + " - " + timeNow);
+                const timeNow = moment().format("DD MM YYYY hh:mm:ss.SSS");
+                console.log(`${game.name} - ${game.app_id} - ${timeNow}`);
 
                 // fix for games that cannot be queried by the store.steampowered api (such as dead island - 91310)
                 if (response.data[game.app_id].data === undefined) {
                   game.steam_appid = game.app_id;
                   return game;
-                } else {
-                  return response.data[game.app_id].data;
                 }
+                return response.data[game.app_id].data;
               })
               .catch((err) => {
-                console.error("Error: " + err);
+                console.error(`Error: ${err}`);
               });
           }));
         })
@@ -306,37 +304,37 @@ var steamDataUpdate = new CronJob("0 1 * * *", function () {
             }
           }
 
-          var headerImage = getSafe(() => gameData.header_image, null);
-          var name = getSafe(() => gameData.name, null);
-          var screenshot1 = getSafe(
+          const headerImage = getSafe(() => gameData.header_image, null);
+          const name = getSafe(() => gameData.name, null);
+          const screenshot1 = getSafe(
             () => gameData.screenshots[0].path_full,
             null
           );
-          var screenshot2 = getSafe(
+          const screenshot2 = getSafe(
             () => gameData.screenshots[1].path_full,
             null
           );
-          var screenshot3 = getSafe(
+          const screenshot3 = getSafe(
             () => gameData.screenshots[2].path_full,
             null
           );
-          var screenshot4 = getSafe(
+          const screenshot4 = getSafe(
             () => gameData.screenshots[3].path_full,
             null
           );
-          var screenshot5 = getSafe(
+          const screenshot5 = getSafe(
             () => gameData.screenshots[4].path_full,
             null
           );
-          var movie1thumbnail = getSafe(
+          const movie1thumbnail = getSafe(
             () => gameData.movies[0].thumbnail,
             null
           );
-          var movie1webm = getSafe(() => gameData.movies[0].webm.max, null);
-          var movie1mp4 = getSafe(() => gameData.movies[0].mp4.max, null);
-          var steam_appid = getSafe(() => gameData.steam_appid, null);
+          const movie1webm = getSafe(() => gameData.movies[0].webm.max, null);
+          const movie1mp4 = getSafe(() => gameData.movies[0].mp4.max, null);
+          const steam_appid = getSafe(() => gameData.steam_appid, null);
 
-          var sql = `
+          const sql = `
                     UPDATE games 
                     SET 
                         name = ? , 
@@ -352,7 +350,7 @@ var steamDataUpdate = new CronJob("0 1 * * *", function () {
                         last_updated = ? 
                     WHERE app_id = ?
                 `;
-          var params = [
+          const params = [
             name,
             headerImage,
             screenshot1,
@@ -366,13 +364,13 @@ var steamDataUpdate = new CronJob("0 1 * * *", function () {
             dateToday,
             steam_appid,
           ];
-          let dbUpdateGames = dao.run(sql, params);
+          const dbUpdateGames = dao.run(sql, params);
           return dbUpdateGames;
         })
       );
     })
     .catch((err) => {
-      console.error("Error: " + err);
+      console.error(`Error: ${err}`);
     });
 });
 

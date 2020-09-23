@@ -3,7 +3,7 @@ exports.seed = function (knex) {
     return knex('games')
         .del()
         .then(function () {
-            let timestampNow = new Date().getTime()
+            const timestampNow = new Date().getTime()
             return knex('games').insert([
                 {
                     id: 570,

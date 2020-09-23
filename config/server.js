@@ -1,15 +1,13 @@
-var express = require("express");
-var session = require("express-session");
-var bodyParser = require("body-parser");
-var path = require("path");
+require("dotenv").config();
+const express = require("express");
+const session = require("express-session");
+const bodyParser = require("body-parser");
+const path = require("path");
 const mustacheExpress = require("mustache-express");
-var config = require("./config.js");
-var passport = require("passport");
-var SteamStrategy = require("../lib/passport-steam/index.js").Strategy;
+const passport = require("passport");
+const SteamStrategy = require("../lib/passport-steam/index.js").Strategy;
 
 const User = require("../models/user");
-
-require("dotenv").config();
 
 // TODO: update stripe API to use the newset version (currently using 2019-11-05, newest is 2020-03-02)
 // TODO: create automated test cases
@@ -38,13 +36,13 @@ passport.use(
     {
       returnURL: "http://localhost:5000/auth/steam/return",
       realm: "http://localhost:5000/",
-      apiKey: config.STEAM_API_KEY,
+      apiKey: process.env.STEAM_API_KEY,
     },
     function (identifier, profile, done) {
       // asynchronous verification, for effect...
       process.nextTick(function () {
-        //console.log(profile._json);
-        var userInfo = {
+        // console.log(profile._json);
+        const userInfo = {
           personaname: profile._json.personaname,
           profileurl: profile._json.profileurl,
           steamid: profile._json.steamid,
@@ -92,7 +90,7 @@ passport.use(
               steam_avatar: userInfo.avatarfull,
             })
             .then((user) => {
-              return "Successfully updated User ID: " + user;
+              return `Successfully updated User ID: ${user}`;
             })
             .catch((err) => {
               console.error(err.message);
@@ -105,12 +103,11 @@ passport.use(
             if (user === undefined) {
               // if user does not exist, insert new
               return insertUser();
-            } else {
-              // if user does exist, update
-              return updateUser();
             }
+            // if user does exist, update
+            return updateUser();
           })
-          .then((response) => {
+          .then(() => {
             // get user data at the end
             return getUser();
           })
@@ -122,7 +119,7 @@ passport.use(
   )
 );
 
-var app = express();
+const app = express();
 
 // parse application/x-www-form-urlencoded
 app.use(
@@ -138,14 +135,14 @@ app.use(bodyParser.json());
 const viewsPath = path.join(__dirname, "../views");
 const viewsPages = path.join(__dirname, "../views/pages");
 
-app.engine("mustache", mustacheExpress(viewsPath + "/partials", ".mustache"));
+app.engine("mustache", mustacheExpress(`${viewsPath}/partials`, ".mustache"));
 app.set("view engine", "mustache");
 app.set("views", [viewsPath, viewsPages]);
 
 // start session
 app.use(
   session({
-    secret: config.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET,
     name: "potion-break-session",
     resave: false,
     saveUninitialized: true,
@@ -163,7 +160,7 @@ app.use(
   express.json({
     // We need the raw body to verify webhook signatures.
     // Let's compute it only when hitting the Stripe webhook endpoint.
-    verify: function (req, res, buf) {
+    verify(req, res, buf) {
       if (req.originalUrl.startsWith("/webhook")) {
         req.rawBody = buf.toString();
       }
@@ -172,10 +169,10 @@ app.use(
 );
 
 // load routes
-var routes = require("../routes/index.js");
+const routes = require("../routes/index.js");
 
 app.use("/", routes);
 
-var server = app.listen(process.env.WEB_PORT, "localhost", function () {
-  console.log("Server listening on port " + process.env.WEB_PORT);
+const server = app.listen(process.env.WEB_PORT, "localhost", function () {
+  console.log(`Server listening on port ${process.env.WEB_PORT}`);
 });

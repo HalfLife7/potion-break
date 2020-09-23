@@ -1,6 +1,6 @@
-var express = require("express");
+const express = require("express");
 
-var router = express.Router();
+const router = express.Router();
 
 /**
  * router manager, loads each controller in seperate files to keep things organized
@@ -13,10 +13,6 @@ router.use("/", require("./controllers/potionBreakController.js"));
 router.use("/", require("./controllers/stripeController.js"));
 router.use("/", require("./controllers/cronController.js"));
 router.use("/", require("./controllers/userController.js"));
-router.use("/db/games", require("./db/games.js"));
-router.use("/db/charities", require("./db/charities.js"));
-router.use("/db/users", require("./db/users.js"));
-router.use("/db/user-games", require("./db/userGames.js"));
 
 // export these routes up to server.js
 module.exports = router;

@@ -1,33 +1,32 @@
-var checkLogin = require("../../config/checkLoginMiddleware");
-var express = require("express");
-var router = express.Router();
-var config = require("../../config/config.js");
+const fs = require("fs");
 const Axios = require("axios");
-const response = require("express");
-var fs = require("fs");
+const express = require("express");
+const checkLogin = require("../../config/checkLoginMiddleware");
+
+const router = express.Router();
 
 const User = require("../../models/user");
 const Game = require("../../models/game");
 const UserGame = require("../../models/userGame");
 
 // convert playtime from minutes to hours:minutes
-function convertMinutesToHHMM(item, index) {
-  let totalMinutes = item.playtime_forever;
-  var hours = Math.floor(totalMinutes / 60);
-  var minutes = totalMinutes - hours * 60;
+function convertMinutesToHHMM(item) {
+  const totalMinutes = item.playtime_forever;
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes - hours * 60;
   if (hours === 0) {
-    item.total_time_played = minutes + " minutes";
+    item.total_time_played = `${minutes} minutes`;
   } else {
-    item.total_time_played = hours + " hours and " + minutes + " minutes";
+    item.total_time_played = `${hours} hours and ${minutes} minutes`;
   }
 }
 
 router.get("/game-library", checkLogin, function (req, res) {
   // console.log(req.user);
-  let userInfo = req.user;
+  const userInfo = req.user;
 
-  let files = fs.readdirSync("public/images/hero/game-library");
-  let randomImage = files[Math.floor(Math.random() * files.length)];
+  const files = fs.readdirSync("public/images/hero/game-library");
+  const randomImage = files[Math.floor(Math.random() * files.length)];
 
   // get user info from DB if this isn't the user's first time visiting this page after loading
   if (req.user.first_load === false) {
@@ -53,7 +52,7 @@ router.get("/game-library", checkLogin, function (req, res) {
           );
         });
 
-        userGameData.map((game) => {
+        userGameData.forEach((game) => {
           if (game.potion_break_active === "true") {
             game.potion_break_active = "disabled";
           } else if (game.potion_break_active === "false") {
@@ -81,13 +80,13 @@ router.get("/game-library", checkLogin, function (req, res) {
         include_played_free_games: true,
         include_appinfo: true,
         format: "json",
-        //'appids_filter[0]': 570,
-        //'appids_filter[1]': 730
+        // 'appids_filter[0]': 570,
+        // 'appids_filter[1]': 730
       },
     })
       .then((response) => {
-        let ownedGames = response.data.response;
-        let timestampNow = new Date().getTime();
+        const ownedGames = response.data.response;
+        const timestampNow = new Date().getTime();
 
         // descending order in playtime
         ownedGames.games.sort(function (a, b) {
@@ -97,7 +96,7 @@ router.get("/game-library", checkLogin, function (req, res) {
         });
 
         // remove games with no playtime
-        let playedGames = ownedGames.games.filter(function (game) {
+        const playedGames = ownedGames.games.filter(function (game) {
           return game.playtime_forever > 0;
         });
 
@@ -110,18 +109,18 @@ router.get("/game-library", checkLogin, function (req, res) {
         // get total games played
         userInfo.total_games_played = Object.keys(playedGames).length;
 
-        let total_minutes_played = 0;
+        let totalMinutesPlayed = 0;
 
         // get total minutes played
-        playedGames.forEach(function (item, index) {
-          total_minutes_played += item.playtime_forever;
+        playedGames.forEach(function (item) {
+          totalMinutesPlayed += item.playtime_forever;
         });
-        userInfo.total_minutes_played = total_minutes_played;
-        userInfo.total_time_played =
-          Math.floor(total_minutes_played / 60) +
-          " hours and " +
-          (total_minutes_played - Math.floor(total_minutes_played / 60) * 60) +
-          " minutes";
+        userInfo.total_minutes_played = totalMinutesPlayed;
+        userInfo.total_time_played = `${Math.floor(
+          totalMinutesPlayed / 60
+        )} hours and ${
+          totalMinutesPlayed - Math.floor(totalMinutesPlayed / 60) * 60
+        } minutes`;
 
         function updateUser(userId) {
           return User.query()
@@ -131,7 +130,7 @@ router.get("/game-library", checkLogin, function (req, res) {
               total_steam_games_played: userInfo.total_steam_games_played,
             })
             .then((user) => {
-              return "Successfully updated User ID: " + user;
+              return `Successfully updated User ID: ${user}`;
             })
             .catch((err) => {
               console.error(err.message);
@@ -160,7 +159,7 @@ router.get("/game-library", checkLogin, function (req, res) {
               img_logo: game.img_logo_url,
               last_updated: timestampNow,
             })
-            .then((game) => {
+            .then(() => {
               return "Sucessfully inserted game.";
             })
             .catch((err) => {
@@ -176,7 +175,7 @@ router.get("/game-library", checkLogin, function (req, res) {
               img_icon: game.img_icon_url,
               img_logo: game.img_logo_url,
             })
-            .then((game) => {
+            .then(() => {
               return "Successfully updated game.";
             })
             .catch((err) => {
@@ -199,7 +198,7 @@ router.get("/game-library", checkLogin, function (req, res) {
               game_id: game.appid,
               playtime_forever: game.playtime_forever,
             })
-            .then((userGame) => {
+            .then(() => {
               return "Successfully inserted User Game";
             })
             .catch((err) => {
@@ -213,7 +212,7 @@ router.get("/game-library", checkLogin, function (req, res) {
             .patch({
               playtime_forever: game.playtime_forever,
             })
-            .then((userGame) => {
+            .then(() => {
               return "Successfully updated game";
             })
             .catch((err) => {
@@ -223,7 +222,7 @@ router.get("/game-library", checkLogin, function (req, res) {
 
         // update user's total games owned/played
         return updateUser(req.user.id)
-          .then((user) => {
+          .then(() => {
             return Promise.all(
               playedGames.map((game) => {
                 return getGame(game.appid)
@@ -232,10 +231,9 @@ router.get("/game-library", checkLogin, function (req, res) {
                     if (response === undefined) {
                       // if they don't add them
                       return insertGame(game);
-                    } else {
-                      // if they do, update them
-                      return updateGame(game);
                     }
+                    // if they do, update them
+                    return updateGame(game);
                   })
                   .catch((err) => {
                     console.error(err.message);
@@ -243,7 +241,7 @@ router.get("/game-library", checkLogin, function (req, res) {
               })
             );
           })
-          .then((response) => {
+          .then(() => {
             return Promise.all(
               playedGames.map((game) => {
                 return getUserGame(req.user.id, game.appid)
@@ -252,10 +250,9 @@ router.get("/game-library", checkLogin, function (req, res) {
                     if (response === undefined) {
                       // if they don't add them
                       return insertUserGame(req.user.id, game);
-                    } else {
-                      // if they do, update them
-                      return updateUserGame(req.user.id, game);
                     }
+                    // if they do, update them
+                    return updateUserGame(req.user.id, game);
                   })
                   .catch((err) => {
                     console.error(err.message);
@@ -267,7 +264,7 @@ router.get("/game-library", checkLogin, function (req, res) {
             return response;
           });
       })
-      .then((response) => {
+      .then(() => {
         function getUserGamesOwned(userId) {
           return UserGame.query()
             .select("*")
@@ -290,7 +287,7 @@ router.get("/game-library", checkLogin, function (req, res) {
               );
             });
 
-            userGameData.map((game) => {
+            userGameData.forEach((game) => {
               if (game.potion_break_active === "true") {
                 game.potion_break_active = "disabled";
               } else if (game.potion_break_active === "false") {
