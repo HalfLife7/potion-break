@@ -89,6 +89,7 @@ exports.up = async (knex) => {
         .references("id")
         .inTable("charities")
         .notNull();
+      t.integer("total_value");
       t.text("setup_intent_id");
       t.text("status");
       t.integer("playtime_start");

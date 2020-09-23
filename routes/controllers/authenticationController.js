@@ -33,7 +33,6 @@ router.get(
     failureRedirect: "/",
   }),
   function (req, res) {
-    console.log("success");
     res.redirect("/game-library");
   }
 );

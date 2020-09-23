@@ -17,79 +17,54 @@ router.get("/public-key", function (req, res) {
   });
 });
 
-router.post("/create-stripe-customer", function async(req, res) {
+router.post("/create-stripe-customer", async (req, res) => {
   // Create or use an existing Customer to associate with the SetupIntent.
   // The PaymentMethod will be stored to this Customer for later use.
 
-  function getUser(userId) {
-    return User.query()
-      .findById(userId)
-      .select("stripe_customer_id")
-      .then((user) => {
-        return user;
-      })
-      .catch((err) => {
-        console.error(err.message);
-      });
-  }
+  try {
+    const user = await User.query()
+      .findById(req.user.id)
+      .select("stripe_customer_id");
 
-  getUser(req.user.id)
-    .then((user) => {
-      // if nothing is returned, create a new customer and tie it to the user
-      if (user.stripe_customer_id === null) {
-        // create customer
-        return stripe.customers
-          .create({
-            description: req.user.steam_id,
-          })
-          .then((customer) => {
-            return User.query().findById(req.user.id).patch({
-              stripe_customer_id: customer.id,
-            });
-          });
-      } else {
-        resolve("stripeUserAlreadyExists");
-      }
-    })
-    .catch((err) => {
-      console.error(err.message);
-    });
+    // if nothing is returned, create a new customer and tie it to the user
+    if (user.stripe_customer_id === null) {
+      // create customer
+      const newCustomer = await stripe.customers.create({
+        description: req.user.steam_id,
+      });
+
+      // update user with stripe details
+      const updateUser = await User.query().findById(req.user.id).patch({
+        stripe_customer_id: newCustomer.id,
+      });
+    } else {
+      // do nothin since user is already tied to a stripe customer
+      console.log("stripeUserAlreadyExists");
+    }
+  } catch (err) {
+    console.error(err.message);
+  }
 });
 
-router.post("/create-setup-intent", function async(req, res) {
-  // use an existing Customer to associate with the SetupIntent.
-  // The PaymentMethod will be stored to this Customer for later use.
-
-  var sql = `
-    SELECT stripe_customer_id 
-    FROM users 
-    WHERE user_id = ( ? )
-    `;
-  var params = [req.user.user_id];
-  let dbGetUserStripeId = dao
-    .get(sql, params)
-    .then((userData) => {
-      console.log("dbGetUserStripeId");
-      console.log(userData);
-      return stripe.customers.retrieve(userData.stripe_customer_id);
-    })
-    .then((customer) => {
-      console.log("stripe.customers.retrieve");
-      console.log(customer);
-      return stripe.setupIntents.create({
-        customer: customer.id,
-      });
-    })
-    .then((setupIntent) => {
-      console.log("stripe.setupIntents.create");
-      console.log(setupIntent);
-      res.send({
-        setupIntent: setupIntent,
-      });
-    })
-    .catch((err) => {
-      console.error("Error: " + err);
+router.post("/create-setup-intent", async (req, res) => {
+  try {
+    // use an existing Customer to associate with the SetupIntent.
+    // The PaymentMethod will be stored to this Customer for later use.
+    const userStripeId = await User.query()
+      .findById(req.user.id)
+      .select("stripe_customer_id");
+    const stripeCustomer = await stripe.customers.retrieve(
+      userStripeId.stripe_customer_id
+    );
+    const setupIntent = await stripe.setupIntents.create({
+      customer: stripeCustomer.id,
     });
+    res.send({
+      setupIntent: setupIntent,
+    });
+  } catch (err) {
+    console.error(err.message);
+  }
 });
 
 // Webhook handler for asynchronous events.

@@ -370,6 +370,7 @@
         crossorigin="anonymous"></script>
     <script>
         $(document).ready(function () {
+            // prevent the swiper to change if the image is changed in fancybox
             $.fancybox.defaults.backFocus = false;
             var mySwiper = new Swiper('.swiper-container', {
                 slidesPerView: 1,
