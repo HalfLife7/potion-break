@@ -37,14 +37,16 @@
                         {{#potionBreakData}}
                         <tr>
                             <td>
+                                <div class="is-flex">
                                 <figure class="image is-24x24 game-logo">
-                                    <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{app_id}}/{{game_img_icon_url}}.jpg"
+                                    <img src="http://media.steampowered.com/steamcommunity/public/images/apps/{{game_id}}/{{game_img_icon_url}}.jpg"
                                         alt="{{game_name}} Icon">
                                 </figure>
-                                {{game_name}}
+                                {{game_name}}                                
+                                </div>
                             </td>
-                            <td>{{start_date}}</td>
-                            <td>{{end_date}}</td>
+                            <td>{{formatted_start_date}}</td>
+                            <td>{{formatted_end_date}}</td>
                             <td>{{total_value}}</td>
                             <td>{{status}}</td>
                             <td class="is-vcentered">
