@@ -1,11 +1,11 @@
-const moment = require("moment");
+var format = require("date-fns/format");
 
 exports.seed = function (knex) {
   // Deletes ALL existing entries
   return knex("games")
     .del()
     .then(function () {
-      const dateToday = moment().format("YYYY-MM-DD");
+      const dateToday = format(new Date(), "yyyy-MM-dd");
       return knex("games").insert([
         {
           id: 570,

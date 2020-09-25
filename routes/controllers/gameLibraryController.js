@@ -1,5 +1,5 @@
 const fs = require("fs");
-const moment = require("moment");
+var format = require("date-fns/format");
 const Axios = require("axios");
 const express = require("express");
 const checkLogin = require("../../config/checkLoginMiddleware");
@@ -76,7 +76,7 @@ router.get("/game-library", checkLogin, async (req, res) => {
         return response.data.response;
       });
 
-      const dateToday = moment().format("YYYY-MM-DD");
+      const dateToday = format(new Date(), "yyyy-MM-dd");
 
       // descending order in playtime
       ownedGames.games.sort(function (a, b) {

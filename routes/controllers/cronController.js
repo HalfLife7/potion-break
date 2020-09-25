@@ -1,5 +1,5 @@
 const express = require("express");
-const moment = require("moment");
+var format = require("date-fns/format");
 
 const router = express.Router();
 const Axios = require("axios");
@@ -16,10 +16,10 @@ const GameMovie = require("../../models/gameMovie.js");
 
 //  0 0 * * * - at midnight every night
 // 1-59/2 * * * * - odd minute for testing
-const potionBreakDailyCheck = new CronJob("0 0 * * *", async () => {
+const potionBreakDailyCheck = new CronJob("1-59/2 * * * *", async () => {
   try {
     // get users who have potion break ending that night
-    const dateToday = moment().format("YYYY-MM-DD");
+    const dateToday = format(new Date(), "yyyy-MM-dd");
 
     const potionBreakData = await PotionBreak.query()
       .select("potion_breaks.*")
@@ -112,7 +112,7 @@ const potionBreakDailyCheck = new CronJob("0 0 * * *", async () => {
 
 // 5 0 * * * - at 12:05 every night
 // */2 * * * * - even minutes for testing
-const stripePaymentDailyCheck = new CronJob("5 0 * * *", async () => {
+const stripePaymentDailyCheck = new CronJob("*/2 * * * *", async () => {
   // get failed potion breaks that haven't been paid yet
   try {
     const unpaidPotionBreaks = await PotionBreak.query()
@@ -184,7 +184,7 @@ const steamDataUpdate = new CronJob("0 1 * * *", async () => {
             format: "json",
           },
         }).then((response) => {
-          const timeNow = moment().format("DD MM YYYY hh:mm:ss.SSS");
+          const timeNow = format(new Date());
           console.log(`${game.name} - ${game.id} - ${timeNow}`);
 
           // fix for games that cannot be queried by the store.steampowered api (such as dead island - 91310)
@@ -199,7 +199,7 @@ const steamDataUpdate = new CronJob("0 1 * * *", async () => {
     })
   );
 
-  const dateToday = moment().format("YYYY-MM-DD");
+  const dateToday = format(new Date(), "yyyy-MM-dd");
 
   for (const game of steamGameData) {
     const updateGame = await Game.query()
@@ -274,9 +274,9 @@ const steamDataUpdate = new CronJob("0 1 * * *", async () => {
 });
 
 // start cronjobs
-// potionBreakDailyCheck.start();
-// stripePaymentDailyCheck.start();
-steamDataUpdate.start();
+potionBreakDailyCheck.start();
+stripePaymentDailyCheck.start();
+// steamDataUpdate.start();
 
 // export routes up to routes.js
 module.exports = router;

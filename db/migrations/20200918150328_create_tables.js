@@ -18,7 +18,7 @@ exports.up = async (knex) => {
       t.text("img_icon");
       t.text("img_logo");
       t.text("header_image");
-      t.text("last_updated");
+      t.date("last_updated");
     });
     await knex.schema.createTable("user_games", (t) => {
       t.integer("user_id")
@@ -95,7 +95,7 @@ exports.up = async (knex) => {
       t.integer("playtime_start");
       t.integer("playtime_end");
       t.text("payment_status");
-      t.integer("stripe_payment_date_created");
+      t.text("stripe_payment_date_created");
     });
   } catch (err) {
     console.error(err.message);
