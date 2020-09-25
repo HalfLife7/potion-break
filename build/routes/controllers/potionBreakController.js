@@ -288,3 +288,4 @@ router.get("/potion-break/create/:appid/success", checkLogin, /*#__PURE__*/funct
 }()); // export routes up to routes.js
 
 module.exports = router;
+//# sourceMappingURL=potionBreakController.js.map

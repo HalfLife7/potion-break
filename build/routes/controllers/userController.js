@@ -108,3 +108,4 @@ router.post("/update-user-profile", /*#__PURE__*/function () {
 }()); // export routes up to routes.js
 
 module.exports = router;
+//# sourceMappingURL=userController.js.map

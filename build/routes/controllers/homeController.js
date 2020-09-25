@@ -89,3 +89,4 @@ router.get("/login", checkLogin, function (req, res) {
 }); // export routes up to routes.js
 
 module.exports = router;
+//# sourceMappingURL=homeController.js.map

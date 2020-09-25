@@ -9,3 +9,4 @@ function checkLogin(req, res, next) {
 }
 
 module.exports = checkLogin;
+//# sourceMappingURL=checkLoginMiddleware.js.map
