@@ -169,7 +169,7 @@ app.use(
 );
 
 // load routes
-const routes = require("../routes/index.js");
+const routes = require("./routes/index");
 
 app.use("/", routes);
 

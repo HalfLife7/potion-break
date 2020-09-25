@@ -9,10 +9,10 @@ const checkLogin = require("../../config/checkLoginMiddleware");
 
 const router = express.Router();
 
-const Game = require("../../models/game");
-const Charity = require("../../models/charity");
-const PotionBreak = require("../../models/potionBreak");
-const UserGame = require("../../models/userGame");
+const Game = require("../../../models/game");
+const Charity = require("../../../models/charity");
+const PotionBreak = require("../../../models/potionBreak");
+const UserGame = require("../../../models/userGame");
 
 // TODO: ADD MANDATE PAGE - https://stripe.com/docs/payments/setup-intents#mandates (more information)
 

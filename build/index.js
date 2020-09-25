@@ -143,10 +143,9 @@ app.use(express.json({
   }
 })); // load routes
 
-var routes = require("../routes/index.js");
+var routes = require("./routes/index");
 
 app.use("/", routes);
 var server = app.listen(process.env.WEB_PORT, "localhost", function () {
   console.log("Server listening on port ".concat(process.env.WEB_PORT));
 });
-//# sourceMappingURL=index.js.map

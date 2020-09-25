@@ -5,8 +5,8 @@ var checkLogin = require("../../config/checkLoginMiddleware");
 const router = express.Router();
 var checkLogin = require("../../config/checkLoginMiddleware.js");
 
-const User = require("../../models/user");
-const UserGame = require("../../models/userGame");
+const User = require("../../../models/user");
+const UserGame = require("../../../models/userGame");
 
 // middleware to check if logged in
 router.get("/user-profile", checkLogin, async (req, res) => {

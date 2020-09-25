@@ -3,7 +3,7 @@ const stripe = require("stripe")(process.env.STRIPE_SK_TEST);
 
 const router = express.Router();
 
-const User = require("../../models/user");
+const User = require("../../../models/user");
 
 router.get("/public-key", function (req, res) {
   res.send({

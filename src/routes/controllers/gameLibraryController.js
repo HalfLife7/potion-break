@@ -6,9 +6,9 @@ const checkLogin = require("../../config/checkLoginMiddleware");
 
 const router = express.Router();
 
-const User = require("../../models/user");
-const Game = require("../../models/game");
-const UserGame = require("../../models/userGame");
+const User = require("../../../models/user");
+const Game = require("../../../models/game");
+const UserGame = require("../../../models/userGame");
 
 // convert playtime from minutes to hours:minutes
 function convertMinutesToHHMM(item) {

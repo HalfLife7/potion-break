@@ -8,11 +8,11 @@ const { CronJob } = require("cron");
 
 const Bottleneck = require("bottleneck/es5");
 
-const PotionBreak = require("../../models/potionBreak");
-const UserGame = require("../../models/userGame");
-const Game = require("../../models/game");
-const GameScreenshot = require("../../models/gameScreenshot");
-const GameMovie = require("../../models/gameMovie.js");
+const PotionBreak = require("../../../models/potionBreak");
+const UserGame = require("../../../models/userGame");
+const Game = require("../../../models/game");
+const GameScreenshot = require("../../../models/gameScreenshot");
+const GameMovie = require("../../../models/gameMovie.js");
 
 //  0 0 * * * - at midnight every night
 // 1-59/2 * * * * - odd minute for testing
@@ -274,8 +274,8 @@ const steamDataUpdate = new CronJob("0 1 * * *", async () => {
 });
 
 // start cronjobs
-potionBreakDailyCheck.start();
-stripePaymentDailyCheck.start();
+// potionBreakDailyCheck.start();
+// stripePaymentDailyCheck.start();
 // steamDataUpdate.start();
 
 // export routes up to routes.js
