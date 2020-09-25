@@ -1,4 +1,5 @@
 const fs = require("fs");
+const moment = require("moment");
 const Axios = require("axios");
 const express = require("express");
 const checkLogin = require("../../config/checkLoginMiddleware");
@@ -75,7 +76,7 @@ router.get("/game-library", checkLogin, async (req, res) => {
         return response.data.response;
       });
 
-      const timestampNow = new Date().getTime();
+      const dateToday = moment().format("YYYY-MM-DD");
 
       // descending order in playtime
       ownedGames.games.sort(function (a, b) {
@@ -132,7 +133,7 @@ router.get("/game-library", checkLogin, async (req, res) => {
             name: game.name,
             img_icon: game.img_icon_url,
             img_logo: game.img_logo_url,
-            last_updated: timestampNow,
+            last_updated: dateToday,
           });
         } else {
           // if they do, update them

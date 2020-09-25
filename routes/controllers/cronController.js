@@ -10,6 +10,9 @@ const Bottleneck = require("bottleneck/es5");
 
 const PotionBreak = require("../../models/potionBreak");
 const UserGame = require("../../models/userGame");
+const Game = require("../../models/game");
+const GameScreenshot = require("../../models/gameScreenshot");
+const GameMovie = require("../../models/gameMovie.js");
 
 //  0 0 * * * - at midnight every night
 // 1-59/2 * * * * - odd minute for testing
@@ -161,141 +164,119 @@ const stripePaymentDailyCheck = new CronJob("5 0 * * *", async () => {
 });
 
 // run everyday at 1:00am
-const steamDataUpdate = new CronJob("0 1 * * *", function () {
+const steamDataUpdate = new CronJob("0 1 * * *", async () => {
   // cron job to update steam game screenshots, movies, etc.
   // get all games in db
-  const sql = `
-    SELECT 
-        app_id, 
-        name
-    FROM games
-    `;
-  const params = [];
-  const dbGetAllGames = dao
-    .all(sql, params)
-    .then((gamesData) => {
-      // use bottleneck's limiter to throttle api calls to 1/sec (1000ms)
-      const limiter = new Bottleneck({
-        maxConcurrent: 1,
-        minTime: 1000,
+  const gamesData = await Game.query().select("id", "name");
+
+  // use bottleneck's limiter to throttle api calls to 1/sec (1000ms)
+  const limiter = new Bottleneck({
+    maxConcurrent: 1,
+    minTime: 1000,
+  });
+
+  const steamGameData = await Promise.all(
+    gamesData.map(async (game) => {
+      return await limiter.schedule(() => {
+        return Axios.get("https://store.steampowered.com/api/appdetails", {
+          params: {
+            appids: game.id,
+            format: "json",
+          },
+        }).then((response) => {
+          const timeNow = moment().format("DD MM YYYY hh:mm:ss.SSS");
+          console.log(`${game.name} - ${game.id} - ${timeNow}`);
+
+          // fix for games that cannot be queried by the store.steampowered api (such as dead island - 91310)
+          if (response.data[game.id].data === undefined) {
+            game.steam_appid = game.id;
+            return game;
+          } else {
+            return response.data[game.id].data;
+          }
+        });
+      });
+    })
+  );
+
+  const dateToday = moment().format("YYYY-MM-DD");
+
+  for (const game of steamGameData) {
+    const updateGame = await Game.query()
+      .where("id", "=", game.steam_appid)
+      .patch({
+        header_image: game?.header_image,
+        last_updated: dateToday,
       });
 
-      return Promise.all(
-        gamesData.map((game) => {
-          return (myValues = limiter.schedule(() => {
-            return Axios.get("https://store.steampowered.com/api/appdetails", {
-              params: {
-                appids: game.app_id,
-                format: "json",
-              },
-            })
-              .then((response) => {
-                const timeNow = moment().format("DD MM YYYY hh:mm:ss.SSS");
-                console.log(`${game.name} - ${game.app_id} - ${timeNow}`);
+    if (game?.screenshots?.length !== 0 && game.screenshots) {
+      for (const screenshot of game.screenshots) {
+        // check if the this screenshot is already in the db
+        const checkScreenshot = await GameScreenshot.query().findById([
+          game.steam_appid,
+          screenshot.id,
+        ]);
 
-                // fix for games that cannot be queried by the store.steampowered api (such as dead island - 91310)
-                if (response.data[game.app_id].data === undefined) {
-                  game.steam_appid = game.app_id;
-                  return game;
-                }
-                return response.data[game.app_id].data;
-              })
-              .catch((err) => {
-                console.error(`Error: ${err}`);
-              });
-          }));
-        })
-      );
-    })
-    .then((steamGameData) => {
-      const dateToday = moment().format("YYYY-MM-DD");
-      return Promise.all(
-        steamGameData.map((gameData, i) => {
-          // https://stackoverflow.com/questions/33757931/is-there-something-like-the-swift-optional-chaining-in-javascript
-          // use getSafe function as alternative to optional chaining (not available in Node.js)
-          // getSafe will attempt to get the value of an object's property and if it is undefined, it will return a default value (second parameter)
-          function getSafe(fn, defaultVal) {
-            try {
-              return fn();
-            } catch (e) {
-              return defaultVal;
-            }
-          }
+        // insert into db if it doesn't exist yet
+        if (checkScreenshot === undefined) {
+          await GameScreenshot.query().insert({
+            game_id: game.steam_appid,
+            id: screenshot.id,
+            path_thumbnail: screenshot.path_thumbnail,
+            path_full: screenshot.path_full,
+          });
+        } else {
+          // update the existing entry if it does exist
+          await GameScreenshot.query()
+            .findById([game.steam_appid, screenshot.id])
+            .patch({
+              path_thumbnail: screenshot?.path_thumbnail,
+              path_full: screenshot?.path_full,
+            });
+        }
+      }
+    }
 
-          const headerImage = getSafe(() => gameData.header_image, null);
-          const name = getSafe(() => gameData.name, null);
-          const screenshot1 = getSafe(
-            () => gameData.screenshots[0].path_full,
-            null
-          );
-          const screenshot2 = getSafe(
-            () => gameData.screenshots[1].path_full,
-            null
-          );
-          const screenshot3 = getSafe(
-            () => gameData.screenshots[2].path_full,
-            null
-          );
-          const screenshot4 = getSafe(
-            () => gameData.screenshots[3].path_full,
-            null
-          );
-          const screenshot5 = getSafe(
-            () => gameData.screenshots[4].path_full,
-            null
-          );
-          const movie1thumbnail = getSafe(
-            () => gameData.movies[0].thumbnail,
-            null
-          );
-          const movie1webm = getSafe(() => gameData.movies[0].webm.max, null);
-          const movie1mp4 = getSafe(() => gameData.movies[0].mp4.max, null);
-          const steam_appid = getSafe(() => gameData.steam_appid, null);
+    if (game?.movies?.length !== 0 && game.movies) {
+      for (const movie of game.movies) {
+        // check if the this movie is already in the db
+        const checkMovie = await GameMovie.query().findById([
+          game.steam_appid,
+          movie.id,
+        ]);
 
-          const sql = `
-                    UPDATE games 
-                    SET 
-                        name = ? , 
-                        header_image_url = ?, 
-                        screenshot_1_url = ?, 
-                        screenshot_2_url = ?, 
-                        screenshot_3_url = ?, 
-                        screenshot_4_url = ?, 
-                        screenshot_5_url = ?, 
-                        movie_1_thumbnail = ?, 
-                        movie_1_webm_url = ?, 
-                        movie_1_mp4_url = ?, 
-                        last_updated = ? 
-                    WHERE app_id = ?
-                `;
-          const params = [
-            name,
-            headerImage,
-            screenshot1,
-            screenshot2,
-            screenshot3,
-            screenshot4,
-            screenshot5,
-            movie1thumbnail,
-            movie1webm,
-            movie1mp4,
-            dateToday,
-            steam_appid,
-          ];
-          const dbUpdateGames = dao.run(sql, params);
-          return dbUpdateGames;
-        })
-      );
-    })
-    .catch((err) => {
-      console.error(`Error: ${err}`);
-    });
+        // insert into db if it doesn't exist yet
+        if (checkMovie === undefined) {
+          await GameMovie.query().insert({
+            game_id: game.steam_appid,
+            id: movie.id,
+            name: movie?.name,
+            thumbnail: movie?.thumbnail,
+            webm_480: movie?.webm?.["480"],
+            webm_max: movie?.webm?.["max"],
+            mp4_480: movie?.mp4?.["480"],
+            mp4_max: movie?.mp4?.["max"],
+          });
+        } else {
+          // update the existing entry if it does exist
+          await GameMovie.query().findById([game.steam_appid, movie.id]).patch({
+            name: movie?.name,
+            thumbnail: movie?.thumbnail,
+            webm_480: movie?.webm?.["480"],
+            webm_max: movie?.webm?.["max"],
+            mp4_480: movie?.mp4?.["480"],
+            mp4_max: movie?.mp4?.["max"],
+          });
+        }
+      }
+    }
+  }
 });
 
 // start cronjobs
 // potionBreakDailyCheck.start();
 // stripePaymentDailyCheck.start();
-// steamDataUpdate.start();
+steamDataUpdate.start();
 
 // export routes up to routes.js
 module.exports = router;
