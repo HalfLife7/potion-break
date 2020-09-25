@@ -1,4 +1,6 @@
-require("dotenv").config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
@@ -173,6 +175,6 @@ const routes = require("./routes/index");
 
 app.use("/", routes);
 
-const server = app.listen(process.env.WEB_PORT, "localhost", function () {
-  console.log(`Server listening on port ${process.env.WEB_PORT}`);
+const server = app.listen(process.env.PORT, "localhost", function () {
+  console.log(`Server listening on port ${process.env.PORT}`);
 });

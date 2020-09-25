@@ -14,10 +14,10 @@ module.exports = {
   development: {
     client: "pg",
     connection: {
-      host: "localhost",
-      database: "potion_break",
-      user: process.env.DB_USER_NAME,
-      password: process.env.DB_USER_PASSWORD,
+      host: process.env.DATABASE_URL,
+      database: process.env.DATABASE_NAME,
+      user: process.env.DATABASE_USER_NAME,
+      password: process.env.DATABASE_USER_PASSWORD,
       port: 5432,
     },
     migrations: {
@@ -30,9 +30,11 @@ module.exports = {
   production: {
     client: "pg",
     connection: {
-      database: "potion_break",
-      user: process.env.DB_USER_NAME,
-      password: process.env.DB_USER_PASSWORD,
+      host: process.env.DATABASE_URL,
+      database: process.env.DATABASE_NAME,
+      user: process.env.DATABASE_USER_NAME,
+      password: process.env.DATABASE_USER_PASSWORD,
+      port: 5432,
     },
     migrations: {
       directory: `${__dirname}/db/migrations`,

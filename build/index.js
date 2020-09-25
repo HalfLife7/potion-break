@@ -1,6 +1,8 @@
 "use strict";
 
-require("dotenv").config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 
 var express = require("express");
 
@@ -146,7 +148,7 @@ app.use(express.json({
 var routes = require("./routes/index");
 
 app.use("/", routes);
-var server = app.listen(process.env.WEB_PORT, "localhost", function () {
-  console.log("Server listening on port ".concat(process.env.WEB_PORT));
+var server = app.listen(process.env.PORT, "localhost", function () {
+  console.log("Server listening on port ".concat(process.env.PORT));
 });
 //# sourceMappingURL=index.js.map
