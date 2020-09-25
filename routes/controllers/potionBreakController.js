@@ -105,8 +105,6 @@ router.get("/potion-breaks/view/all", checkLogin, async (req, res) => {
     const files = fs.readdirSync("public/images/hero/view-all-potion-breaks");
     const randomImage = files[Math.floor(Math.random() * files.length)];
 
-    console.log(potionBreakData);
-
     res.render("view-all-potion-breaks", {
       potionBreakData,
       image: randomImage,
@@ -119,7 +117,6 @@ router.get("/potion-breaks/view/all", checkLogin, async (req, res) => {
 router.post("/potion-break-creation-success", async (req, res) => {
   try {
     const potionBreakData = req.body;
-    console.log(potionBreakData);
 
     // conversion from UNIX timestamp to YYYY-MM-DD
     const formattedStartDate = moment
@@ -130,9 +127,6 @@ router.post("/potion-break-creation-success", async (req, res) => {
     const charityId = await Charity.query()
       .select("id")
       .where("name", "=", potionBreakData.charityName);
-
-    console.log(charityId);
-    console.log(charityId[0].id);
 
     const playtimeForever = await UserGame.query()
       .select("playtime_forever")
@@ -170,12 +164,10 @@ router.get(
   checkLogin,
   async (req, res) => {
     try {
-      console.log("starting potion-break/create/:appid/success");
-
       const maxPotionBreakId = await PotionBreak.query()
         .max("id")
         .where("user_id", "=", req.user.id);
-      console.log(maxPotionBreakId);
+
       const potionBreakData = await PotionBreak.query()
         .select(
           "potion_breaks.id",
@@ -205,7 +197,6 @@ router.get(
         .then((data) => {
           return data[0];
         });
-      console.log(potionBreakData);
 
       // convert unix time to this format - Thursday, July 23rd 2020
       potionBreakData.formatted_start_date = moment(
@@ -224,8 +215,6 @@ router.get(
       );
       potionBreakData.playtime_start_minutes =
         potionBreakData.playtime_start % 60;
-
-      console.log(potionBreakData);
 
       const files = fs.readdirSync("public/images/hero/potion-break-success");
       const randomImage = files[Math.floor(Math.random() * files.length)];

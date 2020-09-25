@@ -109,87 +109,55 @@ const potionBreakDailyCheck = new CronJob("0 0 * * *", async () => {
 
 // 5 0 * * * - at 12:05 every night
 // */2 * * * * - even minutes for testing
-const stripePaymentDailyCheck = new CronJob("5 0 * * *", function () {
+const stripePaymentDailyCheck = new CronJob("5 0 * * *", async () => {
   // get failed potion breaks that haven't been paid yet
-  const sql = `
-    SELECT 
-        potion_breaks.*, 
-        users.steam_id, 
-        users.stripe_customer_id 
-    FROM potion_breaks 
-    INNER JOIN users ON potion_breaks.user_id = users.user_id 
-    WHERE potion_breaks.status = ? AND potion_breaks.payment_status = ?
-    `;
-  const params = ["Failure", "Unpaid"];
-  const dbGetAllUnpaidPotionBreaks = dao
-    .all(sql, params)
-    .then((unpaidPotionBreaks) => {
-      // get the setupintents from the stripe api
-      return Promise.all(
-        unpaidPotionBreaks.map((potionBreak) => {
-          potionBreak.total_value *= 100;
-          return stripe.setupIntents.retrieve(potionBreak.setup_intent_id);
-        })
-      ).then((setupIntents) => {
-        return [unpaidPotionBreaks, setupIntents];
-      });
-    })
-    .then((data) => {
-      const unpaidPotionBreaks = data[0];
-      const setupIntents = data[1];
+  try {
+    const unpaidPotionBreaks = await PotionBreak.query()
+      .select("potion_breaks.*")
+      .from("potion_breaks")
+      .where("potion_breaks.status", "=", "Failure")
+      .where("potion_breaks.payment_status", "=", "Unpaid")
+      .join("users", "potion_breaks.user_id", "users.id")
+      .select("users.steam_id", "users.stripe_customer_id");
 
-      // charge the users by creating paymentIntents through stripe api
-      return Promise.all(
-        setupIntents.map((setupIntent, i) => {
-          return stripe.paymentIntents.create({
-            amount: unpaidPotionBreaks[i].total_value,
-            currency: "cad",
-            payment_method_types: ["card"],
-            customer: unpaidPotionBreaks[i].stripe_customer_id,
-            payment_method: setupIntent.payment_method,
-            off_session: true,
-            confirm: true,
-            error_on_requires_action: true,
-            // , mandate: true (TODO: NEED TO ADD)
-            // , receipt_email: potionBreak[i].user_email
-            // , on_behalf_of: USED FOR STRIPE CONNECT
-          });
-        })
-      ).then((paymentIntents) => {
-        console.log(paymentIntents);
-        return setupIntents;
-      });
-    })
-    .then((setupIntents) => {
-      // detach the payment methods once the users have been charged
+    // get setup intents from stripe
+    const setupIntents = await Promise.all(
+      unpaidPotionBreaks.map(async (potionBreak) => {
+        potionBreak.total_value *= 100;
+        return await stripe.setupIntents.retrieve(potionBreak.setup_intent_id);
+      })
+    );
 
-      return Promise.all(
-        setupIntents.map((setupIntent, i) => {
-          return stripe.paymentMethods.detach(setupIntent.payment_method);
-        })
-      ).then((paymentMethods) => {
-        return setupIntents;
+    for (const [i, setupIntent] of setupIntents.entries()) {
+      console.log(setupIntent);
+      console.log(unpaidPotionBreaks[i]);
+      await stripe.paymentIntents.create({
+        amount: unpaidPotionBreaks[i].total_value,
+        currency: "cad",
+        payment_method_types: ["card"],
+        customer: unpaidPotionBreaks[i].stripe_customer_id,
+        payment_method: setupIntent.payment_method,
+        off_session: true,
+        confirm: true,
+        error_on_requires_action: true,
+        // , mandate: true (TODO: NEED TO ADD)
+        // , receipt_email: potionBreak[i].user_email
+        // , on_behalf_of: USED FOR STRIPE CONNECT
       });
-    })
-    .then((setupIntents) => {
-      // update the database to indicate that the users have paid
 
-      return Promise.all(
-        setupIntents.map((setupIntent) => {
-          const sql = `
-                    UPDATE potion_breaks 
-                    SET payment_status = ? 
-                    WHERE setup_intent_id = ?
-                `;
-          const params = ["Paid", setupIntent.id];
-          const dbUpdatePotionBreakStatus = dao.run(sql, params);
-          return dbUpdatePotionBreakStatus;
-        })
-      );
-    })
-    .catch((err) => {
-      console.error(`Error: ${err}`);
-    });
+      // remove payment method after payment intent is created
+      await stripe.paymentMethods.detach(setupIntent.payment_method);
+
+      // update database to indicate users have paid
+      const updatePaymentStatus = await PotionBreak.query()
+        .where("setup_intent_id", "=", setupIntent.id)
+        .patch({
+          payment_status: "Paid",
+        });
+    }
+  } catch (err) {
+    console.error(err.message);
+  }
 });
 
 // run everyday at 1:00am

@@ -10,6 +10,7 @@ const UserGame = require("../../models/userGame");
 
 // middleware to check if logged in
 router.get("/user-profile", checkLogin, async (req, res) => {
+  console.log(req.user);
   const userData = await User.query()
     .findById(req.user.id)
     .select(
@@ -60,6 +61,9 @@ router.post("/update-user-profile", async (req, res) => {
     name: formData.name,
     email: formData.email,
   });
+
+  req.user.name = formData.name;
+  req.user.email = formData.email;
 
   res.redirect("/user-profile");
 });
