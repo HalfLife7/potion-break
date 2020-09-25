@@ -41,14 +41,14 @@ router.get("/game-library", checkLogin, async (req, res) => {
         return parseFloat(b.playtime_forever) - parseFloat(a.playtime_forever);
       });
 
-      userGameData.forEach((game) => {
+      for (const game of userGameData) {
         if (game.potion_break_active === "true") {
           game.potion_break_active = "disabled";
         } else if (game.potion_break_active === "false") {
           game.potion_break_active = null;
         }
         convertMinutesToHHMM(game);
-      });
+      }
 
       res.render("game-library", {
         user: req.user,
@@ -87,7 +87,9 @@ router.get("/game-library", checkLogin, async (req, res) => {
         return game.playtime_forever > 0;
       });
 
-      playedGames.forEach(convertMinutesToHHMM);
+      for (const game of playedGames) {
+        convertMinutesToHHMM(game);
+      }
 
       // get some additional player stats
       // get total games owned
@@ -99,9 +101,12 @@ router.get("/game-library", checkLogin, async (req, res) => {
       let totalMinutesPlayed = 0;
 
       // get total minutes played
-      playedGames.forEach(function (item) {
-        totalMinutesPlayed += item.playtime_forever;
-      });
+      for (const game of playedGames) {
+        totalMinutesPlayed += game.playtime_forever;
+      }
+      // playedGames.forEach(function (item) {
+      //   totalMinutesPlayed += item.playtime_forever;
+      // });
       userInfo.total_minutes_played = totalMinutesPlayed;
       userInfo.total_time_played = `${Math.floor(
         totalMinutesPlayed / 60
@@ -116,7 +121,7 @@ router.get("/game-library", checkLogin, async (req, res) => {
           total_steam_games_played: userInfo.total_steam_games_played,
         });
 
-      playedGames.forEach(async (game) => {
+      for (const game of playedGames) {
         const getGame = await Game.query()
           .findById(game.appid)
           .withGraphFetched("screenshots")
@@ -139,9 +144,34 @@ router.get("/game-library", checkLogin, async (req, res) => {
             img_logo: game.img_logo_url,
           });
         }
-      });
+      }
 
-      playedGames.forEach(async (game) => {
+      // playedGames.forEach(async (game) => {
+      //   const getGame = await Game.query()
+      //     .findById(game.appid)
+      //     .withGraphFetched("screenshots")
+      //     .withGraphFetched("movies");
+      //   // check if the games in playedGames exist in the games table
+      //   if (getGame === undefined) {
+      //     // if they don't add them
+      //     const insertGame = await Game.query().insert({
+      //       id: game.appid,
+      //       name: game.name,
+      //       img_icon: game.img_icon_url,
+      //       img_logo: game.img_logo_url,
+      //       last_updated: timestampNow,
+      //     });
+      //   } else {
+      //     // if they do, update them
+      //     const updateGame = await Game.query().findById(game.appid).patch({
+      //       name: game.name,
+      //       img_icon: game.img_icon_url,
+      //       img_logo: game.img_logo_url,
+      //     });
+      //   }
+      // });
+
+      for (const game of playedGames) {
         const getUserGame = await UserGame.query().findById([
           req.user.id,
           game.appid,
@@ -162,7 +192,30 @@ router.get("/game-library", checkLogin, async (req, res) => {
               playtime_forever: game.playtime_forever,
             });
         }
-      });
+      }
+
+      // playedGames.forEach(async (game) => {
+      //   const getUserGame = await UserGame.query().findById([
+      //     req.user.id,
+      //     game.appid,
+      //   ]);
+
+      //   // check if the games in playedGames exist in the user_games_owned table
+      //   if (getUserGame === undefined) {
+      //     // if they don't, add them
+      //     const insertUserGame = await UserGame.query().insert({
+      //       user_id: req.user.id,
+      //       game_id: game.appid,
+      //       playtime_forever: game.playtime_forever,
+      //     });
+      //   } else {
+      //     const updateUserGame = await UserGame.query()
+      //       .findById([req.user.id, game.appid])
+      //       .patch({
+      //         playtime_forever: game.playtime_forever,
+      //       });
+      //   }
+      // });
 
       const userGameData = await UserGame.query()
         .select("*")
@@ -174,14 +227,23 @@ router.get("/game-library", checkLogin, async (req, res) => {
         return parseFloat(b.playtime_forever) - parseFloat(a.playtime_forever);
       });
 
-      userGameData.forEach((game) => {
+      for (const game of userGameData) {
         if (game.potion_break_active === "true") {
           game.potion_break_active = "disabled";
         } else if (game.potion_break_active === "false") {
           game.potion_break_active = null;
         }
         convertMinutesToHHMM(game);
-      });
+      }
+
+      // userGameData.forEach((game) => {
+      //   if (game.potion_break_active === "true") {
+      //     game.potion_break_active = "disabled";
+      //   } else if (game.potion_break_active === "false") {
+      //     game.potion_break_active = null;
+      //   }
+      //   convertMinutesToHHMM(game);
+      // });
 
       res.render("game-library", {
         user: req.user,

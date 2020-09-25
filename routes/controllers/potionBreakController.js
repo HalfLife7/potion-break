@@ -58,7 +58,7 @@ router.get("/potion-breaks/view/all", checkLogin, async (req, res) => {
         "charities.img_path AS charity_img_path"
       );
 
-    potionBreakData.forEach(function (potionBreak) {
+    for (const potionBreak of potionBreakData) {
       potionBreak.playtime_start_hours = Math.floor(
         potionBreak.playtime_start / 60
       );
@@ -100,7 +100,7 @@ router.get("/potion-breaks/view/all", checkLogin, async (req, res) => {
       potionBreak.days_left = end.diff(today, "days");
       potionBreak.total_days = end.diff(start, "days");
       potionBreak.progress_percentage = progressPercentage;
-    });
+    }
 
     const files = fs.readdirSync("public/images/hero/view-all-potion-breaks");
     const randomImage = files[Math.floor(Math.random() * files.length)];
@@ -139,8 +139,6 @@ router.post("/potion-break-creation-success", async (req, res) => {
       .where("game_id", "=", potionBreakData.appId)
       .where("user_id", "=", req.user.id);
 
-    console.log(playtimeForever);
-    console.log(playtimeForever[0].playtime_forever);
     const insertPotionBreak = await PotionBreak.query().insert({
       start_date: potionBreakData.formattedDate,
       end_date: potionBreakData.endDate,
@@ -154,7 +152,7 @@ router.post("/potion-break-creation-success", async (req, res) => {
       stripe_payment_date_created: potionBreakData.dateCreated,
     });
 
-    const updatePotionBreakStatus = UserGame.query()
+    const updatePotionBreakStatus = await UserGame.query()
       .where("game_id", "=", potionBreakData.appId)
       .where("user_id", "=", req.user.id)
       .patch({

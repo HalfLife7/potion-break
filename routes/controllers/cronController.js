@@ -8,153 +8,103 @@ const { CronJob } = require("cron");
 
 const Bottleneck = require("bottleneck/es5");
 
+const PotionBreak = require("../../models/potionBreak");
+const UserGame = require("../../models/userGame");
+
 //  0 0 * * * - at midnight every night
 // 1-59/2 * * * * - odd minute for testing
-const potionBreakDailyCheck = new CronJob("0 0 * * *", function () {
-  // get users who have potion break ending that night
-  const dateToday = moment().format("YYYY-MM-DD");
+const potionBreakDailyCheck = new CronJob("0 0 * * *", async () => {
+  try {
+    // get users who have potion break ending that night
+    const dateToday = moment().format("YYYY-MM-DD");
 
-  const sql = `
-    SELECT 
-        potion_breaks.*, 
-        users.steam_id, 
-        users.stripe_customer_id 
-    FROM potion_breaks 
-    INNER JOIN users ON potion_breaks.user_id = users.user_id 
-    WHERE potion_breaks.end_date = ? AND status = ?
-    `;
-  const params = [dateToday, "Ongoing"];
-  const dbGetAllEndingPotionBreaks = dao
-    .all(sql, params)
-    .then((potionBreakData) => {
-      // get user play time through steam api
-      return Promise.all(
-        potionBreakData.map((potionBreak) => {
-          return Axios.get(
-            "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/",
-            {
-              params: {
-                steamid: potionBreak.steam_id,
-                key: process.env.STEAM_API_KEY,
-                include_played_free_games: true,
-                include_appinfo: true,
-                format: "json",
-                "appids_filter[0]": potionBreak.app_id,
-              },
-            }
-          ).then((response) => {
-            return response.data.response.games[0];
-          });
-        })
-      ).then((userSteamData) => {
-        return [potionBreakData, userSteamData];
-      });
-    })
-    .then((data) => {
-      const potionBreakData = data[0];
-      const userGameData = data[1];
+    const potionBreakData = await PotionBreak.query()
+      .select("potion_breaks.*")
+      .from("potion_breaks")
+      .where("potion_breaks.end_date", "=", dateToday)
+      .where("potion_breaks.status", "=", "Ongoing")
+      .join("users", "potion_breaks.user_id", "users.id")
+      .select("users.steam_id", "users.stripe_customer_id");
 
-      // compare user current playtime to initial playtime (when potion break started)
-      return Promise.all(
-        potionBreakData.map((potionBreak, i) => {
-          const userPreviousPlaytime = potionBreak.playtime_start;
-          const userCurrentPlaytime = userGameData[i].playtime_forever;
-
-          // if user played (increase playtime) -> fail potion break
-          if (userPreviousPlaytime < userCurrentPlaytime) {
-            // update user game data
-            var sql = `
-                    UPDATE potion_breaks 
-                    SET status = ?, 
-                    playtime_end = ?, 
-                    payment_status = ? 
-                    WHERE potion_break_id = ?
-                    `;
-            var params = [
-              "Failure",
-              userCurrentPlaytime,
-              "Unpaid",
-              potionBreak.potion_break_id,
-            ];
-
-            const dbUpdateUserPotionBreakFail = dao.run(sql, params);
-            return dbUpdateUserPotionBreakFail;
+    let userGameData = await Promise.all(
+      potionBreakData.map(async (potionBreak) => {
+        return await Axios.get(
+          "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/",
+          {
+            params: {
+              steamid: potionBreak.steam_id,
+              key: process.env.STEAM_API_KEY,
+              include_played_free_games: true,
+              include_appinfo: true,
+              format: "json",
+              "appids_filter[0]": potionBreak.game_id,
+            },
           }
-          // if user hasn't played (same playtime) -> succeed potion break
-          var sql = `
-                        UPDATE potion_breaks 
-                        SET status = ?, 
-                        playtime_end = ?, 
-                        payment_status = ? 
-                        WHERE potion_break_id = ?
-                    `;
-          params = [
-            "Success",
-            userCurrentPlaytime,
-            "N/A",
-            potionBreak.potion_break_id,
-          ];
-          const dbUpdateUserPotionBreakSuccess = dao.run(sql, params);
+        ).then((response) => {
+          return response.data.response.games[0];
+        });
+      })
+    );
 
-          return dbUpdateUserPotionBreakSuccess;
-        })
-      ).then(() => {
-        return potionBreakData;
-      });
-    })
-    .then((potionBreakData) => {
-      // update status games for all finished potionBreaks to 'false'
-      return Promise.all(
-        potionBreakData.map((potionBreak) => {
-          const sql = `
-                    UPDATE user_games_owned
-                    SET potion_break_active = ?
-                    WHERE app_id = ? AND user_id = ?
-                `;
-          const params = ["false", potionBreak.app_id, potionBreak.user_id];
-          const dbUpdateUserGamesOwned = dao.run(sql, params);
-          return dbUpdateUserGamesOwned;
-        })
-      );
-    })
-    .then(() => {
-      // get successful potion breaks
-      const sql = `
-                SELECT 
-                    potion_breaks.*, 
-                    users.steam_id, 
-                    users.stripe_customer_id 
-                FROM potion_breaks 
-                INNER JOIN users ON potion_breaks.user_id = users.user_id 
-                WHERE potion_breaks.end_date = ? AND status = ?
-                `;
-      const params = [dateToday, "Success"];
-      const dbGetAllSuccessPotionBreaksFromToday = dao.all(sql, params);
-      return dbGetAllSuccessPotionBreaksFromToday;
-    })
-    .then((potionBreaks) => {
-      // get the setupIntents from stripe api
-      return Promise.all(
-        potionBreaks.map((potionBreak) => {
-          const { setup_intent_id } = potionBreak;
-          return stripe.setupIntents.retrieve(potionBreak.setup_intent_id);
-        })
-      );
-    })
-    .then((setupIntents) => {
-      // remove the payment methods tied to the setupIntents
-      // (no longer need to charge them since the potion break was successful)
-      console.log(setupIntents);
-      return Promise.all(
-        setupIntents.map((setupIntent) => {
-          const { payment_method } = setupIntent;
-          return stripe.paymentMethods.detach(setupIntent.payment_method);
-        })
-      );
-    })
-    .catch((err) => {
-      console.error(`Error: ${err}`);
-    });
+    // https://thecodebarbarian.com/for-vs-for-each-vs-for-in-vs-for-of-in-javascript
+    for (const [i, potionBreak] of potionBreakData.entries()) {
+      const userPreviousPlaytime = potionBreak.playtime_start;
+      const userCurrentPlaytime = userGameData[i].playtime_forever;
+
+      // if user played (increase playtime) -> fail potion break
+      if (userPreviousPlaytime < userCurrentPlaytime) {
+        // update user game data
+        const updatePotionBreakFailure = await PotionBreak.query()
+          .where("id", "=", potionBreak.id)
+          .patch({
+            status: "Failure",
+            playtime_end: userCurrentPlaytime,
+            payment_status: "Unpaid",
+          });
+      } else {
+        // if user hasn't played (same playtime) -> succeed potion break
+        const updatePotionBreakSuccess = await PotionBreak.query()
+          .where("id", "=", potionBreak.id)
+          .patch({
+            status: "Success",
+            playtime_end: userCurrentPlaytime,
+            payment_status: "N/A",
+          });
+      }
+
+      // update user games owned status for each potion break
+      const updateUserGame = await UserGame.query()
+        .where("game_id", "=", potionBreak.game_id)
+        .where("user_id", "=", potionBreak.user_id)
+        .patch({
+          potion_break_active: "false",
+        });
+    }
+
+    // get successful potion breaks
+    const successfulPotionBreaks = await PotionBreak.query()
+      .select("potion_breaks.*")
+      .from("potion_breaks")
+      .where("potion_breaks.end_date", "=", dateToday)
+      .where("potion_breaks.status", "=", "Success")
+      .join("users", "potion_breaks.user_id", "users.id")
+      .select("users.steam_id", "users.stripe_customer_id");
+
+    // get setup intents from stripe
+    const setupIntents = await Promise.all(
+      successfulPotionBreaks.map(async (potionBreak) => {
+        return await stripe.setupIntents.retrieve(potionBreak.setup_intent_id);
+      })
+    );
+
+    // remove the payment methods tied to the setupIntents
+    // no longer need to charge them since the potion break was successful
+    for (const setupIntent of setupIntents) {
+      await stripe.paymentMethods.detach(setupIntent.payment_method);
+    }
+  } catch (err) {
+    console.error(err.message);
+  }
 });
 
 // 5 0 * * * - at 12:05 every night
