@@ -139,7 +139,18 @@ app.use(session({
 
   }),
   secret: process.env.SESSION_SECRET
-})); // Initialize Passport!  Also use passport.session() middleware, to support
+}));
+app.use(function (req, res, next) {
+  if (process.env.NODE_ENV === "production") {
+    var reqType = req.headers["x-forwarded-proto"]; // if not https redirect to https unless logging in using OAuth
+
+    if (reqType !== "https") {
+      req.url.indexOf("auth/steam") !== -1 ? next() : res.redirect("https://" + req.headers.host + req.url);
+    }
+  } else {
+    next();
+  }
+}); // Initialize Passport!  Also use passport.session() middleware, to support
 // persistent login sessions (recommended).
 
 app.use(passport.initialize());
