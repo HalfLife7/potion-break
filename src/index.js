@@ -163,37 +163,11 @@ app.use(
   })
 );
 
-app.use(function (req, res, next) {
-  if (process.env.NODE_ENV === "production") {
-    const reqType = req.headers["x-forwarded-proto"];
-    // if not https redirect to https unless logging in using OAuth
-    if (reqType !== "https") {
-      req.url.indexOf("auth/steam") !== -1
-        ? next()
-        : res.redirect("https://" + req.headers.host + req.url);
-    }
-  } else {
-    next();
-  }
-});
-
 // Initialize Passport!  Also use passport.session() middleware, to support
 // persistent login sessions (recommended).
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, "../public")));
-// stripe webhook local
-app.use(
-  express.json({
-    // We need the raw body to verify webhook signatures.
-    // Let's compute it only when hitting the Stripe webhook endpoint.
-    verify(req, res, buf) {
-      if (req.originalUrl.startsWith("/webhook")) {
-        req.rawBody = buf.toString();
-      }
-    },
-  })
-);
 
 // load routes
 const routes = require("./routes/index");
