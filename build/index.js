@@ -1,8 +1,8 @@
 "use strict";
 
 // .env workaround for heroku
-// stackoverflow.com/questions/59759085/heroku-failed-to-load-env
-https: if (process.env.NODE_ENV !== "production") {
+// https:stackoverflow.com/questions/59759085/heroku-failed-to-load-env
+if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
@@ -45,8 +45,6 @@ passport.deserializeUser(function (obj, done) {
 
 var returnURL = process.env.BASE_URL + ":" + process.env.PORT + "/auth/steam/return";
 var realm = process.env.BASE_URL + ":" + process.env.PORT;
-console.log(returnURL);
-console.log(realm);
 passport.use(new SteamStrategy({
   returnURL: returnURL,
   realm: realm,
@@ -130,13 +128,6 @@ app.engine("mustache", mustacheExpress("".concat(viewsPath, "/partials"), ".must
 app.set("view engine", "mustache");
 app.set("views", [viewsPath, viewsPages]); // start session
 
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  name: "potion-break-session",
-  resave: false,
-  saveUninitialized: false,
-  secure: true
-}));
 app.use(session({
   cookie: {
     maxAge: 86400000
