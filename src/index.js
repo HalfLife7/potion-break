@@ -189,7 +189,8 @@ app.use(
 const routes = require("./routes/index");
 
 app.use("/", routes);
+const port = process.env.PORT || 8000;
 
-const server = app.listen(process.env.PORT, "localhost", function () {
-  console.log(`Server listening on port ${process.env.PORT}`);
+const server = app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
 });
