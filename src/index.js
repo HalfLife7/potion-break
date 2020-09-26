@@ -1,8 +1,11 @@
-if (process.env.NODE_ENV !== "production") {
+// .env workaround for heroku
+// stackoverflow.com/questions/59759085/heroku-failed-to-load-env
+https: if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 const express = require("express");
 const session = require("express-session");
+var MemoryStore = require("memorystore")(session);
 const bodyParser = require("body-parser");
 const path = require("path");
 const mustacheExpress = require("mustache-express");
@@ -147,8 +150,20 @@ app.use(
     secret: process.env.SESSION_SECRET,
     name: "potion-break-session",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     secure: true,
+  })
+);
+
+app.use(
+  session({
+    cookie: { maxAge: 86400000 },
+    resave: false,
+    saveUninitialized: true,
+    store: new MemoryStore({
+      checkPeriod: 86400000, // prune expired entries every 24h
+    }),
+    secret: process.env.SESSION_SECRET,
   })
 );
 

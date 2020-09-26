@@ -1,12 +1,16 @@
 "use strict";
 
-if (process.env.NODE_ENV !== "production") {
+// .env workaround for heroku
+// stackoverflow.com/questions/59759085/heroku-failed-to-load-env
+https: if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
 var express = require("express");
 
 var session = require("express-session");
+
+var MemoryStore = require("memorystore")(session);
 
 var bodyParser = require("body-parser");
 
@@ -126,8 +130,20 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   name: "potion-break-session",
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   secure: true
+}));
+app.use(session({
+  cookie: {
+    maxAge: 86400000
+  },
+  resave: false,
+  saveUninitialized: true,
+  store: new MemoryStore({
+    checkPeriod: 86400000 // prune expired entries every 24h
+
+  }),
+  secret: process.env.SESSION_SECRET
 })); // Initialize Passport!  Also use passport.session() middleware, to support
 // persistent login sessions (recommended).
 
