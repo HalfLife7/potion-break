@@ -13,13 +13,14 @@ module.exports = {
   },
   development: {
     client: "pg",
-    connection: {
-      host: process.env.DATABASE_HOST,
-      database: process.env.DATABASE_NAME,
-      user: process.env.DATABASE_USER_NAME,
-      password: process.env.DATABASE_USER_PASSWORD,
-      port: process.env.DATABASE_PORT,
-    },
+    // connection: {
+    //   host: process.env.DATABASE_HOST,
+    //   database: process.env.DATABASE_NAME,
+    //   user: process.env.DATABASE_USER_NAME,
+    //   password: process.env.DATABASE_USER_PASSWORD,
+    //   port: process.env.DATABASE_PORT,
+    // },
+    connection: process.env.DATABASE_URL,
     migrations: {
       directory: `${__dirname}/db/migrations`,
     },
@@ -29,13 +30,14 @@ module.exports = {
   },
   production: {
     client: "pg",
-    connection: {
-      host: process.env.DATABASE_HOST,
-      database: process.env.DATABASE_NAME,
-      user: process.env.DATABASE_USER_NAME,
-      password: process.env.DATABASE_USER_PASSWORD,
-      port: process.env.DATABASE_PORT,
-    },
+    // connection: {
+    //   host: process.env.DATABASE_HOST,
+    //   database: process.env.DATABASE_NAME,
+    //   user: process.env.DATABASE_USER_NAME,
+    //   password: process.env.DATABASE_USER_PASSWORD,
+    //   port: process.env.DATABASE_PORT,
+    // },
+    connection: process.env.DATABASE_URL,
     migrations: {
       directory: `${__dirname}/db/migrations`,
     },
