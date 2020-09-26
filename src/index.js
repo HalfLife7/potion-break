@@ -41,6 +41,9 @@ const returnURL =
   process.env.BASE_URL + ":" + process.env.PORT + "/auth/steam/return";
 const realm = process.env.BASE_URL + ":" + process.env.PORT;
 
+console.log(returnURL);
+console.log(realm);
+
 passport.use(
   new SteamStrategy(
     {
@@ -149,8 +152,9 @@ app.engine("mustache", mustacheExpress(`${viewsPath}/partials`, ".mustache"));
 app.set("view engine", "mustache");
 app.set("views", [viewsPath, viewsPages]);
 
-// start session
+app.enable("trust proxy");
 
+// start session
 app.use(
   session({
     cookie: { maxAge: 86400000 },

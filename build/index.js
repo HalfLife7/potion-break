@@ -45,6 +45,8 @@ passport.deserializeUser(function (obj, done) {
 
 var returnURL = process.env.BASE_URL + ":" + process.env.PORT + "/auth/steam/return";
 var realm = process.env.BASE_URL + ":" + process.env.PORT;
+console.log(returnURL);
+console.log(realm);
 passport.use(new SteamStrategy({
   returnURL: returnURL,
   realm: realm,
