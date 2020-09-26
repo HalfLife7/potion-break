@@ -37,9 +37,8 @@ passport.deserializeUser(function (obj, done) {
 //   credentials (in this case, an OpenID identifier and profile), and invoke a
 //   callback with a user object.
 
-const returnURL =
-  process.env.BASE_URL + ":" + process.env.PORT + "/auth/steam/return";
-const realm = process.env.BASE_URL + ":" + process.env.PORT;
+const returnURL = process.env.BASE_URL + "/auth/steam/return";
+const realm = process.env.BASE_URL;
 
 console.log(returnURL);
 console.log(realm);
@@ -152,7 +151,7 @@ app.engine("mustache", mustacheExpress(`${viewsPath}/partials`, ".mustache"));
 app.set("view engine", "mustache");
 app.set("views", [viewsPath, viewsPages]);
 
-app.enable("trust proxy");
+// app.enable("trust proxy");
 
 // start session
 app.use(

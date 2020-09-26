@@ -43,8 +43,8 @@ passport.deserializeUser(function (obj, done) {
 //   credentials (in this case, an OpenID identifier and profile), and invoke a
 //   callback with a user object.
 
-var returnURL = process.env.BASE_URL + ":" + process.env.PORT + "/auth/steam/return";
-var realm = process.env.BASE_URL + ":" + process.env.PORT;
+var returnURL = process.env.BASE_URL + "/auth/steam/return";
+var realm = process.env.BASE_URL;
 console.log(returnURL);
 console.log(realm);
 passport.use(new SteamStrategy({
@@ -128,7 +128,8 @@ var viewsPath = path.join(__dirname, "../views");
 var viewsPages = path.join(__dirname, "../views/pages");
 app.engine("mustache", mustacheExpress("".concat(viewsPath, "/partials"), ".mustache"));
 app.set("view engine", "mustache");
-app.set("views", [viewsPath, viewsPages]); // start session
+app.set("views", [viewsPath, viewsPages]); // app.enable("trust proxy");
+// start session
 
 app.use(session({
   cookie: {
