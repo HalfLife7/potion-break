@@ -1,0 +1,12 @@
+#! /app/bin/node
+
+async function test() {
+  try {
+    console.log("Testing!");
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
+test();
+process.exit();

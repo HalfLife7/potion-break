@@ -1,0 +1,105 @@
+#! /app/bin/node
+
+var format = require("date-fns/format");
+const stripe = require("stripe")(process.env.STRIPE_SK_TEST);
+
+const PotionBreak = require("../../../models/potionBreak");
+const UserGame = require("../../../models/userGame");
+
+async function potionBreakDailyCheck() {
+  try {
+    // get users who have potion break ending that night
+    const dateToday = format(new Date(), "yyyy-MM-dd");
+
+    const potionBreakData = await PotionBreak.query()
+      .select("potion_breaks.*")
+      .from("potion_breaks")
+      .where("potion_breaks.end_date", "=", dateToday)
+      .where("potion_breaks.status", "=", "Ongoing")
+      .join("users", "potion_breaks.user_id", "users.id")
+      .select("users.steam_id", "users.stripe_customer_id");
+
+    let userGameData = await Promise.all(
+      potionBreakData.map(async (potionBreak) => {
+        return await Axios.get(
+          "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/",
+          {
+            params: {
+              steamid: potionBreak.steam_id,
+              key: process.env.STEAM_API_KEY,
+              include_played_free_games: true,
+              include_appinfo: true,
+              format: "json",
+              "appids_filter[0]": potionBreak.game_id,
+            },
+          }
+        ).then((response) => {
+          return response.data.response.games[0];
+        });
+      })
+    );
+
+    // https://thecodebarbarian.com/for-vs-for-each-vs-for-in-vs-for-of-in-javascript
+    for (const [i, potionBreak] of potionBreakData.entries()) {
+      const userPreviousPlaytime = potionBreak.playtime_start;
+      const userCurrentPlaytime = userGameData[i].playtime_forever;
+
+      // if user played (increase playtime) -> fail potion break
+      if (userPreviousPlaytime < userCurrentPlaytime) {
+        // update user game data
+        const updatePotionBreakFailure = await PotionBreak.query()
+          .where("id", "=", potionBreak.id)
+          .patch({
+            status: "Failure",
+            playtime_end: userCurrentPlaytime,
+            payment_status: "Unpaid",
+          });
+      } else {
+        // if user hasn't played (same playtime) -> succeed potion break
+        const updatePotionBreakSuccess = await PotionBreak.query()
+          .where("id", "=", potionBreak.id)
+          .patch({
+            status: "Success",
+            playtime_end: userCurrentPlaytime,
+            payment_status: "N/A",
+          });
+      }
+
+      // update user games owned status for each potion break
+      const updateUserGame = await UserGame.query()
+        .where("game_id", "=", potionBreak.game_id)
+        .where("user_id", "=", potionBreak.user_id)
+        .patch({
+          potion_break_active: "false",
+        });
+    }
+
+    // get successful potion breaks
+    const successfulPotionBreaks = await PotionBreak.query()
+      .select("potion_breaks.*")
+      .from("potion_breaks")
+      .where("potion_breaks.end_date", "=", dateToday)
+      .where("potion_breaks.status", "=", "Success")
+      .join("users", "potion_breaks.user_id", "users.id")
+      .select("users.steam_id", "users.stripe_customer_id");
+
+    // get setup intents from stripe
+    const setupIntents = await Promise.all(
+      successfulPotionBreaks.map(async (potionBreak) => {
+        return await stripe.setupIntents.retrieve(potionBreak.setup_intent_id);
+      })
+    );
+
+    // remove the payment methods tied to the setupIntents
+    // no longer need to charge them since the potion break was successful
+    for (const setupIntent of setupIntents) {
+      await stripe.paymentMethods.detach(setupIntent.payment_method);
+    }
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
+potionBreakDailyCheck();
+
+process.exit();
