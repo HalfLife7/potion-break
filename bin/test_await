@@ -14,14 +14,8 @@ async function testAwait() {
     .withGraphFetched("movies")
     .then((game) => {
       console.log(game);
+      process.exit();
     });
-
-  console.log("before 10 sec timeout");
-  setTimeout(function () {
-    //run async code
-    console.log("exit");
-    process.exit(0); //exit manually
-  }, 10000);
 }
 
 testAwait();
