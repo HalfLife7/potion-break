@@ -1,8 +1,8 @@
-#! /app/bin/node
+#!/app/bin/env node
 
 var format = require("date-fns/format");
 
-const Game = require("../../../models/game");
+const Game = require("../../models/game");
 
 async function testDatabase() {
   const dateToday = format(new Date(), "yyyy-MM-dd");

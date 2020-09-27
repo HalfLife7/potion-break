@@ -1,4 +1,4 @@
-#! /app/bin/node
+#!/app/bin/env node
 
 async function test() {
   try {
