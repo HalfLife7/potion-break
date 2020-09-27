@@ -132,8 +132,6 @@ const stripePaymentDailyCheck = new CronJob("*/2 * * * *", async () => {
     );
 
     for (const [i, setupIntent] of setupIntents.entries()) {
-      console.log(setupIntent);
-      console.log(unpaidPotionBreaks[i]);
       await stripe.paymentIntents.create({
         amount: unpaidPotionBreaks[i].total_value,
         currency: "cad",

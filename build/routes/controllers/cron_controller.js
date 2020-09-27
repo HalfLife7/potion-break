@@ -308,14 +308,12 @@ var stripePaymentDailyCheck = new CronJob("*/2 * * * *", /*#__PURE__*/(0, _async
 
         case 10:
           if ((_step3 = _iterator3.n()).done) {
-            _context5.next = 23;
+            _context5.next = 21;
             break;
           }
 
           _step3$value = (0, _slicedToArray2["default"])(_step3.value, 2), i = _step3$value[0], setupIntent = _step3$value[1];
-          console.log(setupIntent);
-          console.log(unpaidPotionBreaks[i]);
-          _context5.next = 16;
+          _context5.next = 14;
           return stripe.paymentIntents.create({
             amount: unpaidPotionBreaks[i].total_value,
             currency: "cad",
@@ -330,55 +328,55 @@ var stripePaymentDailyCheck = new CronJob("*/2 * * * *", /*#__PURE__*/(0, _async
 
           });
 
-        case 16:
-          _context5.next = 18;
+        case 14:
+          _context5.next = 16;
           return stripe.paymentMethods.detach(setupIntent.payment_method);
 
-        case 18:
-          _context5.next = 20;
+        case 16:
+          _context5.next = 18;
           return PotionBreak.query().where("setup_intent_id", "=", setupIntent.id).patch({
             payment_status: "Paid"
           });
 
-        case 20:
+        case 18:
           updatePaymentStatus = _context5.sent;
 
-        case 21:
+        case 19:
           _context5.next = 10;
           break;
 
-        case 23:
-          _context5.next = 28;
+        case 21:
+          _context5.next = 26;
           break;
 
-        case 25:
-          _context5.prev = 25;
+        case 23:
+          _context5.prev = 23;
           _context5.t0 = _context5["catch"](8);
 
           _iterator3.e(_context5.t0);
 
-        case 28:
-          _context5.prev = 28;
+        case 26:
+          _context5.prev = 26;
 
           _iterator3.f();
 
-          return _context5.finish(28);
+          return _context5.finish(26);
 
-        case 31:
-          _context5.next = 36;
+        case 29:
+          _context5.next = 34;
           break;
 
-        case 33:
-          _context5.prev = 33;
+        case 31:
+          _context5.prev = 31;
           _context5.t1 = _context5["catch"](0);
           console.error(_context5.t1.message);
 
-        case 36:
+        case 34:
         case "end":
           return _context5.stop();
       }
     }
-  }, _callee5, null, [[0, 33], [8, 25, 28, 31]]);
+  }, _callee5, null, [[0, 31], [8, 23, 26, 29]]);
 }))); // run everyday at 1:00am
 
 var steamDataUpdate = new CronJob("0 1 * * *", /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7() {
@@ -388,17 +386,18 @@ var steamDataUpdate = new CronJob("0 1 * * *", /*#__PURE__*/(0, _asyncToGenerato
     while (1) {
       switch (_context7.prev = _context7.next) {
         case 0:
-          _context7.next = 2;
+          _context7.prev = 0;
+          _context7.next = 3;
           return Game.query().select("id", "name");
 
-        case 2:
+        case 3:
           gamesData = _context7.sent;
           // use bottleneck's limiter to throttle api calls to 1/sec (1000ms)
           limiter = new Bottleneck({
             maxConcurrent: 1,
             minTime: 1000
           });
-          _context7.next = 6;
+          _context7.next = 7;
           return Promise.all(gamesData.map( /*#__PURE__*/function () {
             var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(game) {
               return _regenerator["default"].wrap(function _callee6$(_context6) {
@@ -441,59 +440,59 @@ var steamDataUpdate = new CronJob("0 1 * * *", /*#__PURE__*/(0, _asyncToGenerato
             };
           }()));
 
-        case 6:
+        case 7:
           steamGameData = _context7.sent;
           dateToday = format(new Date(), "yyyy-MM-dd");
           _iterator4 = _createForOfIteratorHelper(steamGameData);
-          _context7.prev = 9;
+          _context7.prev = 10;
 
           _iterator4.s();
 
-        case 11:
+        case 12:
           if ((_step4 = _iterator4.n()).done) {
-            _context7.next = 70;
+            _context7.next = 71;
             break;
           }
 
           game = _step4.value;
-          _context7.next = 15;
+          _context7.next = 16;
           return Game.query().where("id", "=", game.steam_appid).patch({
             header_image: game === null || game === void 0 ? void 0 : game.header_image,
             last_updated: dateToday
           });
 
-        case 15:
+        case 16:
           updateGame = _context7.sent;
 
           if (!((game === null || game === void 0 ? void 0 : (_game$screenshots = game.screenshots) === null || _game$screenshots === void 0 ? void 0 : _game$screenshots.length) !== 0 && game.screenshots)) {
-            _context7.next = 42;
+            _context7.next = 43;
             break;
           }
 
           _iterator5 = _createForOfIteratorHelper(game.screenshots);
-          _context7.prev = 18;
+          _context7.prev = 19;
 
           _iterator5.s();
 
-        case 20:
+        case 21:
           if ((_step5 = _iterator5.n()).done) {
-            _context7.next = 34;
+            _context7.next = 35;
             break;
           }
 
           screenshot = _step5.value;
-          _context7.next = 24;
+          _context7.next = 25;
           return GameScreenshot.query().findById([game.steam_appid, screenshot.id]);
 
-        case 24:
+        case 25:
           checkScreenshot = _context7.sent;
 
           if (!(checkScreenshot === undefined)) {
-            _context7.next = 30;
+            _context7.next = 31;
             break;
           }
 
-          _context7.next = 28;
+          _context7.next = 29;
           return GameScreenshot.query().insert({
             game_id: game.steam_appid,
             id: screenshot.id,
@@ -501,68 +500,68 @@ var steamDataUpdate = new CronJob("0 1 * * *", /*#__PURE__*/(0, _asyncToGenerato
             path_full: screenshot.path_full
           });
 
-        case 28:
-          _context7.next = 32;
+        case 29:
+          _context7.next = 33;
           break;
 
-        case 30:
-          _context7.next = 32;
+        case 31:
+          _context7.next = 33;
           return GameScreenshot.query().findById([game.steam_appid, screenshot.id]).patch({
             path_thumbnail: screenshot === null || screenshot === void 0 ? void 0 : screenshot.path_thumbnail,
             path_full: screenshot === null || screenshot === void 0 ? void 0 : screenshot.path_full
           });
 
-        case 32:
-          _context7.next = 20;
+        case 33:
+          _context7.next = 21;
           break;
 
-        case 34:
-          _context7.next = 39;
+        case 35:
+          _context7.next = 40;
           break;
 
-        case 36:
-          _context7.prev = 36;
-          _context7.t0 = _context7["catch"](18);
+        case 37:
+          _context7.prev = 37;
+          _context7.t0 = _context7["catch"](19);
 
           _iterator5.e(_context7.t0);
 
-        case 39:
-          _context7.prev = 39;
+        case 40:
+          _context7.prev = 40;
 
           _iterator5.f();
 
-          return _context7.finish(39);
+          return _context7.finish(40);
 
-        case 42:
+        case 43:
           if (!((game === null || game === void 0 ? void 0 : (_game$movies = game.movies) === null || _game$movies === void 0 ? void 0 : _game$movies.length) !== 0 && game.movies)) {
-            _context7.next = 68;
+            _context7.next = 69;
             break;
           }
 
           _iterator6 = _createForOfIteratorHelper(game.movies);
-          _context7.prev = 44;
+          _context7.prev = 45;
 
           _iterator6.s();
 
-        case 46:
+        case 47:
           if ((_step6 = _iterator6.n()).done) {
-            _context7.next = 60;
+            _context7.next = 61;
             break;
           }
 
           movie = _step6.value;
-          _context7.next = 50;
+          _context7.next = 51;
           return GameMovie.query().findById([game.steam_appid, movie.id]);
 
-        case 50:
+        case 51:
           checkMovie = _context7.sent;
 
           if (!(checkMovie === undefined)) {
-            _context7.next = 56;
+            _context7.next = 57;
             break;
           }
 
-          _context7.next = 54;
+          _context7.next = 55;
           return GameMovie.query().insert({
             game_id: game.steam_appid,
             id: movie.id,
@@ -574,12 +573,12 @@ var steamDataUpdate = new CronJob("0 1 * * *", /*#__PURE__*/(0, _asyncToGenerato
             mp4_max: movie === null || movie === void 0 ? void 0 : (_movie$mp2 = movie.mp4) === null || _movie$mp2 === void 0 ? void 0 : _movie$mp2["max"]
           });
 
-        case 54:
-          _context7.next = 58;
+        case 55:
+          _context7.next = 59;
           break;
 
-        case 56:
-          _context7.next = 58;
+        case 57:
+          _context7.next = 59;
           return GameMovie.query().findById([game.steam_appid, movie.id]).patch({
             name: movie === null || movie === void 0 ? void 0 : movie.name,
             thumbnail: movie === null || movie === void 0 ? void 0 : movie.thumbnail,
@@ -589,54 +588,63 @@ var steamDataUpdate = new CronJob("0 1 * * *", /*#__PURE__*/(0, _asyncToGenerato
             mp4_max: movie === null || movie === void 0 ? void 0 : (_movie$mp4 = movie.mp4) === null || _movie$mp4 === void 0 ? void 0 : _movie$mp4["max"]
           });
 
-        case 58:
-          _context7.next = 46;
+        case 59:
+          _context7.next = 47;
           break;
 
-        case 60:
-          _context7.next = 65;
+        case 61:
+          _context7.next = 66;
           break;
 
-        case 62:
-          _context7.prev = 62;
-          _context7.t1 = _context7["catch"](44);
+        case 63:
+          _context7.prev = 63;
+          _context7.t1 = _context7["catch"](45);
 
           _iterator6.e(_context7.t1);
 
-        case 65:
-          _context7.prev = 65;
+        case 66:
+          _context7.prev = 66;
 
           _iterator6.f();
 
-          return _context7.finish(65);
+          return _context7.finish(66);
 
-        case 68:
-          _context7.next = 11;
+        case 69:
+          _context7.next = 12;
           break;
 
-        case 70:
-          _context7.next = 75;
+        case 71:
+          _context7.next = 76;
           break;
 
-        case 72:
-          _context7.prev = 72;
-          _context7.t2 = _context7["catch"](9);
+        case 73:
+          _context7.prev = 73;
+          _context7.t2 = _context7["catch"](10);
 
           _iterator4.e(_context7.t2);
 
-        case 75:
-          _context7.prev = 75;
+        case 76:
+          _context7.prev = 76;
 
           _iterator4.f();
 
-          return _context7.finish(75);
+          return _context7.finish(76);
 
-        case 78:
+        case 79:
+          _context7.next = 84;
+          break;
+
+        case 81:
+          _context7.prev = 81;
+          _context7.t3 = _context7["catch"](0);
+          console.error(_context7.t3.message);
+
+        case 84:
         case "end":
           return _context7.stop();
       }
     }
-  }, _callee7, null, [[9, 72, 75, 78], [18, 36, 39, 42], [44, 62, 65, 68]]);
+  }, _callee7, null, [[0, 81], [10, 73, 76, 79], [19, 37, 40, 43], [45, 63, 66, 69]]);
 }))); // start cronjobs
 // potionBreakDailyCheck.start();
 // stripePaymentDailyCheck.start();
@@ -644,4 +652,4 @@ var steamDataUpdate = new CronJob("0 1 * * *", /*#__PURE__*/(0, _asyncToGenerato
 // export routes up to routes.js
 
 module.exports = router;
-//# sourceMappingURL=cronController.js.map
+//# sourceMappingURL=cron_controller.js.map

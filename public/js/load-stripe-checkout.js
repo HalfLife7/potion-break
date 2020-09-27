@@ -147,7 +147,7 @@ button.addEventListener("click", function (event) {
       },
     })
     .then(function (result) {
-      console.log(result);
+      // console.log(result);
       if (result.error) {
         displayError.textContent = result.error.message;
 
@@ -176,7 +176,7 @@ const getSetupIntent = function (publicKey) {
       return response.json();
     })
     .then(function (setupIntent) {
-      console.log(setupIntent);
+      // console.log(setupIntent);
       stripeElements(publicKey, setupIntent);
       card = elements.create("card", {
         style,

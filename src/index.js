@@ -5,7 +5,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 const express = require("express");
 const session = require("express-session");
-var MemoryStore = require("memorystore")(session);
+const MemoryStore = require("memorystore")(session);
 const bodyParser = require("body-parser");
 const path = require("path");
 const mustacheExpress = require("mustache-express");
@@ -37,17 +37,14 @@ passport.deserializeUser(function (obj, done) {
 //   credentials (in this case, an OpenID identifier and profile), and invoke a
 //   callback with a user object.
 
-const returnURL = process.env.BASE_URL + "/auth/steam/return";
+const returnURL = `${process.env.BASE_URL}/auth/steam/return`;
 const realm = process.env.BASE_URL;
-
-console.log(returnURL);
-console.log(realm);
 
 passport.use(
   new SteamStrategy(
     {
-      returnURL: returnURL,
-      realm: realm,
+      returnURL,
+      realm,
       apiKey: process.env.STEAM_API_KEY,
     },
     function (identifier, profile, done) {

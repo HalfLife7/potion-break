@@ -1,8 +1,8 @@
 const fs = require("fs");
-var format = require("date-fns/format");
-var differenceInCalendarDays = require("date-fns/differenceInCalendarDays");
-var fromUnixTime = require("date-fns/fromUnixTime");
-var formatISO = require("date-fns/formatISO");
+const format = require("date-fns/format");
+const differenceInCalendarDays = require("date-fns/differenceInCalendarDays");
+const fromUnixTime = require("date-fns/fromUnixTime");
+const formatISO = require("date-fns/formatISO");
 
 const express = require("express");
 const checkLogin = require("../../config/checkLoginMiddleware");

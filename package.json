@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.11.2",
+    "@passport-next/passport-openid": "^1.0.0",
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "bottleneck": "^2.19.5",
@@ -28,6 +29,7 @@
     "pg": "^8.3.3",
     "rimraf": "^3.0.2",
     "sqlite3": "^5.0.0",
+    "steam-web": "^0.7.0",
     "stripe": "^8.32.0",
     "util": "^0.12.2"
   },

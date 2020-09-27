@@ -10,7 +10,6 @@ const UserGame = require("../../../models/userGame");
 
 // middleware to check if logged in
 router.get("/user-profile", checkLogin, async (req, res) => {
-  console.log(req.user);
   const userData = await User.query()
     .findById(req.user.id)
     .select(

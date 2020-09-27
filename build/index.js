@@ -43,10 +43,8 @@ passport.deserializeUser(function (obj, done) {
 //   credentials (in this case, an OpenID identifier and profile), and invoke a
 //   callback with a user object.
 
-var returnURL = process.env.BASE_URL + "/auth/steam/return";
+var returnURL = "".concat(process.env.BASE_URL, "/auth/steam/return");
 var realm = process.env.BASE_URL;
-console.log(returnURL);
-console.log(realm);
 passport.use(new SteamStrategy({
   returnURL: returnURL,
   realm: realm,

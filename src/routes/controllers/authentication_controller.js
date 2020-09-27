@@ -27,7 +27,6 @@ router.get(
   "/steam/return",
   // Issue #37 - Workaround for Express router module stripping the full url, causing assertion to fail
   function (req, res, next) {
-    console.log("here!");
     req.url = req.originalUrl;
     next();
   },

@@ -1,5 +1,5 @@
 const fs = require("fs");
-var format = require("date-fns/format");
+const format = require("date-fns/format");
 const Axios = require("axios");
 const express = require("express");
 const checkLogin = require("../../config/checkLoginMiddleware");

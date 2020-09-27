@@ -23,7 +23,6 @@ router.get("/steam", passport.authenticate("steam", {
 
 router.get("/steam/return", // Issue #37 - Workaround for Express router module stripping the full url, causing assertion to fail
 function (req, res, next) {
-  console.log("here!");
   req.url = req.originalUrl;
   next();
 }, passport.authenticate("steam", {
@@ -36,4 +35,4 @@ router.get("/logout", function (req, res) {
   res.redirect("/");
 });
 module.exports = router;
-//# sourceMappingURL=authenticationController.js.map
+//# sourceMappingURL=authentication_controller.js.map

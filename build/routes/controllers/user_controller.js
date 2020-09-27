@@ -28,21 +28,20 @@ router.get("/user-profile", checkLogin, /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            console.log(req.user);
-            _context.next = 3;
+            _context.next = 2;
             return User.query().findById(req.user.id).select("id", "steam_persona_name", "steam_profile", "steam_id", "steam_avatar", "total_steam_games_owned", "total_steam_games_played", "name", "email");
 
-          case 3:
+          case 2:
             userData = _context.sent;
-            _context.next = 6;
+            _context.next = 5;
             return UserGame.query().sum("playtime_forever as total_minutes_played").where("user_id", "=", req.user.id);
 
-          case 6:
+          case 5:
             userTotalMinutesPlayed = _context.sent;
-            _context.next = 9;
+            _context.next = 8;
             return UserGame.query().count("game_id as total_games_played").where("user_id", "=", req.user.id);
 
-          case 9:
+          case 8:
             userTotalGamesPlayed = _context.sent;
             userData.total_minutes_played = userTotalMinutesPlayed[0].total_minutes_played;
             userData.total_games_played = userTotalGamesPlayed[0].total_games_played;
@@ -62,7 +61,7 @@ router.get("/user-profile", checkLogin, /*#__PURE__*/function () {
               image: randomImage
             });
 
-          case 18:
+          case 17:
           case "end":
             return _context.stop();
         }
@@ -108,4 +107,4 @@ router.post("/update-user-profile", /*#__PURE__*/function () {
 }()); // export routes up to routes.js
 
 module.exports = router;
-//# sourceMappingURL=userController.js.map
+//# sourceMappingURL=user_controller.js.map

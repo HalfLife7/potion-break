@@ -126,4 +126,4 @@ router.post("/create-setup-intent", /*#__PURE__*/function () {
 }()); // export routes up to routes.js
 
 module.exports = router;
-//# sourceMappingURL=stripeController.js.map
+//# sourceMappingURL=stripe_controller.js.map

@@ -365,4 +365,4 @@ router.get("/game-library", checkLogin, /*#__PURE__*/function () {
 }()); // export routes up to routes.js
 
 module.exports = router;
-//# sourceMappingURL=gameLibraryController.js.map
+//# sourceMappingURL=game_library_controller.js.map
