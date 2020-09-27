@@ -3,8 +3,8 @@
 var format = require("date-fns/format");
 const stripe = require("stripe")(process.env.STRIPE_SK_TEST);
 
-const PotionBreak = require("../../models/potionBreak");
-const UserGame = require("../../models/userGame");
+const PotionBreak = require("../models/potionBreak");
+const UserGame = require("../models/userGame");
 
 async function potionBreakDailyCheck() {
   try {
