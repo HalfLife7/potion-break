@@ -95,13 +95,11 @@ async function potionBreakDailyCheck() {
     for (const setupIntent of setupIntents) {
       await stripe.paymentMethods.detach(setupIntent.payment_method);
     }
+
+    process.exit();
   } catch (err) {
     console.error(err.message);
   }
 }
 
 potionBreakDailyCheck();
-
-process.nextTick(() => {
-  process.exit();
-});
