@@ -42,12 +42,12 @@ router.get("/", /*#__PURE__*/function () {
           case 7:
             dota = _context.sent;
             _context.next = 10;
-            return Game.query().findById(435150).withGraphFetched("screenshots").withGraphFetched("movies");
+            return Game.query().findById(546560).withGraphFetched("screenshots").withGraphFetched("movies");
 
           case 10:
             halflife = _context.sent;
             _context.next = 13;
-            return Game.query().findById(546560).withGraphFetched("screenshots").withGraphFetched("movies");
+            return Game.query().findById(435150).withGraphFetched("screenshots").withGraphFetched("movies");
 
           case 13:
             divinity = _context.sent;

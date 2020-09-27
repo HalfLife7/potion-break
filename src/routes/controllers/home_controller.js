@@ -18,12 +18,12 @@ router.get("/", async (req, res) => {
         .withGraphFetched("movies");
 
       const halflife = await Game.query()
-        .findById(435150)
+        .findById(546560)
         .withGraphFetched("screenshots")
         .withGraphFetched("movies");
 
       const divinity = await Game.query()
-        .findById(546560)
+        .findById(435150)
         .withGraphFetched("screenshots")
         .withGraphFetched("movies");
 
