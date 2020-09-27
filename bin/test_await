@@ -1,15 +1,20 @@
 #!/usr/bin/env node
 
+var format = require("date-fns/format");
+
+const Game = require("../models/game");
+
 async function testAwait() {
-  try {
-    console.log("Testing!");
-    await fetch("https://medium.com/feed/stokedinfluence");
-  } catch (err) {
-    console.error(err.message);
-  }
+  const dateToday = format(new Date(), "yyyy-MM-dd");
+  console.log(dateToday);
+
+  await Game.query()
+    .findById(570)
+    .withGraphFetched("screenshots")
+    .withGraphFetched("movies")
+    .then((game) => {
+      console.log(game);
+    });
 }
 
 testAwait();
-process.nextTick(() => {
-  process.exit();
-});
