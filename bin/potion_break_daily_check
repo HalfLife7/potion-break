@@ -1,4 +1,4 @@
-#!/app/bin/env node
+#!/usr/bin/env node
 
 var format = require("date-fns/format");
 const stripe = require("stripe")(process.env.STRIPE_SK_TEST);
@@ -102,4 +102,6 @@ async function potionBreakDailyCheck() {
 
 potionBreakDailyCheck();
 
-process.exit();
+process.nextTick(() => {
+  process.exit();
+});

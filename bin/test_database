@@ -1,4 +1,4 @@
-#!/app/bin/env node
+#!/usr/bin/env node
 
 var format = require("date-fns/format");
 
@@ -17,4 +17,6 @@ async function testDatabase() {
 }
 
 testDatabase();
-process.exit();
+process.nextTick(() => {
+  process.exit();
+});

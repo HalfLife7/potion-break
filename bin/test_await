@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 
-async function test() {
+async function testAwait() {
   try {
     console.log("Testing!");
+    await fetch("https://medium.com/feed/stokedinfluence");
   } catch (err) {
     console.error(err.message);
   }
 }
 
-test();
+testAwait();
 process.nextTick(() => {
   process.exit();
 });
