@@ -29,7 +29,7 @@ async function steamDataUpdate() {
               format: "json",
             },
           }).then((response) => {
-            const timeNow = format(new Date());
+            const timeNow = format(new Date("yyyy-MM-dd hh:mm:ss aaaa"));
             console.log(`${game.name} - ${game.id} - ${timeNow}`);
 
             // fix for games that cannot be queried by the store.steampowered api (such as dead island - 91310)
