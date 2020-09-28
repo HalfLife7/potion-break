@@ -2,6 +2,9 @@
   "name": "potion-break",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": "14.8"
+  },
   "main": "server.js",
   "directories": {
     "lib": "lib"
