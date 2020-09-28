@@ -4,9 +4,9 @@ var format = require("date-fns/format");
 const Axios = require("axios");
 const Bottleneck = require("bottleneck/es5");
 
-const Game = require("../../../models/game");
-const GameScreenshot = require("../../../models/gameScreenshot");
-const GameMovie = require("../../../models/gameMovie.js");
+const Game = require("../models/game");
+const GameScreenshot = require("../models/gameScreenshot");
+const GameMovie = require("../models/gameMovie.js");
 
 async function steamDataUpdate() {
   try {
