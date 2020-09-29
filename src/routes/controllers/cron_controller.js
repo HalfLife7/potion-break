@@ -221,16 +221,28 @@ const steamDataUpdate = new CronJob("0 1 * * *", async () => {
             await GameScreenshot.query().insert({
               game_id: game.steam_appid,
               id: screenshot.id,
-              path_thumbnail: screenshot.path_thumbnail,
-              path_full: screenshot.path_full,
+              path_thumbnail: screenshot.path_thumbnail.replace(
+                /^http:\/\//i,
+                "https://"
+              ),
+              path_full: screenshot.path_full.replace(
+                /^http:\/\//i,
+                "https://"
+              ),
             });
           } else {
             // update the existing entry if it does exist
             await GameScreenshot.query()
               .findById([game.steam_appid, screenshot.id])
               .patch({
-                path_thumbnail: screenshot?.path_thumbnail,
-                path_full: screenshot?.path_full,
+                path_thumbnail: screenshot?.path_thumbnail.replace(
+                  /^http:\/\//i,
+                  "https://"
+                ),
+                path_full: screenshot?.path_full.replace(
+                  /^http:\/\//i,
+                  "https://"
+                ),
               });
           }
         }
@@ -250,11 +262,11 @@ const steamDataUpdate = new CronJob("0 1 * * *", async () => {
               game_id: game.steam_appid,
               id: movie.id,
               name: movie?.name,
-              thumbnail: movie?.thumbnail,
-              webm_480: movie?.webm?.["480"],
-              webm_max: movie?.webm?.["max"],
-              mp4_480: movie?.mp4?.["480"],
-              mp4_max: movie?.mp4?.["max"],
+              thumbnail: movie?.thumbnail.replace(/^http:\/\//i, "https://"),
+              webm_480: movie?.webm?.["480"].replace(/^http:\/\//i, "https://"),
+              webm_max: movie?.webm?.["max"].replace(/^http:\/\//i, "https://"),
+              mp4_480: movie?.mp4?.["480"].replace(/^http:\/\//i, "https://"),
+              mp4_max: movie?.mp4?.["max"].replace(/^http:\/\//i, "https://"),
             });
           } else {
             // update the existing entry if it does exist
@@ -263,10 +275,16 @@ const steamDataUpdate = new CronJob("0 1 * * *", async () => {
               .patch({
                 name: movie?.name,
                 thumbnail: movie?.thumbnail,
-                webm_480: movie?.webm?.["480"],
-                webm_max: movie?.webm?.["max"],
-                mp4_480: movie?.mp4?.["480"],
-                mp4_max: movie?.mp4?.["max"],
+                webm_480: movie?.webm?.["480"].replace(
+                  /^http:\/\//i,
+                  "https://"
+                ),
+                webm_max: movie?.webm?.["max"].replace(
+                  /^http:\/\//i,
+                  "https://"
+                ),
+                mp4_480: movie?.mp4?.["480"].replace(/^http:\/\//i, "https://"),
+                mp4_max: movie?.mp4?.["max"].replace(/^http:\/\//i, "https://"),
               });
           }
         }
