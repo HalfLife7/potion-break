@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="" rel="noopener">
+  <a href="https://potion-break.herokuapp.com/" rel="noopener">
  <img width=200px height=200px src="https://github.com/HalfLife7/potion-break/blob/master/public/images/big-potion-break-logo.png?raw=true" alt="Project logo"></a>
 </p>
 
