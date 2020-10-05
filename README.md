@@ -120,6 +120,7 @@ Open `potion-break/.env.example` then edit it with your settings and rename to O
 
 ### Utilities
 
+- [Babel](https://babeljs.io/) - JavaScript Transpiler
 - [axios](https://www.npmjs.com/package/axios) - HTTP Client
 - [Passport](http://www.passportjs.org/) - Authentication
 - [Bottleneck](https://github.com/SGrondin/bottleneck#readme) - Rate Limiter
