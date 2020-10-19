@@ -47,10 +47,16 @@ async function steamDataUpdate() {
     const dateToday = format(new Date(), "yyyy-MM-dd");
 
     for (const game of steamGameData) {
+      let headerImage = game?.header_image;
+
+      if (headerImage !== null && headerImage !== undefined) {
+        headerImage.replace(/^http:\/\//i, "https://");
+      }
+
       const updateGame = await Game.query()
         .where("id", "=", game.steam_appid)
         .patch({
-          header_image: game?.header_image.replace(/^http:\/\//i, "https://"),
+          header_image: headerImage,
           last_updated: dateToday,
         });
 
