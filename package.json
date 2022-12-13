@@ -19,7 +19,7 @@
     "cors": "^2.8.5",
     "cron": "^1.8.2",
     "date-fns": "^2.16.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-session": "^1.17.1",
     "flatpickr": "^4.6.3",
     "knex": "^0.21.5",
